@@ -1,4 +1,4 @@
-from math import acos, degrees, tan
+from math import acos, degrees, cos, sin, radians
 from tkinter import *
 from tkinter.ttk import *
 from tkinter import Canvas, Frame, Button, Label, Entry
@@ -30,13 +30,84 @@ def is_triangle(p1, p2, p3):
     return False
 
 
+def is_number(string):
+    try:
+        float(string)
+        return True
+    except ValueError:
+        return False
+
+
+def get_rect_centre(rect):
+    xl = rect[0][0]
+    yl = rect[0][1]
+    xr = xl + rect[1]
+    yr = yl + rect[2]
+
+    xr = xr * cos(radians(rect[3])) - yr * sin(radians(rect[3]))
+    yr = xr * sin(radians(rect[3])) + yr * cos(radians(rect[3]))
+
+    return (xl + xr) / 2, (yl + yr) / 2
+
+
+def get_triangle_point(cords, rect_centre):
+    cords_len = len(cords)
+    min_fi = -2.0
+    triangle = None
+    point = None
+
+    for p1 in range(cords_len):
+        for p2 in range(p1 + 1, cords_len):
+            for p3 in range(p2 + 1, cords_len):
+
+                if is_triangle(cords[p1], cords[p2], cords[p3]):
+
+                    res_point = find_point(cords[p1], cords[p2], cords[p3])
+                    fi = find_corner(res_point, rect_centre)
+
+                    if fi > min_fi:
+                        min_fi = fi
+                        triangle = (cords[p1], cords[p2], cords[p3])
+                        point = res_point
+
+    return triangle, min_fi, point
+
+
+def get_rect_points(rect):
+    xl = rect[0][0]
+    yl = rect[0][1]
+
+    xr = rect[1] * cos(radians(rect[3])) - rect[2] * sin(radians(rect[3]))
+    yr = rect[1] * sin(radians(rect[3])) + rect[2] * cos(radians(rect[3]))
+
+    xr += rect[0][0]
+    yr += rect[0][1]
+
+    xl2 = 0 * cos(radians(rect[3])) - rect[2] * sin(radians(rect[3]))
+    yl2 = 0 * sin(radians(rect[3])) + rect[2] * cos(radians(rect[3]))
+
+    xl2 += rect[0][0]
+    yl2 += rect[0][1]
+
+    xr2 = rect[1] * cos(radians(rect[3])) - 0 * sin(radians(rect[3]))
+    yr2 = rect[1] * sin(radians(rect[3])) + 0 * cos(radians(rect[3]))
+
+    xr2 += rect[0][0]
+    yr2 += rect[0][1]
+
+    return (xl, yl), (xl2, yl2), (xr, yr), (xr2, yr2)
+
+
 class MainFrame(Tk):
 
     def __init__(self):
         super().__init__()
 
-        self.ex1 = None
-        self.ey1 = None
+        self.width = 700
+        self.height = 700
+
+        self.rect_x = None
+        self.rect_y = None
         self.rect_a = None
         self.rect_b = None
         self.rect_fi = None
@@ -88,8 +159,8 @@ class MainFrame(Tk):
     def create_rect_frame(self, right_frame):
         rect_frame = Frame(right_frame)
 
-        self.ex1 = Entry(rect_frame, width=5)
-        self.ey1 = Entry(rect_frame, width=5)
+        self.rect_x = Entry(rect_frame, width=5)
+        self.rect_y = Entry(rect_frame, width=5)
         self.rect_a = Entry(rect_frame, width=5)
         self.rect_b = Entry(rect_frame, width=5)
         self.rect_fi = Entry(rect_frame, width=5)
@@ -99,9 +170,9 @@ class MainFrame(Tk):
         rect_label.grid(row=0, column=0, columnspan=4)
 
         Label(rect_frame, text="x =").grid(row=1, column=0, sticky=E)
-        self.ex1.grid(row=1, column=1, sticky=W)
+        self.rect_x.grid(row=1, column=1, sticky=W)
         Label(rect_frame, text="y =").grid(row=1, column=2, sticky=E)
-        self.ey1.grid(row=1, column=3, sticky=W)
+        self.rect_y.grid(row=1, column=3, sticky=W)
 
         Label(rect_frame, text="Длинна : ").grid(row=2, column=0, columnspan=3, sticky=E)
         self.rect_a.grid(row=2, column=3, sticky=W)
@@ -179,22 +250,26 @@ class MainFrame(Tk):
 
         if len(self.cords) > 2:
 
-            rect_centre, rect = self.get_rect()
+            rect = self.get_rect()
 
-            if (rect[1][0] - rect[0][0]) * (rect[1][1] - rect[0][1]) != 0:
-                triangle, cos_fi, b_point = self.get_triangle_point(rect_centre)
+            if rect is not None:
+
+                rect_centre = get_rect_centre(rect)
+                rect_points = get_rect_points(rect)
+
+                triangle, cos_fi, b_point = get_triangle_point(self.cords, rect_centre)
 
                 if b_point is not None:
 
                     # scale
 
-                    k, mins = self.get_scale(rect, triangle, b_point)
+                    k, mins = self.get_scale(rect_points, triangle, b_point)
 
                     # draw graph
 
-                    self.draw_rect(rect, mins, k)
+                    self.draw_rect(rect_points, mins, k)
                     self.draw_triangle(triangle, b_point, mins, k)
-                    self.draw_lines(rect_centre, b_point, mins, k)
+                    self.draw_lines(rect_points, b_point, mins, k)
 
                     self.display_text.set("Минимальный угол = {:.3f} градуса.".format(degrees(acos(cos_fi))))
 
@@ -208,48 +283,36 @@ class MainFrame(Tk):
     # helper function
 
     def get_rect(self):
-        xl = float(self.ex1.get())
-        yl = float(self.ey1.get())
-        xr = float(self.ex3.get())
-        yr = float(self.ey3.get())
 
-        return ((xl + xr) / 2, (yl + yr) / 2), ((xl, yl), (xr, yr))
+        if is_number(self.rect_x.get()) and is_number(self.rect_y.get()) \
+                and is_number(self.rect_a.get()) and is_number(self.rect_b.get()) \
+                and is_number(self.rect_fi.get()):
 
-    def get_triangle_point(self, rect_centre):
-        cords_len = len(self.cords)
-        min_fi = -2.0
-        triangle = None
-        point = None
+            x = float(self.rect_x.get())
+            y = float(self.rect_y.get())
+            a = float(self.rect_a.get())
+            b = float(self.rect_b.get())
+            fi = float(self.rect_fi.get())
 
-        for p1 in range(cords_len):
-            for p2 in range(p1 + 1, cords_len):
-                for p3 in range(p2 + 1, cords_len):
+            if a > 0 and b > 0 and 0 <= fi < 180:
+                return (x, y), a, b, fi
 
-                    if is_triangle(self.cords[p1], self.cords[p2], self.cords[p3]):
+        return None
 
-                        res_point = find_point(self.cords[p1], self.cords[p2], self.cords[p3])
-                        fi = find_corner(res_point, rect_centre)
+    def get_scale(self, rect_points, triangle, b_point):
+        width = self.width
+        height = self.height
 
-                        if fi > min_fi:
-                            min_fi = fi
-                            triangle = (p1, p2, p3)
-                            point = res_point
+        k = None
 
-        return triangle, min_fi, point
-
-    def get_scale(self, rect, triangle, b_point):
-        width = 700
-        height = 700
-
-        min_x = min(rect[0][0], rect[1][0], self.cords[triangle[0]][0],
-                    self.cords[triangle[1]][0], self.cords[triangle[2]][0], b_point[0])
-        max_x = max(rect[0][0], rect[1][0], self.cords[triangle[0]][0],
-                    self.cords[triangle[1]][0], self.cords[triangle[2]][0], b_point[0])
-        min_y = min(rect[0][1], rect[1][1], self.cords[triangle[0]][1],
-                    self.cords[triangle[1]][1], self.cords[triangle[2]][1], b_point[1])
-        print("min y = ", min_y)
-        max_y = max(rect[0][1], rect[1][1], self.cords[triangle[0]][1],
-                    self.cords[triangle[1]][1], self.cords[triangle[2]][1], b_point[1])
+        min_x = min(rect_points[0][0], rect_points[1][0], rect_points[2][0], rect_points[3][0],
+                    triangle[0][0], triangle[1][0], triangle[2][0], b_point[0])
+        max_x = max(rect_points[0][0], rect_points[1][0], rect_points[2][0], rect_points[3][0],
+                    triangle[0][0], triangle[1][0], triangle[2][0], b_point[0])
+        min_y = min(rect_points[0][1], rect_points[1][1], rect_points[2][1], rect_points[3][1],
+                    triangle[0][1], triangle[1][1], triangle[2][1], b_point[1])
+        max_y = max(rect_points[0][1], rect_points[1][1], rect_points[2][1], rect_points[3][1],
+                    triangle[0][1], triangle[1][1], triangle[2][1], b_point[1])
 
         k_x = (width - 2 * self.border) / (max_x - min_x)
         k_y = (height - 2 * self.border) / (max_y - min_y)
@@ -262,52 +325,79 @@ class MainFrame(Tk):
             k = k_y
         elif k_x < 1 and k_y < 1:
             k = min(k_x, k_y)
+
         print("k = ", k)
+        print("min x = ", min_x)
+
         return k, (min_x, min_y)
 
     # draw functions
 
-    def draw_rect(self, rect, mins, k):
-        my = 700#self.canvas.winfo_height()
-        min_x = mins[0]# fabs(mins[0])
-        min_y = mins[1]# fabs(mins[1])
+    def draw_rect(self, rect_points, mins, k):
+        my = self.height
+        min_x = mins[0]
+        min_y = mins[1]
 
-        xl = (rect[0][0] - min_x) * k + self.border
-        yl = my - (rect[0][1] - min_y) * k - self.border
-        xr = (rect[1][0] - min_x) * k + self.border
-        yr = my - (rect[1][1] - min_y) * k - self.border
+        xl = rect_points[0][0]
+        yl = rect_points[0][1]
 
-        self.canvas.create_rectangle(xl, yl, xr, yr, outline="blue")
+        xr = rect_points[2][0]
+        yr = rect_points[2][1]
+
+        xl2 = rect_points[1][0]
+        yl2 = rect_points[1][1]
+
+        xr2 = rect_points[3][0]
+        yr2 = rect_points[3][1]
+
+        tx = (xl + xr) / 2
+        ty = (yl + yr) / 2
+
+        # other
+
+        xl = (xl - min_x) * k + self.border
+        yl = my - (yl - min_y) * k - self.border
+
+        xr = (xr - min_x) * k + self.border
+        yr = my - (yr - min_y) * k - self.border
+
+        xl2 = (xl2 - min_x) * k + self.border
+        yl2 = my - (yl2 - min_y) * k - self.border
+
+        xr2 = (xr2 - min_x) * k + self.border
+        yr2 = my - (yr2 - min_y) * k - self.border
+
+        # drawing
+
+        self.canvas.create_line(xl, yl, xr2, yr2, xr, yr, xl2, yl2, xl, yl, fill="blue")
+
         self.canvas.create_oval((xl + xr) / 2 - 2, (yl + yr) / 2 - 2,
                                 (xl + xr) / 2 + 2, (yl + yr) / 2 + 2,
                                 fill="red", outline="red")
         self.canvas.create_text((xl + xr) / 2 + 18, (yl + yr) / 2 + 18,
-                                text="({:.1f}, {:.1f})".format((rect[1][0] + rect[0][0]) / 2,
-                                                               (rect[1][1] + rect[0][1]) / 2),
+                                text="({:.1f}, {:.1f})".format(tx, ty),
                                 font="Verdana 8", justify=CENTER)
 
     def draw_triangle(self, triangle, b_point, mins, k):
 
-        my = 700#self.canvas.winfo_height()
-        # min_x = fabs(mins[0])
-        # min_y = fabs(mins[1])
+        my = self.height
         min_x = mins[0]
         min_y = mins[1]
 
-        self.canvas.create_line((self.cords[triangle[0]][0] - min_x) * k + self.border,
-                                my - (self.cords[triangle[0]][1] - min_y) * k - self.border,
-                                (self.cords[triangle[1]][0] - min_x) * k + self.border,
-                                my - (self.cords[triangle[1]][1] - min_y) * k - self.border, fill="green")
+        self.canvas.create_line((triangle[0][0] - min_x) * k + self.border,
+                                my - (triangle[0][1] - min_y) * k - self.border,
+                                (triangle[1][0] - min_x) * k + self.border,
+                                my - (triangle[1][1] - min_y) * k - self.border, fill="green")
 
-        self.canvas.create_line((self.cords[triangle[1]][0] - min_x) * k + self.border,
-                                my - (self.cords[triangle[1]][1] - min_y) * k - self.border,
-                                (self.cords[triangle[2]][0] - min_x) * k + self.border,
-                                my - (self.cords[triangle[2]][1] - min_y) * k - self.border, fill="green")
+        self.canvas.create_line((triangle[1][0] - min_x) * k + self.border,
+                                my - (triangle[1][1] - min_y) * k - self.border,
+                                (triangle[2][0] - min_x) * k + self.border,
+                                my - (triangle[2][1] - min_y) * k - self.border, fill="green")
 
-        self.canvas.create_line((self.cords[triangle[2]][0] - min_x) * k + self.border,
-                                my - (self.cords[triangle[2]][1] - min_y) * k - self.border,
-                                (self.cords[triangle[0]][0] - min_x) * k + self.border,
-                                my - (self.cords[triangle[0]][1] - min_y) * k - self.border, fill="green")
+        self.canvas.create_line((triangle[2][0] - min_x) * k + self.border,
+                                my - (triangle[2][1] - min_y) * k - self.border,
+                                (triangle[0][0] - min_x) * k + self.border,
+                                my - (triangle[0][1] - min_y) * k - self.border, fill="green")
 
         self.canvas.create_oval((b_point[0] - min_x) * k + self.border - 2,
                                 my - (b_point[1] - min_y) * k - self.border - 2,
@@ -320,21 +410,28 @@ class MainFrame(Tk):
                                 text="({:.1f}, {:.1f})".format(b_point[0], b_point[1]),
                                 font="Verdana 8", justify=CENTER)
 
-    def draw_lines(self, p1, p2, mins, k):
+    def draw_lines(self, rect_points, b_point, mins, k):
 
-        my = 700#self.canvas.winfo_height()
-        # min_x = fabs(mins[0])
-        # min_y = fabs(mins[1])
+        my = self.height
         min_x = mins[0]
         min_y = mins[1]
 
-        self.canvas.create_line((p1[0] - min_x) * k + self.border,
-                                my - (p1[1] - min_y) * k - self.border,
-                                (p2[0] - min_x) * k + self.border,
-                                my - (p2[1] - min_y) * k - self.border, fill="maroon")
+        xl = rect_points[0][0]
+        yl = rect_points[0][1]
 
-        x0 = (p1[0] + p2[0]) / 2
-        y0 = (p1[1] + p2[1]) / 2
+        xr = rect_points[2][0]
+        yr = rect_points[2][1]
+
+        x1 = (xl + xr) / 2
+        y1 = (yl + yr) / 2
+
+        self.canvas.create_line((x1 - min_x) * k + self.border,
+                                my - (y1 - min_y) * k - self.border,
+                                (b_point[0] - min_x) * k + self.border,
+                                my - (b_point[1] - min_y) * k - self.border, fill="maroon")
+
+        x0 = (x1 + b_point[0]) / 2
+        y0 = (y1 + b_point[1]) / 2
 
         x0 = (x0 - min_x) * k + self.border
         y0 = my - (y0 - min_y) * k - self.border
@@ -342,7 +439,6 @@ class MainFrame(Tk):
         self.canvas.create_line(x0 - 200, y0, x0 + 200, y0, arrow=LAST)
         self.canvas.create_text(x0 + 190, y0 - 18, text="Параллельная оси X",
         font="Verdana 8", justify=CENTER)
-
 
 
 def main():
