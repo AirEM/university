@@ -1,101 +1,8 @@
-from math import acos, degrees, cos, sin, radians
+from math import acos, degrees
 from tkinter import *
 from tkinter.ttk import *
 from tkinter import Canvas, Frame, Button, Label, Entry
-
-
-def find_point(p1, p2, p3):
-    a = ((p2[0] - p1[0]) ** 2 + (p2[1] - p1[1]) ** 2) ** 0.5
-    b = ((p3[0] - p2[0]) ** 2 + (p3[1] - p2[1]) ** 2) ** 0.5
-    c = ((p1[0] - p3[0]) ** 2 + (p1[1] - p3[1]) ** 2) ** 0.5
-
-    x = (b * p1[0] + c * p2[0] + a * p3[0]) / (a + b + c)
-    y = (b * p1[1] + c * p2[1] + a * p3[1]) / (a + b + c)
-
-    return x, y
-
-
-def find_corner(p1, p2):
-    x = p1[0] - p2[0]
-    y = p1[1] - p2[1]
-
-    cos_fi = x / ((x * x + y * y) ** 0.5)
-    print("cos_fi = ", cos_fi)
-    return cos_fi
-
-
-def is_triangle(p1, p2, p3):
-    if (p2[1] - p1[1]) * (p3[0] - p1[0]) != (p3[1] - p1[1]) * (p2[0] - p1[0]):
-        return True
-    return False
-
-
-def is_number(string):
-    try:
-        float(string)
-        return True
-    except ValueError:
-        return False
-
-
-def get_rect_centre(rect):
-    xl = rect[0][0]
-    yl = rect[0][1]
-    xr = xl + rect[1]
-    yr = yl + rect[2]
-
-    xr = xr * cos(radians(rect[3])) - yr * sin(radians(rect[3]))
-    yr = xr * sin(radians(rect[3])) + yr * cos(radians(rect[3]))
-
-    return (xl + xr) / 2, (yl + yr) / 2
-
-
-def get_triangle_point(cords, rect_centre):
-    cords_len = len(cords)
-    min_fi = -2.0
-    triangle = None
-    point = None
-
-    for p1 in range(cords_len):
-        for p2 in range(p1 + 1, cords_len):
-            for p3 in range(p2 + 1, cords_len):
-
-                if is_triangle(cords[p1], cords[p2], cords[p3]):
-
-                    res_point = find_point(cords[p1], cords[p2], cords[p3])
-                    fi = find_corner(res_point, rect_centre)
-
-                    if fi > min_fi:
-                        min_fi = fi
-                        triangle = (cords[p1], cords[p2], cords[p3])
-                        point = res_point
-
-    return triangle, min_fi, point
-
-
-def get_rect_points(rect):
-    xl = rect[0][0]
-    yl = rect[0][1]
-
-    xr = rect[1] * cos(radians(rect[3])) - rect[2] * sin(radians(rect[3]))
-    yr = rect[1] * sin(radians(rect[3])) + rect[2] * cos(radians(rect[3]))
-
-    xr += rect[0][0]
-    yr += rect[0][1]
-
-    xl2 = 0 * cos(radians(rect[3])) - rect[2] * sin(radians(rect[3]))
-    yl2 = 0 * sin(radians(rect[3])) + rect[2] * cos(radians(rect[3]))
-
-    xl2 += rect[0][0]
-    yl2 += rect[0][1]
-
-    xr2 = rect[1] * cos(radians(rect[3])) - 0 * sin(radians(rect[3]))
-    yr2 = rect[1] * sin(radians(rect[3])) + 0 * cos(radians(rect[3]))
-
-    xr2 += rect[0][0]
-    yr2 += rect[0][1]
-
-    return (xl, yl), (xl2, yl2), (xr, yr), (xr2, yr2)
+from points import *
 
 
 class MainFrame(Tk):
@@ -118,10 +25,6 @@ class MainFrame(Tk):
         self.display_text = None
 
         self.listbox = None
-
-        self.btn_do = None
-        self.btn_add = None
-        self.btn_cls = None
 
         self.canvas = None
         self.border = 15
@@ -208,13 +111,16 @@ class MainFrame(Tk):
         self.listbox.grid(row=1, column=0, columnspan=4, ipadx=2, ipady=2, padx=10, pady=5)
         scrollbar.config(command=self.listbox.yview)
 
-        self.btn_add = Button(point_frame, text="Add", command=self.add_point)
-        self.btn_add.grid(row=3, column=0, columnspan=2, ipadx=15, padx=2, pady=2)
-        self.btn_cls = Button(point_frame, text="Clean", command=self.clean)
-        self.btn_cls.grid(row=3, column=2, columnspan=2, ipadx=15, padx=2, pady=2)
+        btn_add = Button(point_frame, text="Add", command=self.add_point)
+        btn_add.grid(row=3, column=0, columnspan=2, ipadx=15, padx=2, pady=2)
+        btn_del = Button(point_frame, text="Delete", command=self.delete_point)
+        btn_del.grid(row=3, column=2, columnspan=2, ipadx=13, padx=2, pady=2)
 
-        self.btn_do = Button(point_frame, text="DO", command=self.do_it)
-        self.btn_do.grid(row=4, column=0, columnspan=4, ipadx=55, padx=2, pady=2)
+        btn_cls = Button(point_frame, text="Clean", command=self.clean)
+        btn_cls.grid(row=4, column=0, columnspan=4, ipadx=49, padx=2, pady=2)
+
+        btn_do = Button(point_frame, text="DO", command=self.do_it)
+        btn_do.grid(row=5, column=0, columnspan=4, ipadx=55, padx=2, pady=2)
 
         return point_frame
 
@@ -225,18 +131,21 @@ class MainFrame(Tk):
             self.ex.delete(0, END)
             self.ey.delete(0, END)
 
+    def delete_point(self):
+        selection = self.listbox.curselection()
+        # мы можем получить удаляемый элемент по индексу
+        # selected_language = languages_listbox.get(selection[0])
+        self.listbox.delete(selection[0])
+
     def clean(self):
         self.ex.delete(0, END)
         self.ey.delete(0, END)
 
-        self.ex1.delete(0, END)
-        self.ey1.delete(0, END)
-        self.ex2.delete(0, END)
-        self.ey2.delete(0, END)
-        self.ex3.delete(0, END)
-        self.ey3.delete(0, END)
-        self.ex4.delete(0, END)
-        self.ey4.delete(0, END)
+        self.rect_x.delete(0, END)
+        self.rect_y.delete(0, END)
+        self.rect_a.delete(0, END)
+        self.rect_b.delete(0, END)
+        self.rect_fi.delete(0, END)
 
         self.canvas.delete("all")
 
@@ -325,9 +234,6 @@ class MainFrame(Tk):
             k = k_y
         elif k_x < 1 and k_y < 1:
             k = min(k_x, k_y)
-
-        print("k = ", k)
-        print("min x = ", min_x)
 
         return k, (min_x, min_y)
 
@@ -440,11 +346,3 @@ class MainFrame(Tk):
         self.canvas.create_text(x0 + 190, y0 - 18, text="Параллельная оси X",
         font="Verdana 8", justify=CENTER)
 
-
-def main():
-    app = MainFrame()
-    app.mainloop()
-
-
-if __name__ == '__main__':
-    main()
