@@ -1,7 +1,8 @@
 from math import acos, degrees
 from tkinter import *
-from tkinter.ttk import *
-from tkinter import Canvas, Frame, Button, Label, Entry
+# from tkinter.ttk import *
+from tkinter import messagebox as mb
+# from tkinter import Canvas, Frame, Button, Label, Entry
 from points import *
 
 
@@ -157,6 +158,8 @@ class MainFrame(Tk):
 
     def do_it(self):
 
+        self.canvas.delete("all")
+
         if len(self.cords) > 2:
 
             rect = self.get_rect()
@@ -183,11 +186,14 @@ class MainFrame(Tk):
                     self.display_text.set("Минимальный угол = {:.3f} градуса.".format(degrees(acos(cos_fi))))
 
                 else:
-                    self.display_text.set("Выражденный треугольник")
+                    self.display_text.set("Выражденный треугольники")
+                    mb.showerror("Ошибка", "Выражденный треугольники")
             else:
-                self.display_text.set("Прямоугольник задан неправильно.")
+                self.display_text.set("Прямоугольник задан некорректно.")
+                mb.showerror("Ошибка", "Прямоугольник задан некорректно.")
         else:
-            self.display_text.set("Мало точек")
+            self.display_text.set("Требуется не менее трех точек.")
+            mb.showerror("Ошибка", "Требуется не менее трех точек.")
 
     # helper function
 
