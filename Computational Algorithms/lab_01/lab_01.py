@@ -1,12 +1,23 @@
 from math import fabs
 
 
+def f(x):
+    return (x - 1)**2
+
+
 def print_mtx(m):
+    print("!!!----------------------------")
     for i in m:
         for j in i:
             if j is not None:
                 print("{:.3f}".format(j), end=' ')
         print()
+    print("!!!----------------------------")
+
+
+def print_data(data):
+    for i in data:
+        print("x = {:.3f}; f(x) = {:.3f}".format(i[0], i[1]))
 
 
 def data_input():
@@ -21,15 +32,14 @@ def data_input():
     return data
 
 
-def f(x):
-    return x * x
-
-
 def point_selection(data, n, x):
     # n + 1 points
 
     d_len = len(data)
     new_data = list()
+
+    if d_len < n + 1:
+        return None
 
     if x < data[0][0]:
         new_data = [(data[i][0], data[i][1]) for i in range(n + 1)]
@@ -52,7 +62,7 @@ def point_selection(data, n, x):
 
         new_data.append(data[index])
 
-        while left != -1 and right != d_len:
+        while left != -1 or right != d_len:
             if right != d_len:
                 new_data.append(data[right])
                 right += 1
@@ -62,17 +72,24 @@ def point_selection(data, n, x):
                 break
 
             if left != -1:
-                new_data.append(data[left])
+                new_data.insert(0, data[left])
                 left -= 1
                 count += 1
 
             if count == n:
                 break
 
-        new_data = sorted(new_data)
-
     return new_data
 
+
+def swap_cords(data):
+
+    new_data = list()
+
+    for i in data:
+        new_data.append((i[1], i[0]))
+
+    return new_data
 
 # interpolation
 
@@ -86,7 +103,9 @@ def get_table(data, n):
 
     for col in range(n):
         for row in range(n - col):
-            m[row][col + 2] = (m[row + 1][col + 1] - m[row][col + 1]) / (m[row + 1 + col][0] - m[row][0])
+            denominator = (m[row + 1 + col][0] - m[row][0])
+            denominator = denominator if denominator != 0 else 1e-10
+            m[row][col + 2] = (m[row + 1][col + 1] - m[row][col + 1]) / denominator
 
     return m
 
@@ -107,11 +126,12 @@ def p(table, n, x):
 
 
 def interpolation(data, n, x):
-    print(data)
-    print(n)
-    print(x)
+    # print(data)
+    # print(n)
+    # print(x)
 
     table = get_table(data, n)
+
     print_mtx(table)
 
     y = p(table, n, x)
@@ -132,14 +152,29 @@ def main():
     '''
 
     data = data_input()
+
+    print_data(data)
+
     n = int(input("Введите степень многочлена: "))
     x = float(input("Введите x: "))
 
     data = point_selection(data, n, x)
 
-    y = interpolation(data, n, x)
+    if data is not None:
+        y = interpolation(data, n, x)
 
-    print("f({:.3f}) = {:.3f}".format(x, y))
+        print("f({:.3f}) = {:.3f}".format(x, y))
+
+        # нахождение корня
+
+        swap_data = swap_cords(data)
+
+        root = interpolation(swap_data, n, 0)
+
+        print("f({:.3f}) = 0".format(root))
+
+    else:
+        print("Недотаточно точек, чтобы посчитать полином {:d} степени.".format(n))
 
 
 if __name__ == '__main__':
