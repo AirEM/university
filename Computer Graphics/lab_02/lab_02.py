@@ -51,6 +51,7 @@ class RenderArea(QWidget):
         self.update()
 
     def scale_picture(self, xm, ym, kx, ky):
+        print(self.array[9])
         self.array = [(kx * item[0] + (1 - kx) * xm,
                        ky * item[1] + (1 - ky) * ym)
                       for item in self.array]
@@ -58,9 +59,12 @@ class RenderArea(QWidget):
 
     def rotate_picture(self, xc, yc, fi):
 
-        self.array = [(xc - (item[0] - xc)*cos(radians(fi)) + (item[1] - yc)*sin(radians(fi)),
+        fi = -fi
+
+        self.array = [(xc + (item[0] - xc)*cos(radians(fi)) + (item[1] - yc)*sin(radians(fi)),
                        yc - (item[0] - xc)*sin(radians(fi)) + (item[1] - yc)*cos(radians(fi)))
                       for item in self.array]
+
         self.update()
 
     def paintEvent(self, event):
