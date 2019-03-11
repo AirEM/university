@@ -2,6 +2,7 @@ from math import fabs
 
 eps = 5
 
+
 def f(x):
     return x**2
 
@@ -17,7 +18,7 @@ def data_input():
     left, right, step = map(float, input('Введите "Левая граница Правая граница Шаг":').split())
 
     while left < right + step / 2:
-        data.append((round(left, eps), round(f(left), eps)))
+        data.append((left, f(left)))
         left += step
 
     return data
@@ -30,18 +31,16 @@ def interpolation(data, x, n):
 
     # h
 
-    h = [0] * n
+    h = [None] * n
     for i in range(1, n):
         h[i] = round(data[i][0] - data[i-1][0], eps)
 
-    print("h = ", h)
-
     # A B D F
 
-    A = [0] * n
-    B = [0] * n
-    D = [0] * n
-    F = [0] * n
+    A = [None] * n
+    B = [None] * n
+    D = [None] * n
+    F = [None] * n
 
     for i in range(2, n):
         A[i] = h[i-1]
@@ -49,29 +48,28 @@ def interpolation(data, x, n):
         D[i] = h[i]
         F[i] = -3 * ((data[i][1] - data[i-1][1]) / h[i] - (data[i-1][1] - data[i-2][1]) / h[i-1])
 
-    print("A = ", A)
-    print("B = ", B)
-    print("D = ", D)
-    print("F = ", F)
-
     # ksi eta
 
-    ksi = [0] * n
-    eta = [0] * n
+    ksi = [None] * (n + 1)
+    eta = [None] * (n + 1)
 
-    for i in range(2, n - 1):
+    ksi[2] = 0
+    eta[2] = 0
+
+    for i in range(2, n):
         ksi[i + 1] = D[i] / (B[i] - A[i] * ksi[i])
         eta[i + 1] = (A[i] * eta[i] + F[i]) / (B[i] - A[i]*ksi[i])
 
-    print("ksi = ", ksi)
-    print("eta = ", eta)
-
     # U, она же c
 
-    U = [0] * (n + 1)
+    U = [None] * (n + 1)
+    U[n] = 0
+    U[1] = 0
 
-    for i in range(2, n):
+    for i in range(n, 2, -1):
         U[i-1] = ksi[i] * U[i] + eta[i]
+    #for i in range(n - 1 - 1, 1, -1):
+        #U[i] = ksi[i + 1] * U[i + 1] + eta[i + 1]
 
     # Обратные преобразования
 
@@ -82,26 +80,19 @@ def interpolation(data, x, n):
 
     for i in range(1, n):
         a[i] = data[i-1][1]
-        b[i] = (data[i][1] - data[i-1][1]) / h[i] - h[i] / 3 * (U[i + 1] - 2 * U[i])
+        b[i] = ((data[i][1] - data[i-1][1]) / h[i]) - (h[i] * (U[i + 1] + 2 * U[i]) / 3)
         c[i] = U[i]
         d[i] = (U[i+1] - U[i]) / (3 * h[i])
-
-    # print
-
-    print("============================")
-    for i in range(1, n):
-        print("{:.5f} {:.5f} {:.5f} {:.5f}".format(a[i], b[i], c[i], d[i]))
-    print("============================")
 
     # y
 
     k = -1
     for i in range(1, n):
-        if data[i-1][0] <= x <= data[i][0]:
+        if data[i-1][0] <= x < data[i][0]:
             k = i
             break
 
-    y = a[k] + b[k]*(x - data[k-1][0]) + c[k]*pow((x - data[k-1][0]), 2) + d[k]*pow( (x - data[k-1][0]), 3)
+    y = a[k] + b[k]*(x - data[k-1][0]) + c[k]*pow((x - data[k-1][0]), 2) + d[k]*pow((x - data[k-1][0]), 3)
 
     return y
 
@@ -111,7 +102,7 @@ def interpolation(data, x, n):
 
 def main():
 
-    data = data_input() # [(1, 1.0002), (2, 1.0341), (3, 0.6), (4, 0.40105), (5, 0.1), (6, 0.23975) ]
+    data = data_input()
 
     print_data(data)
 

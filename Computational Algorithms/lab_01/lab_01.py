@@ -2,7 +2,7 @@ from math import fabs
 
 
 def f(x):
-    return (x - 1)**2
+    return x**2
 
 
 def print_mtx(m):
@@ -41,45 +41,41 @@ def point_selection(data, n, x):
     if d_len < n + 1:
         return None
 
-    if x < data[0][0]:
-        new_data = [(data[i][0], data[i][1]) for i in range(n + 1)]
-    elif data[d_len - 1][0] < x:
-        new_data = [(data[i][0], data[i][1]) for i in range(d_len - (n + 1), d_len)]
-    else:
-        left = -1
-        index = 0
-        right = 1
-        mins = fabs(x - data[0][0])
-        count = 0
 
-        for i in range(d_len):
+    left = -1
+    index = 0
+    right = 1
+    mins = fabs(x - data[0][0])
+    count = 0
 
-            if fabs(x - data[i][0]) < mins:
-                left = i - 1
-                index = i
-                right = i + 1
-                mins = fabs(x - data[i][0])
+    for i in range(d_len):
 
-        new_data.append(data[index])
+        if fabs(x - data[i][0]) < mins:
+            left = i - 1
+            index = i
+            right = i + 1
+            mins = fabs(x - data[i][0])
 
-        while left != -1 or right != d_len:
-            if right != d_len:
-                new_data.append(data[right])
-                right += 1
-                count += 1
+    new_data.append(data[index])
 
-            if count == n:
-                break
+    while left != -1 or right != d_len:
+        if right != d_len:
+            new_data.append(data[right])
+            right += 1
+            count += 1
 
-            if left != -1:
-                new_data.insert(0, data[left])
-                left -= 1
-                count += 1
+        if count == n:
+            break
 
-            if count == n:
-                break
+        if left != -1:
+            new_data.insert(0, data[left])
+            left -= 1
+            count += 1
 
-    return new_data
+        if count == n:
+            break
+
+    return sorted(new_data)
 
 
 def swap_cords(data):
@@ -151,14 +147,14 @@ def main():
     # f.close()
     '''
 
-    data = data_input()
+    main_data = data_input()
 
-    print_data(data)
+    print_data(main_data)
 
     n = int(input("Введите степень многочлена: "))
     x = float(input("Введите x: "))
 
-    data = point_selection(data, n, x)
+    data = point_selection(main_data, n, x)
 
     if data is not None:
         y = interpolation(data, n, x)
@@ -167,9 +163,10 @@ def main():
 
         # нахождение корня
 
-        swap_data = swap_cords(data)
+        swap_data = swap_cords(main_data)
+        data = point_selection(swap_data, n, 0)
 
-        root = interpolation(swap_data, n, 0)
+        root = interpolation(data, n, 0)
 
         print("f({:.3f}) = 0".format(root))
 
