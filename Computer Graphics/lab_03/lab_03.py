@@ -1,7 +1,7 @@
 from PyQt5.QtCore import QPoint, QSize, Qt
 from PyQt5.QtGui import (QBrush, QPainter, QPalette, QPixmap,
-                         QPalette, QPen, QPolygon, QColor)
-from PyQt5.QtWidgets import (QApplication, QGridLayout, QGroupBox, QVBoxLayout, QComboBox,
+                         QPalette, QPen, QPolygon, QColor, QPicture)
+from PyQt5.QtWidgets import (QApplication, QGridLayout, QGroupBox, QVBoxLayout, QComboBox, QMainWindow,
                              QLabel, QWidget, QPushButton, QLineEdit, QMessageBox, QErrorMessage)
 
 
@@ -163,8 +163,12 @@ class RenderArea(QWidget):
         self.color = Qt.black
         self.colors = {0: Qt.black, 1: Qt.red, 2: Qt.green, 3: Qt.blue, 4: Qt.yellow}
 
-        self.pen = QPen()
-        self.brush = QBrush()
+
+        # self.pen = QPen()
+        # self.brush = QBrush()
+
+        self.pixmap = QPixmap(self.size())
+        self.pixmap.fill(Qt.transparent)
 
         self.setBackgroundRole(QPalette.Base)
         self.setAutoFillBackground(True)
@@ -179,31 +183,45 @@ class RenderArea(QWidget):
 
         self.color = self.colors[color]
         self.points = [(xb, yb,), (xe, ye)]
+
+        p = QPainter(self.pixmap)
+        pen = QPen(Qt.red)
+        p.setPen(pen)
+        b_s(p, xb, yb, xe, ye)
+        #p.drawLine(line)
+        p.end()
+
+
         self.update()
 
     def paintEvent(self, event):
+
         if self.points is None:
             return
 
-        self.pen.setColor(self.color)
+        # pen = QPen()
+        # pen.setColor(self.color)
 
         painter = QPainter(self)
-        painter.restore()
-        painter.setPen(self.pen)
-        painter.setBrush(self.brush)
+        painter.drawPixmap(QPoint(), self.pixmap)
 
-        b_s(painter, round(self.points[0][0]), round(self.points[0][1]),
-               round(self.points[1][0]), round(self.points[1][1]))
+        # painter.restore()
+        # painter.setPen(pen)
+        # painter.setBrush(QBrush())
+
+        # b_s(painter, round(self.points[0][0]), round(self.points[0][1]),
+               # round(self.points[1][0]), round(self.points[1][1]))
 
         # painter.drawLine(self.points[0][0], self.points[0][1], self.points[1][0], self.points[1][1])
         # painter.restore()
-        painter.save()
+        #painter.save()
 
         # painter.setPen(self.palette().dark().color())
         # painter.setBrush(Qt.NoBrush)
 
 
 class Window(QWidget):
+
     def __init__(self):
         super(Window, self).__init__()
 
