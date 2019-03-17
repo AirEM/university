@@ -130,162 +130,147 @@ class MainFrame(Tk):
         return rect_frame
 
     def b_simple(self, xn, yn, xk, yk, col):
-        '''
-        Алгоритм
-        Брезенхема:
 
-        1. Начало
-        2. Ввод хн, ун, хк, ук
-        3. Проверка отрезка на вырожденность: если вырожденный то высветить точку хн, ун и переход на конец
-        4. 𝑥тек = 𝑥н, 𝑦тек = 𝑦к
-        5. 𝑑𝑥 = 𝑥𝑘−𝑥𝑛, 𝑑𝑦 = 𝑦𝑘−𝑦𝑛
-        6. Sx = sign(dx), sy = sign(dy)
-        7. Dx = | dx |, dy = | dy |
-        8. Если dx > dy то обмен = 0, иначе обмен = 1 {t = dy; dy = dx; dx = t}
-        9. 𝑚 = 𝑑𝑦𝑑𝑥.
-        10. Цикл построения отрезка(по i = 1 to dx + 1)
-        11. Конец
-        '''
-
-        #xn = 100
-        #yn = 100
-        #xk = 500
-        #yk = 100
-
-        # check line !!!
-
-        # 4
         x = xn
         y = yn
-        # 5
-        dx = xk - xn
-        dy = yk - yn
 
-        m = dy / dx
-        e = m - 0.5
-
-        for i in range(dx):
-            self.canvas.create_rectangle(x, y, x, y, outline=col)
-
-            if not (e < 0):
-                y = y + 1
-                e = e - 1
-
-            x = x + 1
-            e = e + m
-
-    def b_norm(self, xn, yn, xk, yk, col):
-        #xn = 100
-        #yn = 100
-        #xk = 500
-        #yk = 100
-        # check line !!!
-
-        # 4
-        x = xn
-        y = yn
-        # 5
         dx = xk - xn
         dy = yk - yn
 
         sx = sign(dx)
         sy = sign(dy)
 
-        dx = fabs(dx)
-        dy = fabs(dy)
+        dx = abs(dx)
+        dy = abs(dy)
 
-        ob = None
+        flag = 0
 
-        if dx > dy:
-            ob = 0
-        else:
-            ob = 1
-            dx, dy, = dy, dx
+        if not (dx > dy):
+            flag = 1
+            dx, dy = dy, dx
 
-        m = dy / dx
-        e = m - 0.5
+        e = 2 * dy - dx
 
-        for i in range(int(dx)):
+        for i in range(dx):
             self.canvas.create_rectangle(x, y, x, y, outline=col)
 
-            if not (e < 0):
-                if ob == 1:
-                    x = x + sx
+            if e >= 0:
+                if flag == 0:
+                    y += sy
                 else:
-                    y = y + sx
+                    x += sx
 
-                e = e - 1
+                e -= 2 * dx
 
-            if ob == 1:
-                y = y + sy
             else:
-                x = x + sx
+                if flag == 0:
+                    x += sx
+                else:
+                    y += sy
 
-            e = e + m
+                e += 2 * dy
+
+    def b_norm(self, xn, yn, xk, yk, col):
+
+        x = xn
+        y = yn
+
+        dx = xk - xn
+        dy = yk - yn
+
+        sx = sign(dx)
+        sy = sign(dy)
+
+        dx = abs(dx)
+        dy = abs(dy)
+
+        flag = 0
+
+        if not (dx > dy):
+            flag = 1
+            dx, dy = dy, dx
+
+        m = dy/dx
+        e = m - 0.5
+
+        for i in range(dx):
+            self.canvas.create_rectangle(x, y, x, y, outline=col)
+
+            if e >= 0:
+                if flag == 0:
+                    y += sy
+                else:
+                    x += sx
+
+                e -= 1
+
+            else:
+                if flag == 0:
+                    x += sx
+                else:
+                    y += sy
+
+                e += m
+
+    def b_2(self, xn, yn, xk, yk, col):
+
+        x = xn
+        y = yn
+
+        dx = xk - xn
+        dy = yk - yn
+
+        sx = sign(dx)
+        sy = sign(dy)
+
+        dx = abs(dx)
+        dy = abs(dy)
+
+        flag = 0
+
+        if not (dx > dy):
+            flag = 1
+            dx, dy = dy, dx
+
+        m = dy/dx
+        e = m - 0.5
+
+        for i in range(dx):
+            self.canvas.create_rectangle(x, y, x, y, outline=col)
+
+            if e >= 0:
+                if flag == 0:
+                    y += sy
+                else:
+                    x += sx
+
+                e -= 1
+
+            else:
+                if flag == 0:
+                    x += sx
+                else:
+                    y += sy
+
+                e += m
 
     def action(self):
-        # self.canvas.delete("all")
 
         alg = self.algorithm_box.get()
         col = self.color_box.get()
 
         xb = float(self.xb.get())
-        yb = float(self.yb.get())
+        yb = self.canvas.winfo_height() - float(self.yb.get())
         xe = float(self.xe.get())
-        ye = float(self.ye.get())
+        ye = self.canvas.winfo_height() - float(self.ye.get())
 
         if self.d_algorithm[alg] == 0:
             self.b_simple(round(xb), round(yb), round(xe), round(ye), self.d_color[col])
         elif self.d_algorithm[alg] == 1:
-            self.b_norm(xb, yb, xe, ye, self.d_color[col])
+            self.b_norm(round(xb), round(yb), round(xe), round(ye), self.d_color[col])
         elif self.d_algorithm[alg] == 4:
-            self.canvas.create_line(xb, yb, xe, ye, fill=self.d_color[col])
-
-        '''
-        x1 = 100
-        y1 = 100
-        x2 = 500
-        y2 = 500
-
-        dx = x2 - x1
-        dy = y2 - y1
-
-        sign_x = 1 if dx > 0 else -1 if dx < 0 else 0
-        sign_y = 1 if dy > 0 else -1 if dy < 0 else 0
-
-        if dx < 0:
-            dx = -dx
-        if dy < 0:
-            dy = -dy
-
-        if dx > dy:
-            pdx, pdy = sign_x, 0
-            es, el = dy, dx
-        else:
-            pdx, pdy = 0, sign_y
-            es, el = dx, dy
-
-        x, y = x1, y1
-
-        error, t = el / 2, 0
-
-        #setPixel(x, y)
-
-        self.canvas.create_rectangle(x, y, x, y)
-
-        while t < el:
-            error -= es
-            if error < 0:
-                error += el
-                x += sign_x
-                y += sign_y
-            else:
-                x += pdx
-                y += pdy
-            t += 1
-            #setPixel(x, y)
-            self.canvas.create_rectangle(x, y, x, y)
-        '''
+            pass
+        self.canvas.create_line(xb, yb, xe, ye, fill='#{:02x}{:02x}{:02x}{:02x}'.format(0, 0, 255, 100))
 
     def clean(self):
         self.canvas.delete("all")
