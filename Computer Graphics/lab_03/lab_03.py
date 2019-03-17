@@ -1,12 +1,12 @@
 from PyQt5.QtCore import QPoint, QSize, Qt
-from PyQt5.QtGui import (QBrush, QPainter, QPalette, QPixmap,
-                         QPalette, QPen, QPolygon, QColor, QPicture)
-from PyQt5.QtWidgets import (QApplication, QGridLayout, QGroupBox, QVBoxLayout, QComboBox, QMainWindow,
-                             QLabel, QWidget, QPushButton, QLineEdit, QMessageBox, QErrorMessage)
+from PyQt5.QtGui import (QPainter, QPixmap, QPalette, QPen)
+from PyQt5.QtWidgets import (QApplication, QGridLayout, QGroupBox,
+                             QVBoxLayout, QComboBox, QButtonGroup,
+                             QLabel, QWidget, QPushButton, QLineEdit,
+                             QMessageBox, QRadioButton)
 
 
 def sign(x):
-
     if x > 0:
         return 1
     elif x < 0:
@@ -15,7 +15,7 @@ def sign(x):
         return 0
 
 
-def b_simple(painter, xn, yn, xk, yk):
+def b_whole_numbers(painter, xn, yn, xk, yk):
     x = xn
     y = yn
 
@@ -56,7 +56,7 @@ def b_simple(painter, xn, yn, xk, yk):
             e += 2 * dy
 
 
-def b_norm(painter, xn, yn, xk, yk):
+def b_real_number(painter, xn, yn, xk, yk):
     x = xn
     y = yn
 
@@ -98,8 +98,7 @@ def b_norm(painter, xn, yn, xk, yk):
             e += m
 
 
-def b_s(painter, xn, yn, xk, yk):
-
+def b_modified(painter, xn, yn, xk, yk):
     I = 256
 
     x = xn
@@ -159,13 +158,15 @@ class RenderArea(QWidget):
 
         self.points = None
 
-        self.algorithm = 0
+        self.algorithm = None
+        self.algorithms = {'Алгоритм Брезенхема\n c действительными числами': b_real_number,
+                           'Алгоритм Брезенхема\n с целыми числами': b_whole_numbers,
+                           'Алгоритм Брезенхема\n с устранением ступенчатости': b_modified,
+                           'CDA': None,
+                           'Библиотечный алгоритм': None}
+
         self.color = Qt.black
         self.colors = {0: Qt.black, 1: Qt.red, 2: Qt.green, 3: Qt.blue, 4: Qt.yellow}
-
-
-        # self.pen = QPen()
-        # self.brush = QBrush()
 
         self.pixmap = QPixmap(self.size())
         self.pixmap.fill(Qt.transparent)
@@ -180,44 +181,23 @@ class RenderArea(QWidget):
         return QSize(800, 600)
 
     def drawLine(self, xb, yb, xe, ye, color):
-
         self.color = self.colors[color]
         self.points = [(xb, yb,), (xe, ye)]
 
         p = QPainter(self.pixmap)
         pen = QPen(Qt.red)
         p.setPen(pen)
-        b_s(p, xb, yb, xe, ye)
-        #p.drawLine(line)
+        b_modified(p, xb, yb, xe, ye)
         p.end()
-
 
         self.update()
 
     def paintEvent(self, event):
-
         if self.points is None:
             return
 
-        # pen = QPen()
-        # pen.setColor(self.color)
-
         painter = QPainter(self)
         painter.drawPixmap(QPoint(), self.pixmap)
-
-        # painter.restore()
-        # painter.setPen(pen)
-        # painter.setBrush(QBrush())
-
-        # b_s(painter, round(self.points[0][0]), round(self.points[0][1]),
-               # round(self.points[1][0]), round(self.points[1][1]))
-
-        # painter.drawLine(self.points[0][0], self.points[0][1], self.points[1][0], self.points[1][1])
-        # painter.restore()
-        #painter.save()
-
-        # painter.setPen(self.palette().dark().color())
-        # painter.setBrush(Qt.NoBrush)
 
 
 class Window(QWidget):
@@ -250,15 +230,32 @@ class Window(QWidget):
         # QComboBox
 
         self.colorComboBox = QComboBox()
-        self.colorComboBox.addItem("Черный", 0)#Qt.black)
-        self.colorComboBox.addItem("Красный", 1)#Qt.red)
-        self.colorComboBox.addItem("Зеленый", 2)#Qt.green)
-        self.colorComboBox.addItem("Синий", 4)#Qt.blue)
-        self.colorComboBox.addItem("Желтый", 5)#Qt.yellow)
+        self.colorComboBox.addItem("Черный", 0)  # Qt.black)
+        self.colorComboBox.addItem("Красный", 1)  # Qt.red)
+        self.colorComboBox.addItem("Зеленый", 2)  # Qt.green)
+        self.colorComboBox.addItem("Синий", 4)  # Qt.blue)
+        self.colorComboBox.addItem("Желтый", 5)  # Qt.yellow)
 
         colorLabel = QLabel("&Цвет:")
         colorLabel.setAlignment(Qt.AlignRight)
         colorLabel.setBuddy(self.colorComboBox)
+
+        # Radio Button
+
+        rb_0 = QRadioButton('Алгоритм Брезенхема\n c действительными числами')
+        rb_1 = QRadioButton('Алгоритм Брезенхема\n с целыми числами')
+        rb_2 = QRadioButton('Алгоритм Брезенхема\n с устранением ступенчатости')
+        rb_3 = QRadioButton('CDA')
+        rb_4 = QRadioButton('Библиотечный алгоритм')
+
+        rb_0.setChecked(True)
+
+        button_group = QButtonGroup()
+        button_group.addButton(rb_0)
+        button_group.addButton(rb_1)
+        button_group.addButton(rb_2)
+        button_group.addButton(rb_3)
+        button_group.addButton(rb_4)
 
         # Buttons
 
@@ -276,40 +273,54 @@ class Window(QWidget):
         # Right Layout
 
         rightLayout = QGridLayout()
+        rightLayout_2 = QGridLayout()
 
-        rightLayout.addWidget(lineLabel, 0, 0, 1, 4)
+        rightLayout.addWidget(beginLabel, 0, 0, 1, 4)
 
-        rightLayout.addWidget(beginLabel, 1, 0, 1, 4)
+        rightLayout.addWidget(QLabel("x = "), 1, 0, Qt.AlignRight)
+        rightLayout.addWidget(self.xbEdit, 1, 1)  # , Qt.AlignRight)
+        rightLayout.addWidget(QLabel("y = "), 1, 2, Qt.AlignRight)
+        rightLayout.addWidget(self.ybEdit, 1, 3)  # , Qt.AlignRight)
 
-        rightLayout.addWidget(QLabel("x = "), 2, 0, Qt.AlignRight)
-        rightLayout.addWidget(self.xbEdit, 2, 1)  # , Qt.AlignRight)
-        rightLayout.addWidget(QLabel("y = "), 2, 2, Qt.AlignRight)
-        rightLayout.addWidget(self.ybEdit, 2, 3)  # , Qt.AlignRight)
+        rightLayout.addWidget(endLabel, 2, 0, 1, 4)
 
-        rightLayout.addWidget(endLabel, 3, 0, 1, 4)
+        rightLayout.addWidget(QLabel("x = "), 3, 0, Qt.AlignRight)
+        rightLayout.addWidget(self.xeEdit, 3, 1)  # , Qt.AlignRight)
+        rightLayout.addWidget(QLabel("y = "), 3, 2, Qt.AlignRight)
+        rightLayout.addWidget(self.yeEdit, 3, 3)  # , Qt.AlignRight)
 
-        rightLayout.addWidget(QLabel("x = "), 4, 0, Qt.AlignRight)
-        rightLayout.addWidget(self.xeEdit, 4, 1)  # , Qt.AlignRight)
-        rightLayout.addWidget(QLabel("y = "), 4, 2, Qt.AlignRight)
-        rightLayout.addWidget(self.yeEdit, 4, 3)  # , Qt.AlignRight)
+        # right layout 2
 
-        rightLayout.addWidget(colorLabel, 5, 0, 1, 2)
-        rightLayout.addWidget(self.colorComboBox, 5, 2, 1, 2)
-
-        rightLayout.addWidget(drawButton, 6, 0, 1, 4)
+        rightLayout_2.addWidget(colorLabel, 0, 0, 1, 1)
+        rightLayout_2.addWidget(self.colorComboBox, 0, 1, 1, 3)
+        rightLayout_2.addWidget(rb_0, 1, 0, 1, 4)
+        rightLayout_2.addWidget(rb_1, 2, 0, 1, 4)
+        rightLayout_2.addWidget(rb_2, 3, 0, 1, 4)
+        rightLayout_2.addWidget(rb_3, 4, 0, 1, 4)
+        rightLayout_2.addWidget(rb_4, 5, 0, 1, 4)
 
         # Group Box
 
-        rightGB = QGroupBox("Линия")
+        rightGB = QGroupBox("Координаты")
+        rightGB.setLayout(rightLayout)
 
-        rightGB.setLayout(rightLayout) # (rightLayout)
+        rightGB_2 = QGroupBox("Параметры")
+        rightGB_2.setLayout(rightLayout_2)
+
+        rW = QWidget()
+        rl = QVBoxLayout()
+        rl.addWidget(lineLabel)
+        rl.addWidget(rightGB)
+        rl.addWidget(rightGB_2)
+        rl.addWidget(drawButton)
+        rW.setLayout(rl)
 
         # Main Window
 
         mainLayout.setColumnStretch(0, 3)
         mainLayout.addWidget(self.renderArea, 0, 0, 4, 4)
 
-        mainLayout.addWidget(rightGB, 0, 4)
+        mainLayout.addWidget(rW, 0, 4)  # rightGB, 0, 4)
 
         self.setLayout(mainLayout)
 
@@ -326,6 +337,7 @@ class Window(QWidget):
             color = self.colorComboBox.itemData(self.colorComboBox.currentIndex())
 
             self.renderArea.drawLine(xb, yb, xe, ye, color)
+
         except ValueError:
             msg = QMessageBox(self)
             msg.setIcon(QMessageBox.Critical)
@@ -336,7 +348,6 @@ class Window(QWidget):
 
 
 if __name__ == '__main__':
-
     import sys
 
     app = QApplication(sys.argv)
