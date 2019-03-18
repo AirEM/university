@@ -1,9 +1,8 @@
 from PyQt5.QtCore import QPoint, QSize, Qt
 from PyQt5.QtGui import (QPainter, QPixmap, QPalette, QPen)
 from PyQt5.QtWidgets import (QApplication, QGridLayout, QGroupBox,
-                             QVBoxLayout, QComboBox, QButtonGroup,
-                             QLabel, QWidget, QPushButton, QLineEdit,
-                             QMessageBox, QRadioButton)
+                             QVBoxLayout, QComboBox, QLabel, QWidget,
+                             QPushButton, QLineEdit, QMessageBox, QRadioButton)
 
 
 def sign(x):
@@ -15,10 +14,10 @@ def sign(x):
         return 0
 
 
-def b_whole_numbers(painter, xn, yn, xk, yk):
+def alg_b_whole_numb(painter, xn, yn, xk, yk):
     x = xn
     y = yn
-    print("TEST 1")
+
     dx = xk - xn
     dy = yk - yn
 
@@ -56,10 +55,10 @@ def b_whole_numbers(painter, xn, yn, xk, yk):
             e += 2 * dy
 
 
-def b_real_number(painter, xn, yn, xk, yk):
+def alg_b_real_numb(painter, xn, yn, xk, yk):
     x = xn
     y = yn
-    print("TEST 0")
+
     dx = xk - xn
     dy = yk - yn
 
@@ -80,6 +79,7 @@ def b_real_number(painter, xn, yn, xk, yk):
 
     for i in range(dx):
         painter.drawPoint(QPoint(x, y))
+        print(x, y)
 
         if e >= 0:
             if flag == 0:
@@ -98,7 +98,7 @@ def b_real_number(painter, xn, yn, xk, yk):
             e += m
 
 
-def b_modified(painter, xn, yn, xk, yk):
+def alg_b_modified(painter, xn, yn, xk, yk):
     I = 256
     print("TEST 2")
     x = xn
@@ -151,6 +151,27 @@ def b_modified(painter, xn, yn, xk, yk):
         painter.drawPoint(QPoint(x, y))
 
 
+def alg_cda(painter, xn, yn, xk, yk):
+    if abs(xk - xn) >= abs(yk - yn):
+        l = abs(xk - xn)
+    else:
+        l = abs(yk - yn)
+
+    px = (xk - xn) / l
+    py = (yk - yn) / l
+
+    x = xn + 0.5 * sign(px)
+    y = yn + 0.5 * sign(py)
+
+    i = 1
+
+    while i <= l:
+        painter.drawPoint(QPoint(x, y))
+        x += px
+        y += py
+        i += 1
+
+
 def alg_lib(painter, xn, yn, xk, yk):
     painter.drawLine(xn, yn, xk, yk)
 
@@ -162,11 +183,11 @@ class RenderArea(QWidget):
 
         self.points = None
 
-        self.algorithm = b_real_number
-        self.algorithms = {0: b_real_number,
-                           1: b_whole_numbers,
-                           2: b_modified,
-                           3: None,
+        self.algorithm = alg_b_real_numb
+        self.algorithms = {0: alg_b_real_numb,
+                           1: alg_b_whole_numb,
+                           2: alg_b_modified,
+                           3: alg_cda,
                            4: alg_lib}
 
         self.color = Qt.black
