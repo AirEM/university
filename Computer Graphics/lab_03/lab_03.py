@@ -18,7 +18,7 @@ def sign(x):
 def b_whole_numbers(painter, xn, yn, xk, yk):
     x = xn
     y = yn
-
+    print("TEST 1")
     dx = xk - xn
     dy = yk - yn
 
@@ -59,7 +59,7 @@ def b_whole_numbers(painter, xn, yn, xk, yk):
 def b_real_number(painter, xn, yn, xk, yk):
     x = xn
     y = yn
-
+    print("TEST 0")
     dx = xk - xn
     dy = yk - yn
 
@@ -100,7 +100,7 @@ def b_real_number(painter, xn, yn, xk, yk):
 
 def b_modified(painter, xn, yn, xk, yk):
     I = 256
-
+    print("TEST 2")
     x = xn
     y = yn
 
@@ -151,6 +151,10 @@ def b_modified(painter, xn, yn, xk, yk):
         painter.drawPoint(QPoint(x, y))
 
 
+def alg_lib(painter, xn, yn, xk, yk):
+    painter.drawLine(xn, yn, xk, yk)
+
+
 class RenderArea(QWidget):
 
     def __init__(self):
@@ -158,12 +162,12 @@ class RenderArea(QWidget):
 
         self.points = None
 
-        self.algorithm = None
-        self.algorithms = {'Алгоритм Брезенхема\n c действительными числами': b_real_number,
-                           'Алгоритм Брезенхема\n с целыми числами': b_whole_numbers,
-                           'Алгоритм Брезенхема\n с устранением ступенчатости': b_modified,
-                           'CDA': None,
-                           'Библиотечный алгоритм': None}
+        self.algorithm = b_real_number
+        self.algorithms = {0: b_real_number,
+                           1: b_whole_numbers,
+                           2: b_modified,
+                           3: None,
+                           4: alg_lib}
 
         self.color = Qt.black
         self.colors = {0: Qt.black, 1: Qt.red, 2: Qt.green, 3: Qt.blue, 4: Qt.yellow}
@@ -180,14 +184,20 @@ class RenderArea(QWidget):
     def sizeHint(self):
         return QSize(800, 600)
 
-    def drawLine(self, xb, yb, xe, ye, color):
+    def createLine(self, xb, yb, xe, ye, color, alg):
         self.color = self.colors[color]
         self.points = [(xb, yb,), (xe, ye)]
+        self.algorithm = self.algorithms[alg]
 
+        self.drawLine()
+
+    def drawLine(self):
         p = QPainter(self.pixmap)
-        pen = QPen(Qt.red)
+        pen = QPen(self.color)
         p.setPen(pen)
-        b_modified(p, xb, yb, xe, ye)
+        self.algorithm(p, self.points[0][0], self.points[0][1],
+                       self.points[1][0], self.points[1][1])
+
         p.end()
 
         self.update()
@@ -206,6 +216,8 @@ class Window(QWidget):
         super(Window, self).__init__()
 
         self.renderArea = RenderArea()
+
+        self.alg = 0
 
         # Labels
 
@@ -243,11 +255,17 @@ class Window(QWidget):
         # Radio Button
 
         rb_0 = QRadioButton('Алгоритм Брезенхема\n c действительными числами')
+        rb_0.setChecked(True)
+        rb_0.toggled.connect(lambda: self.but_rest(0))
         rb_1 = QRadioButton('Алгоритм Брезенхема\n с целыми числами')
+        rb_1.toggled.connect(lambda: self.but_rest(1))
         rb_2 = QRadioButton('Алгоритм Брезенхема\n с устранением ступенчатости')
+        rb_2.toggled.connect(lambda: self.but_rest(2))
         rb_3 = QRadioButton('CDA')
+        rb_3.toggled.connect(lambda: self.but_rest(3))
         rb_4 = QRadioButton('Библиотечный алгоритм')
-
+        rb_4.toggled.connect(lambda: self.but_rest(4))
+        '''
         rb_0.setChecked(True)
 
         button_group = QButtonGroup()
@@ -256,7 +274,7 @@ class Window(QWidget):
         button_group.addButton(rb_2)
         button_group.addButton(rb_3)
         button_group.addButton(rb_4)
-
+        '''
         # Buttons
 
         drawButton = QPushButton("Отрисовать")
@@ -330,13 +348,14 @@ class Window(QWidget):
     def drawButtonClicked(self):
         try:
             xb = float(self.xbEdit.text())
-            yb = float(self.ybEdit.text())
+            yb = self.renderArea.height() - float(self.ybEdit.text())
             xe = float(self.xeEdit.text())
-            ye = float(self.yeEdit.text())
+            ye = self.renderArea.height() - float(self.yeEdit.text())
 
             color = self.colorComboBox.itemData(self.colorComboBox.currentIndex())
 
-            self.renderArea.drawLine(xb, yb, xe, ye, color)
+            self.renderArea.createLine(round(xb), round(yb),
+                                       round(xe), round(ye), color, self.alg)
 
         except ValueError:
             msg = QMessageBox(self)
@@ -345,6 +364,9 @@ class Window(QWidget):
             msg.setWindowTitle("Ошибка заполнения полей")
             msg.setStandardButtons(QMessageBox.Ok)
             msg.show()
+
+    def but_rest(self, n):
+        self.alg = n
 
 
 if __name__ == '__main__':
