@@ -1,3 +1,4 @@
+from math import radians, cos, sin
 from PyQt5.QtCore import QPoint, QSize, Qt
 from PyQt5.QtGui import (QPainter, QPixmap, QPalette, QPen)
 from PyQt5.QtWidgets import (QApplication, QGridLayout, QGroupBox,
@@ -35,7 +36,7 @@ def alg_b_whole_numb(painter, xn, yn, xk, yk):
 
     e = 2 * dy - dx
 
-    for i in range(dx):
+    for i in range(dx + 1):
         painter.drawPoint(QPoint(x, y))
 
         if e >= 0:
@@ -46,13 +47,12 @@ def alg_b_whole_numb(painter, xn, yn, xk, yk):
 
             e -= 2 * dx
 
+        if flag == 0:
+            x += sx
         else:
-            if flag == 0:
-                x += sx
-            else:
-                y += sy
+            y += sy
 
-            e += 2 * dy
+        e += 2 * dy
 
 
 def alg_b_real_numb(painter, xn, yn, xk, yk):
@@ -77,9 +77,8 @@ def alg_b_real_numb(painter, xn, yn, xk, yk):
     m = dy / dx
     e = m - 0.5
 
-    for i in range(dx):
+    for i in range(dx + 1):
         painter.drawPoint(QPoint(x, y))
-        print(x, y)
 
         if e >= 0:
             if flag == 0:
@@ -88,19 +87,18 @@ def alg_b_real_numb(painter, xn, yn, xk, yk):
                 x += sx
 
             e -= 1
-
+            
+        if flag == 0:
+            x += sx
         else:
-            if flag == 0:
-                x += sx
-            else:
-                y += sy
+            y += sy
 
-            e += m
+        e += m
 
 
 def alg_b_modified(painter, xn, yn, xk, yk):
-    I = 256
-    print("TEST 2")
+    I = 255
+
     x = xn
     y = yn
 
@@ -113,42 +111,50 @@ def alg_b_modified(painter, xn, yn, xk, yk):
     dx = abs(dx)
     dy = abs(dy)
 
-    m = (I * dy) / dx
+    flag = 0
 
-    W = I - m
+    if not (dx > dy):
+        flag = 1
+        dx, dy = dy, dx
 
-    e = I / 2
+    m = dy / dx
+    W = 1 - m
+    e = 0.5
+    a = round(I * e)
 
     # plot(X, Y, m / 2);
     pen = painter.pen()
     color = pen.color()
-    color.setAlpha(m / 2)
+    color.setAlpha(a)
 
     pen.setColor(color)
     painter.setPen(pen)
 
     painter.drawPoint(QPoint(x, y))
 
-    while x < xk:
-        if e < W:
-            x += 1
-            e += m
-        else:
-            x += 1
-            y += 1
-            e -= W
-
-        # plot(X, Y, e)
-        painter.drawPoint(QPoint(x, y))
+    for i in range(dx + 1):
 
         pen = painter.pen()
         color = pen.color()
-        color.setAlpha(e)
+        color.setAlpha(a)
 
         pen.setColor(color)
         painter.setPen(pen)
 
         painter.drawPoint(QPoint(x, y))
+
+        if e < W:
+            if flag:
+                y += sy
+            else:
+                x += sx
+            e += m
+        else:
+            y += sy
+            x += sx
+            e -= W
+
+        a = round(I * e)
 
 
 def alg_cda(painter, xn, yn, xk, yk):
@@ -191,9 +197,13 @@ class RenderArea(QWidget):
                            4: alg_lib}
 
         self.color = Qt.black
-        self.colors = {0: Qt.black, 1: Qt.red, 2: Qt.green, 3: Qt.blue, 4: Qt.yellow}
+        self.colors = {0: Qt.black,
+                       1: Qt.red,
+                       2: Qt.green,
+                       3: Qt.blue,
+                       4: Qt.yellow}
 
-        self.pixmap = QPixmap(self.size())
+        self.pixmap = QPixmap(self.size()).scaled(800, 600, Qt.IgnoreAspectRatio)
         self.pixmap.fill(Qt.transparent)
 
         self.setBackgroundRole(QPalette.Base)
@@ -204,6 +214,38 @@ class RenderArea(QWidget):
 
     def sizeHint(self):
         return QSize(800, 600)
+
+    def clean_all(self):
+        self.pixmap = QPixmap(self.size())
+        self.pixmap.fill(Qt.transparent)
+
+        self.update()
+
+    def createSun(self, col, alg):
+
+        xb = self.width() / 4
+        xe = xb * 3
+
+        yb = self.height() / 2
+        ye = self.height() / 2
+
+        xc = self.width() / 2
+        yc = self.height() / 2
+
+        fi = 30
+        
+        for i in range(12):
+            self.createLine(round(xb), round(yb), round(xe), round(ye), col, alg)
+            
+            new_x = xc + (xb - xc)*cos(radians(fi)) + (yb - yc)*sin(radians(fi))          
+            new_y = yc - (xb - xc)*sin(radians(fi)) + (yb - yc)*cos(radians(fi))
+            xb = new_x
+            yb = new_y
+
+            new_x = xc + (xe - xc)*cos(radians(fi)) + (ye - yc)*sin(radians(fi))          
+            new_y = yc - (xe - xc)*sin(radians(fi)) + (ye - yc)*cos(radians(fi))
+            xe = new_x
+            ye = new_y
 
     def createLine(self, xb, yb, xe, ye, color, alg):
         self.color = self.colors[color]
@@ -224,9 +266,6 @@ class RenderArea(QWidget):
         self.update()
 
     def paintEvent(self, event):
-        if self.points is None:
-            return
-
         painter = QPainter(self)
         painter.drawPixmap(QPoint(), self.pixmap)
 
@@ -263,11 +302,11 @@ class Window(QWidget):
         # QComboBox
 
         self.colorComboBox = QComboBox()
-        self.colorComboBox.addItem("Черный", 0)  # Qt.black)
-        self.colorComboBox.addItem("Красный", 1)  # Qt.red)
-        self.colorComboBox.addItem("Зеленый", 2)  # Qt.green)
-        self.colorComboBox.addItem("Синий", 4)  # Qt.blue)
-        self.colorComboBox.addItem("Желтый", 5)  # Qt.yellow)
+        self.colorComboBox.addItem("Черный", 0)
+        self.colorComboBox.addItem("Красный", 1)
+        self.colorComboBox.addItem("Зеленый", 2)
+        self.colorComboBox.addItem("Синий", 3)
+        self.colorComboBox.addItem("Желтый", 4)
 
         colorLabel = QLabel("&Цвет:")
         colorLabel.setAlignment(Qt.AlignRight)
@@ -286,24 +325,18 @@ class Window(QWidget):
         rb_3.toggled.connect(lambda: self.but_rest(3))
         rb_4 = QRadioButton('Библиотечный алгоритм')
         rb_4.toggled.connect(lambda: self.but_rest(4))
-        '''
-        rb_0.setChecked(True)
 
-        button_group = QButtonGroup()
-        button_group.addButton(rb_0)
-        button_group.addButton(rb_1)
-        button_group.addButton(rb_2)
-        button_group.addButton(rb_3)
-        button_group.addButton(rb_4)
-        '''
         # Buttons
 
         drawButton = QPushButton("Отрисовать")
+        testButton = QPushButton("Тест")
         cleanButton = QPushButton("Очистить")
 
         # Connection
 
         drawButton.clicked.connect(self.drawButtonClicked)
+        testButton.clicked.connect(self.testButtonClicked)
+        cleanButton.clicked.connect(self.cleanButtonClicked)
 
         # layout
 
@@ -352,6 +385,8 @@ class Window(QWidget):
         rl.addWidget(rightGB)
         rl.addWidget(rightGB_2)
         rl.addWidget(drawButton)
+        rl.addWidget(testButton)
+        rl.addWidget(cleanButton)
         rW.setLayout(rl)
 
         # Main Window
@@ -367,6 +402,7 @@ class Window(QWidget):
         self.setWindowTitle("Lab_03")
 
     def drawButtonClicked(self):
+
         try:
             xb = float(self.xbEdit.text())
             yb = self.renderArea.height() - float(self.ybEdit.text())
@@ -386,6 +422,13 @@ class Window(QWidget):
             msg.setStandardButtons(QMessageBox.Ok)
             msg.show()
 
+    def testButtonClicked(self):
+        color = self.colorComboBox.itemData(self.colorComboBox.currentIndex())
+        self.renderArea.createSun(color, self.alg)
+        
+    def cleanButtonClicked(self):
+        self.renderArea.clean_all()
+    
     def but_rest(self, n):
         self.alg = n
 
