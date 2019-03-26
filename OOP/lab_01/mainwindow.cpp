@@ -50,3 +50,25 @@ void MainWindow::on_cleanPushButton_clicked()
 {
     label.clean();
 }
+
+void MainWindow::on_savePushButton_clicked()
+{
+    QString QfileName = QFileDialog::getSaveFileName(this, tr("Save File"),
+                                                    "", tr("Text Files (*.txt)"));
+    QByteArray ba = QfileName.toLocal8Bit();
+
+    int n = QfileName.length();
+    char *filename = new char[n];
+
+    memcpy(filename, ba, static_cast<size_t>(n));
+
+    struct save_data s_data;
+    s_data.filename = filename;
+
+    union u_data data;
+    data.s_data = &s_data;
+
+    action(SAVE, data);
+
+    delete []filename;
+}

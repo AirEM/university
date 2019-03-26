@@ -27,6 +27,8 @@ private slots:
 
     void on_cleanPushButton_clicked();
 
+    void on_savePushButton_clicked();
+
 private:
     Ui::MainWindow *ui;
     MainLabel label;

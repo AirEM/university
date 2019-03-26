@@ -12,10 +12,15 @@ int action(command c, union u_data &data)
     case DRAW:
         err = draw(model, data.d_data);
         break;
+    case CLEAN:
+        err = clean(model, data.d_data);
+        break;
     case LOAD:
         err = load(model, data.l_data);
         break;
-    case SAVE: std::cout << "SAVE" << std::endl;  break;
+    case SAVE:
+        err = save(model, data.s_data);
+        break;
     case MOVE: std::cout << "MOVE" << std::endl;  break;
     case SCALE: std::cout << "SCALE" << std::endl;  break;
     case ROTATE: std::cout << "ROTATE" << std::endl;  break;
@@ -39,6 +44,16 @@ int draw(const Model &model, const struct draw_data *d_data)
 
         d_data->painter->drawLine(QLineF(sx_begin, -sy_begin, sx_end, -sy_end));
     }
+
+    return 0;
+}
+
+int clean(Model &model, const struct draw_data *data)
+{
+    delete []model.lines;
+    model.lines = nullptr;
+
+    model.count = 0;
 
     return 0;
 }
@@ -74,3 +89,25 @@ int load(Model &model, const struct load_data *l_data)
     return 0;
 }
 
+int save(Model &model, const struct save_data *s_data)
+{
+    std::ofstream fout(s_data->filename);
+
+    // проверка на откуртие файла и возвратошибки
+
+    fout << model.count << std::endl;
+
+    for (int i = 0; i < model.count; i++)
+    {
+        fout <<
+        model.lines[i].x_begin << " " <<
+        model.lines[i].y_begin << " " <<
+        model.lines[i].z_begin << " " <<
+        model.lines[i].x_end << " " <<
+        model.lines[i].y_end << " " <<
+        model.lines[i].z_end << " " <<
+        std::endl;
+    }
+
+    return 0;
+}

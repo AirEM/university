@@ -3,14 +3,19 @@
 
 #include <QPainter>
 
+struct draw_data
+{
+    QPainter *painter;
+};
+
 struct load_data
 {
     char *filename;
 };
 
-struct draw_data
+struct save_data
 {
-    QPainter *painter;
+    char *filename;
 };
 
 #endif // DATA_H

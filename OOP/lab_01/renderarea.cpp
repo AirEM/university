@@ -12,9 +12,6 @@ void MainLabel::draw()
 
     painter.translate(QPoint(this->width() / 2, this->height() / 2));
 
-//    painter.drawLine(0, 0, 0, -200);
-//    painter.drawLine(0, 0, 100, -0);
-
     struct draw_data d_data;
     d_data.painter = &painter;
 
@@ -28,6 +25,10 @@ void MainLabel::draw()
 
 void MainLabel::clean()
 {   
+    union u_data data;
+
+    action(CLEAN, data);
+
     pixmap.fill();
 
     this->update();
@@ -36,8 +37,6 @@ void MainLabel::clean()
 
 void MainLabel::resizeEvent(QResizeEvent *event)
 {
-    std::cout << "RESIZE" << std::endl;
-
     pixmap = pixmap.scaled(this->width(), this->height(), Qt::IgnoreAspectRatio);
     pixmap.fill();
     draw();
