@@ -21,9 +21,14 @@ int action(command c, union u_data &data)
     case SAVE:
         err = save(model, data.s_data);
         break;
-    case MOVE: std::cout << "MOVE" << std::endl;  break;
-    case SCALE: std::cout << "SCALE" << std::endl;  break;
+    case MOVE:
+        err = move(model, data.m_data);
+        break;
+    case SCALE:
+        err = scale(model, data.sc_data);
+        break;
     case ROTATE: std::cout << "ROTATE" << std::endl;  break;
+
     }
 
     return err;
@@ -110,4 +115,84 @@ int save(Model &model, const struct save_data *s_data)
     }
 
     return 0;
+}
+
+int move(Model &model, const struct move_data *m_data)
+{
+    for (int i = 0; i < model.count; i++)
+    {
+        model.lines[i].x_begin += m_data->dx;
+        model.lines[i].y_begin += m_data->dy;
+        model.lines[i].z_begin += m_data->dz;
+
+        model.lines[i].x_end += m_data->dx;
+        model.lines[i].y_end += m_data->dy;
+        model.lines[i].z_end += m_data->dz;
+    }
+
+    return 0;
+}
+
+int scale(Model &model, const struct scale_data *sc_data)
+{
+    for (int i = 0; i < model.count; i++)
+    {
+        model.lines[i].x_begin *= sc_data->kx;
+        model.lines[i].y_begin *= sc_data->ky;
+        model.lines[i].z_begin *= sc_data->kz;
+
+        model.lines[i].x_end *= sc_data->kx;
+        model.lines[i].y_end *= sc_data->ky;
+        model.lines[i].z_end *= sc_data->kz;
+    }
+
+    return 0;
+}
+
+int rotate(Model &model, const struct rotate_data *r_data)
+{
+    double fix = r_data->fix * PI / 180,
+           fiy = r_data->fiy * PI / 180,
+           fiz = r_data->fiz * PI / 180;
+
+    double x, y, z;
+
+    for (int i = 0; i < model.count; i++)
+    {
+
+        // rotate begin point on x line
+
+        x = model.lines[i].x_begin;
+        y = model.lines[i].y_begin * cos(fix) - model.lines[i].z_begin * sin(fix);
+        z = model.lines[i].y_begin * sin(fix) + model.lines[i].z_begin * cos(fix);
+
+        model.lines[i].x_begin = x;
+        model.lines[i].x_begin = y;
+        model.lines[i].x_begin = z;
+
+        // rotate begin point on y line
+
+        x = model.lines[i].x_begin * cos(fiy) + model.lines[i].z_begin * sin(fiy);
+        y = model.lines[i].y_begin;
+        z = -model.lines[i].x_begin * sin(fiy) + model.lines[i].z_begin * cos(fiy);
+
+        model.lines[i].x_begin = x;
+        model.lines[i].x_begin = y;
+        model.lines[i].x_begin = z;
+
+        // rotate begin point on z line
+
+        x = model.lines[i].x_begin * cos(fiz) - model.lines[i].y_begin * sin(fiz);
+        y = model.lines[i].x_begin * sin(fiz) + model.lines[i].y_begin * cos(fiz);
+        z = model.lines[i].z_begin;
+
+        model.lines[i].x_begin = x;
+        model.lines[i].x_begin = y;
+        model.lines[i].x_begin = z;
+
+
+        //model.lines[i].x_end *= sc_data->kx;
+        //model.lines[i].y_end *= sc_data->ky;
+        //model.lines[i].z_end *= sc_data->kz;
+    }
 }

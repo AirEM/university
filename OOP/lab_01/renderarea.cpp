@@ -8,6 +8,8 @@ MainLabel::MainLabel(QWidget *parent) : QLabel (parent), pixmap(781, 638)
 
 void MainLabel::draw()
 {
+    pixmap.fill();
+
     QPainter painter(&pixmap);
 
     painter.translate(QPoint(this->width() / 2, this->height() / 2));

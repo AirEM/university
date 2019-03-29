@@ -21,13 +21,16 @@ public:
     ~MainWindow() override;
 
 private slots:
-    void on_scalingPushButton_clicked();
 
     void on_loadPushButton_clicked();
 
+    void on_savePushButton_clicked();
+
     void on_cleanPushButton_clicked();
 
-    void on_savePushButton_clicked();
+    void on_movePushButton_clicked();
+
+    void on_scalingPushButton_clicked();
 
 private:
     Ui::MainWindow *ui;
