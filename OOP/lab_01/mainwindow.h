@@ -32,6 +32,8 @@ private slots:
 
     void on_scalingPushButton_clicked();
 
+    void on_rotationPushButton_clicked();
+
 private:
     Ui::MainWindow *ui;
     MainLabel label;

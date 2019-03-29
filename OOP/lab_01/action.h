@@ -36,4 +36,6 @@ int scale(Model &, const struct scale_data *);
 
 int rotate(Model &, const struct rotate_data *);
 
+void rotate_point(Point &, double, double, double);
+
 #endif // ACTION_H
