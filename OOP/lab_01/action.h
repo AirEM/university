@@ -20,7 +20,7 @@ union u_data
 
 enum command {DRAW, CLEAN, LOAD, SAVE, MOVE, SCALE, ROTATE};
 
-int action(command, union u_data &);
+int action(command, const union u_data &);
 
 int draw(const Model &, const struct draw_data *);
 

@@ -1,9 +1,9 @@
 #include "action.h"
 
 
-int action(command c, union u_data &data)
+int action(command c, const union u_data &data)
 {
-    int err = 0;
+    int err = SUCCESS;
 
     static Model model = {nullptr, 0};
 
@@ -38,21 +38,28 @@ int action(command c, union u_data &data)
 
 int draw(const Model &model, const struct draw_data *d_data)
 {
+    int err = SUCCESS;
+
     double dist = 500.0;
     double sx_begin, sy_begin, sx_end, sy_end;
 
-    for (int i = 0; i < model.count; i++)
+    if (model.count < 1 || model.lines == nullptr)
+        err = ERR_MODEL;
+    else
     {
-        sx_begin = model.lines[i].begin.x * dist / (model.lines[i].begin.z + dist);
-        sy_begin = model.lines[i].begin.y * dist / (model.lines[i].begin.z + dist);
+        for (int i = 0; i < model.count; i++)
+        {
+            sx_begin = model.lines[i].begin.x * dist / (model.lines[i].begin.z + dist);
+            sy_begin = model.lines[i].begin.y * dist / (model.lines[i].begin.z + dist);
 
-        sx_end = model.lines[i].end.x * dist / (model.lines[i].end.z + dist);
-        sy_end = model.lines[i].end.y * dist / (model.lines[i].end.z + dist);
+            sx_end = model.lines[i].end.x * dist / (model.lines[i].end.z + dist);
+            sy_end = model.lines[i].end.y * dist / (model.lines[i].end.z + dist);
 
-        d_data->painter->drawLine(QLineF(sx_begin, -sy_begin, sx_end, -sy_end));
+            d_data->painter->drawLine(QLineF(sx_begin, -sy_begin, sx_end, -sy_end));
+        }
     }
 
-    return 0;
+    return err;
 }
 
 int clean(Model &model, const struct draw_data *data)
@@ -62,11 +69,13 @@ int clean(Model &model, const struct draw_data *data)
 
     model.count = 0;
 
-    return 0;
+    return SUCCESS;
 }
 
 int load(Model &model, const struct load_data *l_data)
 {
+    int err = SUCCESS;
+
     delete []model.lines;
     model.lines = nullptr;
     model.count = 0;
@@ -75,102 +84,131 @@ int load(Model &model, const struct load_data *l_data)
 
     std::ifstream fin(l_data->filename);
 
-    // проверка на откуртие файла и возвратошибки
-
-    fin >> model.count;
-
-    model.lines = new Line[model.count];
-
-    for (int i = 0; i < model.count; i++)
+    if (!fin.is_open())
+        err = ERR_FILE;
+    else
     {
-        fin >> x_b >> y_b >> z_b >> x_e >> y_e >> z_e;
+        fin >> model.count;
 
-        model.lines[i].begin.x = static_cast<double>(x_b);
-        model.lines[i].begin.y = static_cast<double>(y_b);
-        model.lines[i].begin.z = static_cast<double>(z_b);
-        model.lines[i].end.x = static_cast<double>(x_e);
-        model.lines[i].end.y = static_cast<double>(y_e);
-        model.lines[i].end.z = static_cast<double>(z_e);
+        model.lines = new Line[model.count];
+
+        for (int i = 0; i < model.count; i++)
+        {
+            fin >> x_b >> y_b >> z_b >> x_e >> y_e >> z_e;
+
+            model.lines[i].begin.x = static_cast<double>(x_b);
+            model.lines[i].begin.y = static_cast<double>(y_b);
+            model.lines[i].begin.z = static_cast<double>(z_b);
+            model.lines[i].end.x = static_cast<double>(x_e);
+            model.lines[i].end.y = static_cast<double>(y_e);
+            model.lines[i].end.z = static_cast<double>(z_e);
+        }
     }
 
-    return 0;
+    return err;
 }
 
 int save(Model &model, const struct save_data *s_data)
 {
+    int err = SUCCESS;
+
     std::ofstream fout(s_data->filename);
 
-    // проверка на откуртие файла и возвратошибки
-
-    fout << model.count << std::endl;
-
-    for (int i = 0; i < model.count; i++)
+    if (!fout.is_open())
+        err = ERR_FILE;
+    else
     {
-//        fout <<
-//        model.lines[i].x_begin << " " <<
-//        model.lines[i].y_begin << " " <<
-//        model.lines[i].z_begin << " " <<
-//        model.lines[i].x_end << " " <<
-//        model.lines[i].y_end << " " <<
-//        model.lines[i].z_end << " " <<
-//        std::endl;
+        fout << model.count << std::endl;
+
+        for (int i = 0; i < model.count; i++)
+        {
+                    fout <<
+                    model.lines[i].begin.x << " " <<
+                    model.lines[i].begin.y << " " <<
+                    model.lines[i].begin.z << " " <<
+                    model.lines[i].end.x << " " <<
+                    model.lines[i].end.y << " " <<
+                    model.lines[i].end.z << " " <<
+                    std::endl;
+        }
     }
 
-    return 0;
+    return err;
 }
 
 int move(Model &model, const struct move_data *m_data)
 {
-    for (int i = 0; i < model.count; i++)
-    {
-        model.lines[i].begin.x += m_data->dx;
-        model.lines[i].begin.y += m_data->dy;
-        model.lines[i].begin.z += m_data->dz;
+    int err = SUCCESS;
 
-        model.lines[i].end.x += m_data->dx;
-        model.lines[i].end.y += m_data->dy;
-        model.lines[i].end.z += m_data->dz;
+    if (model.count < 1 || model.lines == nullptr)
+        err = ERR_MODEL;
+    else
+    {
+        for (int i = 0; i < model.count; i++)
+        {
+            model.lines[i].begin.x += m_data->dx;
+            model.lines[i].begin.y += m_data->dy;
+            model.lines[i].begin.z += m_data->dz;
+
+            model.lines[i].end.x += m_data->dx;
+            model.lines[i].end.y += m_data->dy;
+            model.lines[i].end.z += m_data->dz;
+        }
     }
 
-    return 0;
+    return err;
 }
 
 int scale(Model &model, const struct scale_data *sc_data)
 {
-    for (int i = 0; i < model.count; i++)
+    int err = SUCCESS;
+
+    if (model.count < 1 || model.lines == nullptr)
+        err = ERR_MODEL;
+    else
     {
-        model.lines[i].begin.x *= sc_data->kx;
-        model.lines[i].begin.y *= sc_data->ky;
-        model.lines[i].begin.z *= sc_data->kz;
+        for (int i = 0; i < model.count; i++)
+        {
+            model.lines[i].begin.x *= sc_data->kx;
+            model.lines[i].begin.y *= sc_data->ky;
+            model.lines[i].begin.z *= sc_data->kz;
 
-        model.lines[i].end.x *= sc_data->kx;
-        model.lines[i].end.y *= sc_data->ky;
-        model.lines[i].end.z *= sc_data->kz;
+            model.lines[i].end.x *= sc_data->kx;
+            model.lines[i].end.y *= sc_data->ky;
+            model.lines[i].end.z *= sc_data->kz;
+        }
     }
-
-    return 0;
+    return err;
 }
 
 int rotate(Model &model, const struct rotate_data *r_data)
 {
+    int err = SUCCESS;
+
     double fix = r_data->fix * PI / 180,
            fiy = r_data->fiy * PI / 180,
            fiz = r_data->fiz * PI / 180;
 
-    for (int i = 0; i < model.count; i++)
+    if (model.count < 1 || model.lines == nullptr)
+        err = ERR_MODEL;
+    else
     {
-        rotate_point(model.lines[i].begin, fix, fiy, fiz);
+        for (int i = 0; i < model.count; i++)
+        {
+            rotate_point(model.lines[i].begin, fix, fiy, fiz);
 
-        rotate_point(model.lines[i].end, fix, fiy, fiz);
+            rotate_point(model.lines[i].end, fix, fiy, fiz);
+        }
     }
 
+    return err;
 }
 
 void rotate_point(Point &point, double fix, double fiy, double fiz)
 {
     double x, y, z;
 
-    // rotate begin point on x line
+    // rotate point around x line
 
     x = point.x;
     y = point.y * cos(fix) - point.z * sin(fix);
@@ -180,7 +218,7 @@ void rotate_point(Point &point, double fix, double fiy, double fiz)
     point.y = y;
     point.z = z;
 
-    // rotate begin point on y line
+    // rotate point around y line
 
     x = point.x * cos(fiy) + point.z * sin(fiy);
     y = point.y;
@@ -190,7 +228,7 @@ void rotate_point(Point &point, double fix, double fiy, double fiz)
     point.y = y;
     point.z = z;
 
-    // rotate begin point on z line
+    // rotate point around z line
 
     x = point.x * cos(fiz) - point.y * sin(fiz);
     y = point.x * sin(fiz) + point.y * cos(fiz);
