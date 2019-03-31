@@ -1,6 +1,7 @@
 from gui import Ui_MainWindow
 from RenderArea import RenderArea
-from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox
+
+from PyQt5.QtWidgets import (QApplication, QMainWindow, QMessageBox)
 
 
 class Window(QMainWindow):
@@ -8,42 +9,45 @@ class Window(QMainWindow):
     def __init__(self):
         super(Window, self).__init__()
 
-        self.alg = 0
-
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
-        self.renderArea = RenderArea()
+        self.alg = 0
 
-        self.ui.horizontalLayout.addWidget(self.renderArea)
+        self.ui.renderArea = RenderArea()
+
+        self.ui.horizontalLayout.addWidget(self.ui.renderArea)
 
         self.ui.colorBox.addItem("Черный", 0)
         self.ui.colorBox.addItem("Красный", 1)
         self.ui.colorBox.addItem("Зеленый", 2)
         self.ui.colorBox.addItem("Синий", 3)
         self.ui.colorBox.addItem("Желтый", 4)
+        self.ui.colorBox.addItem("Белый", 5)
 
+        self.ui.rb_0.setChecked(True)
         self.ui.rb_0.toggled.connect(lambda: self.set_alg(0))
         self.ui.rb_1.toggled.connect(lambda: self.set_alg(1))
         self.ui.rb_2.toggled.connect(lambda: self.set_alg(2))
         self.ui.rb_3.toggled.connect(lambda: self.set_alg(3))
         self.ui.rb_4.toggled.connect(lambda: self.set_alg(4))
 
-        # self.ui.testButton.clicked.connect(self.tab_test)
+        self.ui.drawButton.clicked.connect(self.drawButtonClicked)
+        # self.ui.cleanButton.clicked.connect(self.cleanButtonClicked)
 
     def drawButtonClicked(self):
 
         try:
-            # xb = float(self.xbEdit.text())
-            # yb = self.renderArea.height() - float(self.ybEdit.text())
-            # xe = float(self.xeEdit.text())
-            # ye = self.renderArea.height() - float(self.yeEdit.text())
-
             color = self.ui.colorBox.itemData(self.ui.colorBox.currentIndex())
             figure = self.ui.tabWidget.currentIndex()
 
-            # self.renderArea.createLine(round(xb), round(yb),
-                                       # round(xe), round(ye), color, self.alg)
+            if figure:
+                a = float(self.ui.xEdit.text())
+                b = float(self.ui.yEdit.text())
+                self.ui.renderArea.createFigure(figure, color, self.alg, a=a, b=b)
+            else:
+                r = float(self.ui.radiusEdit.text())
+                self.ui.renderArea.createFigure(figure, color, self.alg, r=r)
 
         except ValueError:
             msg = QMessageBox(self)
@@ -53,14 +57,12 @@ class Window(QMainWindow):
             msg.setStandardButtons(QMessageBox.Ok)
             msg.show()
 
-    '''
     def testButtonClicked(self):
         color = self.colorComboBox.itemData(self.colorComboBox.currentIndex())
         self.renderArea.createSun(color, self.alg)
-
+        
     def cleanButtonClicked(self):
         self.renderArea.clean_all()
-    '''
 
     def set_alg(self, alg):
         self.alg = alg
