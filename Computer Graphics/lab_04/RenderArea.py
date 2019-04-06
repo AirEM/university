@@ -35,7 +35,6 @@ class RenderArea(QWidget):
         self.update()
 
     def createFigure(self, figure, color, alg, **args):
-        print("test ", self.width(), self.height())
 
         p = QPainter(self.pixmap)
         p.translate(self.width() / 2, self.height() / 2)
@@ -45,6 +44,52 @@ class RenderArea(QWidget):
         self.figure = Ellipse(args['a'], args['b'], p, alg) if figure \
             else Circle(args['r'], p, alg)
         self.figure.draw()
+
+        p.end()
+
+        self.update()
+
+    def test(self, figure, color, alg,):
+
+        if figure:
+            self.testEllipse(color, alg)
+        else:
+            self.testCircle(color, alg)
+
+    def testEllipse(self, color, alg):
+
+        p = QPainter(self.pixmap)
+        p.translate(self.width() / 2, self.height() / 2)
+        pen = QPen(self.colors[color])
+        p.setPen(pen)
+
+        a = 50
+        b = 25
+        step = 25
+
+        for _ in range(9):
+            self.figure = Ellipse(a, b, p, alg)
+            self.figure.draw()
+            a += step
+            b += step
+
+        p.end()
+
+        self.update()
+
+    def testCircle(self, color, alg):
+        p = QPainter(self.pixmap)
+        p.translate(self.width() / 2, self.height() / 2)
+        pen = QPen(self.colors[color])
+        p.setPen(pen)
+
+        r = 25
+        step = 25
+
+        for i in range(10):
+            self.figure = Circle(r, p, alg)
+            self.figure.draw()
+            r += step
 
         p.end()
 

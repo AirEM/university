@@ -33,7 +33,8 @@ class Window(QMainWindow):
         self.ui.rb_4.toggled.connect(lambda: self.set_alg(4))
 
         self.ui.drawButton.clicked.connect(self.drawButtonClicked)
-        # self.ui.cleanButton.clicked.connect(self.cleanButtonClicked)
+        self.ui.testButton.clicked.connect(self.testButtonClicked)
+        self.ui.cleanButton.clicked.connect(self.cleanButtonClicked)
 
     def drawButtonClicked(self):
 
@@ -44,10 +45,10 @@ class Window(QMainWindow):
             if figure:
                 a = float(self.ui.xEdit.text())
                 b = float(self.ui.yEdit.text())
-                self.ui.renderArea.createFigure(figure, color, self.alg, a=a, b=b)
+                self.ui.renderArea.createFigure(figure, color, self.alg, a=round(a), b=round(b))
             else:
                 r = float(self.ui.radiusEdit.text())
-                self.ui.renderArea.createFigure(figure, color, self.alg, r=r)
+                self.ui.renderArea.createFigure(figure, color, self.alg, r=round(r))
 
         except ValueError:
             msg = QMessageBox(self)
@@ -58,11 +59,13 @@ class Window(QMainWindow):
             msg.show()
 
     def testButtonClicked(self):
-        color = self.colorComboBox.itemData(self.colorComboBox.currentIndex())
-        self.renderArea.createSun(color, self.alg)
-        
+        color = self.ui.colorBox.itemData(self.ui.colorBox.currentIndex())
+        figure = self.ui.tabWidget.currentIndex()
+
+        self.ui.renderArea.test(figure, color, self.alg)
+
     def cleanButtonClicked(self):
-        self.renderArea.clean_all()
+        self.ui.renderArea.clean_all()
 
     def set_alg(self, alg):
         self.alg = alg
