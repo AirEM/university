@@ -88,7 +88,7 @@ class Figure:
 
             x_start = mid_x + 1
 
-            x_end = ((pb[0] - pe[0]) * (y - 0.5) - (pb[0] * pe[1] - pe[0] * pb[1])) / (pb[1] - pe[1])
+            x_end = ((pb[0] - pe[0]) * (y + 0.5) - (pb[0] * pe[1] - pe[0] * pb[1])) / (pb[1] - pe[1])
             x_end = round(x_end)
 
             '''
