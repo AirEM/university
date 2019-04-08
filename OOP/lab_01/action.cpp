@@ -13,7 +13,7 @@ int action(command c, const union u_data &data)
         err = draw(model, data.d_data);
         break;
     case CLEAN:
-        err = clean(model, data.d_data);
+        err = clean(model);
         break;
     case LOAD:
         err = load(model, data.l_data);
@@ -62,7 +62,7 @@ int draw(const Model &model, const struct draw_data *d_data)
     return err;
 }
 
-int clean(Model &model, const struct draw_data *data)
+int clean(Model &model)
 {
     delete []model.lines;
     model.lines = nullptr;

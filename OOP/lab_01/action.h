@@ -24,7 +24,7 @@ int action(command, const union u_data &);
 
 int draw(const Model &, const struct draw_data *);
 
-int clean(Model &, const struct draw_data *);
+int clean(Model &);
 
 int load(Model &, const struct load_data *);
 

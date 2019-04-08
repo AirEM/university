@@ -33,14 +33,20 @@ class Circle(Figure):
         self.__radius = radius
 
     def __alg_canon(self):
+
         for x in range(0, self.__radius + 1, 1):
+
             y = round(sqrt(self.__radius ** 2 - x ** 2))
+
             self._painter.drawPoint(QPoint(x, y))
             self._painter.drawPoint(QPoint(x, -y))
             self._painter.drawPoint(QPoint(-x, y))
             self._painter.drawPoint(QPoint(-x, -y))
 
+        # для дорисовки пробегаем по другой оси
+
         for y in range(0, self.__radius + 1, 1):
+
             x = round(sqrt(self.__radius ** 2 - y ** 2))
 
             self._painter.drawPoint(QPoint(x, y))
@@ -49,9 +55,13 @@ class Circle(Figure):
             self._painter.drawPoint(QPoint(-x, -y))
 
     def __alg_param(self):
-        len_circle = round(pi * self.__radius / 2)  # длина четврети окружности
+
+        # длина четврети окружности
+
+        len_circle = round(pi * self.__radius / 2)
 
         for i in range(0, len_circle + 1, 1):
+
             x = round(self.__radius * cos(i / self.__radius))
             y = round(self.__radius * sin(i / self.__radius))
 
@@ -61,18 +71,49 @@ class Circle(Figure):
             self._painter.drawPoint(QPoint(-x, -y))
 
     def __alg_brez(self):
+
+        # начало в точке (0, R)
+
         x = 0
         y = self.__radius
+
+        # ошибка
         d = 2 - 2 * self.__radius
+
+        # Для любой заданной точки на окружности при генерации по
+        # часовой стрелке существует только три возможности выбрать
+        # следующий пиксел, наилучшим образом приближающий
+        # окружность: горизонтально вправо, по диагонали вниз
+        # и вправо, вертикально вниз
+
+        # mH = | (xi + 1)^2 + (yi)^2 - R^2 |
+
+        # mD = | (xi + 1)^2 + (yi - 1)^2 - R^2 |
+
+        # mV = | (xi)^2 + (yi - 1)^2 - R^2 |
+
         while y >= 0:
             self._painter.drawPoint(QPoint(x, y))
             self._painter.drawPoint(QPoint(x, -y))
             self._painter.drawPoint(QPoint(-x, y))
             self._painter.drawPoint(QPoint(-x, -y))
 
+            # в окрестности точки(xi, yi) возможны только пять
+            # типов пересечений окружности и сетки растра
+
             if d < 0:
+
+                # диагональная точка(xi, + 1, уi - 1)
+                # находится внутри реальной окружности
+
+                # buf - расстояние до сл. пикселей
                 buf = 2 * d + 2 * y - 1
                 x += 1
+
+                # следует выбрать либо
+                # пиксел(xi, + 1, уi) mH,
+                # либо
+                # пиксел(xi, + 1, уi - 1) mD
 
                 if buf <= 0:
                     d = d + 2 * x + 1
@@ -83,8 +124,15 @@ class Circle(Figure):
                 continue
 
             if d > 0:
+
+                # диагональная точка (xi, + 1, уi -1)
+                # находится вне окружности
+
                 buf = 2 * d - 2 * x - 1
                 y -= 1
+
+                # должен быть выбран либо пиксел (xi + 1, уi -1)
+                # либо (xi, уi -1).
 
                 if buf > 0:
                     d = d - 2 * y + 1
@@ -95,15 +143,28 @@ class Circle(Figure):
                 continue
 
             if d == 0.0:
+
+                # пиксел(xi, уi - 1) лежит
+                # на окружности
+
+                # выбирается диагональный
+                # пиксел(xi + 1, уi - 1)
+
                 x += 1
                 y -= 1
                 d = d + 2 * x - 2 * y + 2
 
     def __alg_middle(self):
+        
+        # начальные значения
         x = 0
         y = self.__radius
+        
+        # найти исходное значение параметра принятия решения
         p = 5 / 4 - self.__radius
+
         while True:
+            
             self._painter.drawPoint(QPoint(-x, y))
             self._painter.drawPoint(QPoint(x, -y))
             self._painter.drawPoint(QPoint(-x, -y))
@@ -117,8 +178,14 @@ class Circle(Figure):
             x += 1
 
             if p < 0:
+                
+                # следующая точка на окружности (x+1, y)
+                
                 p += 2 * x + 1
             else:
+
+                # следующая точка на окружности (x+1, y-1)
+                
                 p += 2 * x - 2 * y + 5
                 y -= 1
 
@@ -235,7 +302,8 @@ class Ellipse(Figure):
                 y -= 1
                 p += 2 * self.__b * self.__b * x - 2 * self.__a * self.__a * y + self.__b * self.__b
 
-        p = self.__b * self.__b * (x + 0.5) * (x + 0.5) + self.__a * self.__a * (y - 1) * (y - 1) - self.__a * self.__a * self.__b * self.__b
+        p = self.__b * self.__b * (x + 0.5) * (x + 0.5) + self.__a * self.__a * (y - 1) * (
+                    y - 1) - self.__a * self.__a * self.__b * self.__b
         # начальное значение параметра принятия решения в области tg>1 в точке (х + 0.5, y - 1) полседнего положения
 
         while y >= 0:
@@ -266,4 +334,3 @@ class Ellipse(Figure):
             self.__alg_canon()
         elif self._alg == 4:
             self.__alg_lib()
-
