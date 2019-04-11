@@ -2,8 +2,6 @@
 #define ACTION_H
 
 #include <iostream>
-#include <fstream>
-#include <cmath>
 
 #include "data.h"
 #include "model.h"
@@ -18,24 +16,22 @@ union u_data
     struct rotate_data *r_data;
 };
 
-enum command {DRAW, CLEAN, LOAD, SAVE, MOVE, SCALE, ROTATE};
+enum command {DRAW = 0, CLEAN = 1, LOAD = 2, SAVE = 3, MOVE = 4, SCALE = 5, ROTATE = 6};
 
-int action(command, const union u_data &);
+error action(command, const union u_data &);
 
-int draw(const Model &, const struct draw_data *);
+error draw(const Model &, const struct draw_data *);
 
-int clean(Model &);
+error clean(Model &);
 
-int load(Model &, const struct load_data *);
+error load(Model &, const struct load_data *);
 
-int save(Model &, const struct save_data *);
+error save(const Model &, const struct save_data *);
 
-int move(Model &, const struct move_data *);
+error move(Model &, const struct move_data *);
 
-int scale(Model &, const struct scale_data *);
+error scale(Model &, const struct scale_data *);
 
-int rotate(Model &, const struct rotate_data *);
-
-void rotate_point(Point &, double, double, double);
+error rotate(Model &, const struct rotate_data *);
 
 #endif // ACTION_H

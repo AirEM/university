@@ -5,10 +5,6 @@
 
 #define PI 3.14159265
 
-#define SUCCESS 0
-#define ERR_MODEL -1
-#define ERR_FILE -2
-
 struct draw_data
 {
     QPainter *painter;
@@ -36,7 +32,7 @@ struct scale_data
 
 struct rotate_data
 {
-    double fix, fiy, fiz;
+    double fi_x, fi_y, fi_z;
 };
 
 

@@ -35,6 +35,8 @@ private slots:
 
     void on_rotationPushButton_clicked();
 
+    void show_error(error);
+
 private:
     Ui::MainWindow *ui;
     MainLabel label;

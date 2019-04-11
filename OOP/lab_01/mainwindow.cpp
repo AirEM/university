@@ -23,7 +23,8 @@ void MainWindow::on_loadPushButton_clicked()
     QByteArray byte_array;
     char *filename;
     int len;
-    int err = SUCCESS;
+
+    error err = SUCCESS;
 
     QfileName = QFileDialog::getOpenFileName(this, tr("Open File"),
                                                     "", tr("Text Files (*.txt)"));
@@ -46,15 +47,10 @@ void MainWindow::on_loadPushButton_clicked()
 
     delete []filename;
 
-    label.draw();
-
-    if (err != SUCCESS)
-    {
-        QMessageBox messageBox;
-        QString mes = "Ошибка : ";
-        mes += err == ERR_MODEL ? QString("Пустая модель") : QString("Файл не открылся");
-        messageBox.critical(nullptr, "Ошибка", mes);
-    }
+    if (err == SUCCESS)
+        label.draw();
+    else
+        show_error(err);
 }
 
 void MainWindow::on_savePushButton_clicked()
@@ -63,7 +59,8 @@ void MainWindow::on_savePushButton_clicked()
     QByteArray byte_array;
     char *filename;
     int len;
-    int err = SUCCESS;
+
+    error err = SUCCESS;
 
     QfileName = QFileDialog::getSaveFileName(this, tr("Save File"),
                                                     "", tr("Text Files (*.txt)"));
@@ -85,13 +82,7 @@ void MainWindow::on_savePushButton_clicked()
 
     delete []filename;
 
-    if (err != SUCCESS)
-    {
-        QMessageBox messageBox;
-        QString mes = "Ошибка : ";
-        mes += err == ERR_MODEL ? QString("Пустая модель") : QString("Файл не открылся");
-        messageBox.critical(nullptr, "Ошибка", mes);
-    }
+    show_error(err);
 }
 
 void MainWindow::on_cleanPushButton_clicked()
@@ -102,7 +93,7 @@ void MainWindow::on_cleanPushButton_clicked()
 
 void MainWindow::on_movePushButton_clicked()
 {
-    int err = SUCCESS;
+    error err = SUCCESS;
 
     double dx = this->ui->dxLineEdit->text().toDouble();
     double dy = this->ui->dyLineEdit->text().toDouble();
@@ -120,18 +111,12 @@ void MainWindow::on_movePushButton_clicked()
 
     label.draw();
 
-    if (err != SUCCESS)
-    {
-        QMessageBox messageBox;
-        QString mes = "Ошибка : ";
-        mes += err == ERR_MODEL ? QString("Пустая модель") : QString("Файл не открылся");
-        messageBox.critical(nullptr, "Ошибка", mes);
-    }
+    show_error(err);
 }
 
 void MainWindow::on_scalingPushButton_clicked()
 {
-    int err = SUCCESS;
+    error err = SUCCESS;
 
     double kx = this->ui->kxLineEdit->text().toDouble();
     double ky = this->ui->kyLineEdit->text().toDouble();
@@ -151,42 +136,57 @@ void MainWindow::on_scalingPushButton_clicked()
 
     err = action(SCALE, data);
 
-    if (err != SUCCESS)
-    {
-        QMessageBox messageBox;
-        QString mes = "Ошибка : ";
-        mes += err == ERR_MODEL ? QString("Пустая модель") : QString("Файл не открылся");
-        messageBox.critical(nullptr, "Ошибка", mes);
-    }
+    show_error(err);
 
     label.draw();
 }
 
 void MainWindow::on_rotationPushButton_clicked()
 {
-    int err = SUCCESS;
+    error err = SUCCESS;
 
-    double fix = this->ui->fixLineEdit->text().toDouble();
-    double fiy = this->ui->fiyLineEdit->text().toDouble();
-    double fiz = this->ui->fizLineEdit->text().toDouble();
+    double fi_x = this->ui->fixLineEdit->text().toDouble();
+    double fi_y = this->ui->fiyLineEdit->text().toDouble();
+    double fi_z = this->ui->fizLineEdit->text().toDouble();
 
     struct rotate_data r_data;
-    r_data.fix = fix;
-    r_data.fiy = fiy;
-    r_data.fiz = fiz;
+    r_data.fi_x = fi_x;
+    r_data.fi_y = fi_y;
+    r_data.fi_z = fi_z;
 
     union u_data data;
     data.r_data = &r_data;
 
     err = action(ROTATE, data);
 
+    show_error(err);
+
+    label.draw();
+}
+
+
+void MainWindow::show_error(error err)
+{
     if (err != SUCCESS)
     {
         QMessageBox messageBox;
         QString mes = "Ошибка : ";
-        mes += err == ERR_MODEL ? QString("Пустая модель") : QString("Файл не открылся");
+
+        switch (err)
+        {
+        case SUCCESS:
+            break;
+        case ERR_MODEL:
+            mes +=  QString("Пустая модель");
+            break;
+        case ERR_FILE:
+            mes += QString("Файл не открылся");
+            break;
+        case ERR_FILE_ACTION:
+            mes += QString("Ошибка чтения/записи файла.");
+            break;
+
+        }
         messageBox.critical(nullptr, "Ошибка", mes);
     }
-
-    label.draw();
 }
