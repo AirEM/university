@@ -14,6 +14,7 @@ class RenderArea(QWidget):
         self.shift = False
 
         self.figure = Figure()
+        self.image = None
 
         self.pixmap = QPixmap(self.size()).scaled(800, 633, Qt.IgnoreAspectRatio)
         self.pixmap.fill(Qt.transparent)
@@ -48,6 +49,7 @@ class RenderArea(QWidget):
 
             self.draw()
 
+    '''
     def keyPressEvent(self, event):
         print(event.key())
         if event.key() == Qt.Key_Shift:
@@ -57,6 +59,7 @@ class RenderArea(QWidget):
         print(event.key())
         if event.key() == Qt.Key_Shift:
             self.shift = False
+    '''
 
     def resizeEvent(self, ev):
         self.pixmap.scaled(self.width(), self.height(), Qt.IgnoreAspectRatio)
@@ -81,7 +84,7 @@ class RenderArea(QWidget):
         pen = QPen(Qt.blue)
         p.setPen(pen)
 
-        self.figure.fill(p, self.pixmap, slow)
+        self.figure.fill(p, (self.pixmap.toImage(), self.image), slow)
 
         p.end()
 
@@ -89,7 +92,7 @@ class RenderArea(QWidget):
 
     def close_figure(self):
         self.figure.close()
-
+        self.image = self.pixmap.toImage()
         self.draw()
 
     def clean_all(self):

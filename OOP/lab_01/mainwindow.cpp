@@ -55,7 +55,6 @@ void MainWindow::on_loadPushButton_clicked()
         mes += err == ERR_MODEL ? QString("Пустая модель") : QString("Файл не открылся");
         messageBox.critical(nullptr, "Ошибка", mes);
     }
-
 }
 
 void MainWindow::on_savePushButton_clicked()
@@ -71,9 +70,10 @@ void MainWindow::on_savePushButton_clicked()
     byte_array = QfileName.toLocal8Bit();
 
     len = QfileName.length();
-    filename = new char[len];
+    filename = new char[len + 1];
 
     memcpy(filename, byte_array, static_cast<size_t>(len));
+    filename[len] = '\0';
 
     struct save_data s_data;
     s_data.filename = filename;

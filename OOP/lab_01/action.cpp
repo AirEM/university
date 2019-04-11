@@ -75,34 +75,57 @@ int clean(Model &model)
 int load(Model &model, const struct load_data *l_data)
 {
     int err = SUCCESS;
+    int count = 0;
+
+    FILE *f;
 
     delete []model.lines;
     model.lines = nullptr;
     model.count = 0;
 
-    float x_b, y_b, z_b, x_e, y_e, z_e;
+    double x_b, y_b, z_b, x_e, y_e, z_e;
 
-    std::ifstream fin(l_data->filename);
+    f = fopen(l_data->filename, "r");
 
-    if (!fin.is_open())
+    if (f == NULL)
         err = ERR_FILE;
     else
     {
-        fin >> model.count;
+        count = fscanf(f, "%d", &(model.count));
 
-        model.lines = new Line[model.count];
-
-        for (int i = 0; i < model.count; i++)
+        if (count != 1 && model.count > 0)
         {
-            fin >> x_b >> y_b >> z_b >> x_e >> y_e >> z_e;
-
-            model.lines[i].begin.x = static_cast<double>(x_b);
-            model.lines[i].begin.y = static_cast<double>(y_b);
-            model.lines[i].begin.z = static_cast<double>(z_b);
-            model.lines[i].end.x = static_cast<double>(x_e);
-            model.lines[i].end.y = static_cast<double>(y_e);
-            model.lines[i].end.z = static_cast<double>(z_e);
+            clean(model);
+            err = ERR_FILE;
         }
+        else
+        {
+
+            model.lines = new Line[model.count];
+
+            for (int i = 0; i < model.count; i++)
+            {
+                count = fscanf(f, "%lf %lf %lf %lf %lf %lf", &x_b, &y_b, &z_b, &x_e, &y_e, &z_e);
+
+
+                if (count != 6)
+                {
+                    clean(model);
+                    err = ERR_FILE;
+                    break;
+                }
+                else
+                {
+                    model.lines[i].begin.x = x_b;
+                    model.lines[i].begin.y = y_b;
+                    model.lines[i].begin.z = z_b;
+                    model.lines[i].end.x = x_e;
+                    model.lines[i].end.y = y_e;
+                    model.lines[i].end.z = z_e;
+                }
+            }
+        }
+        fclose(f);
     }
 
     return err;
@@ -111,26 +134,37 @@ int load(Model &model, const struct load_data *l_data)
 int save(Model &model, const struct save_data *s_data)
 {
     int err = SUCCESS;
+    int count = 0;
 
-    std::ofstream fout(s_data->filename);
+    FILE *f;
 
-    if (!fout.is_open())
+    f = fopen(s_data->filename, "w");
+
+    if (f == NULL)
         err = ERR_FILE;
     else
     {
-        fout << model.count << std::endl;
+        count = fprintf(f, "%d\n", model.count);
 
-        for (int i = 0; i < model.count; i++)
+        if (count < 0)
+            err = ERR_FILE;
+        else
         {
-                    fout <<
-                    model.lines[i].begin.x << " " <<
-                    model.lines[i].begin.y << " " <<
-                    model.lines[i].begin.z << " " <<
-                    model.lines[i].end.x << " " <<
-                    model.lines[i].end.y << " " <<
-                    model.lines[i].end.z << " " <<
-                    std::endl;
+            for (int i = 0; i < model.count; i++)
+            {
+                count = fprintf(f, "%lf %lf %lf %lf %lf %lf\n",
+                                model.lines[i].begin.x, model.lines[i].begin.y, model.lines[i].begin.z,
+                                model.lines[i].end.x, model.lines[i].end.y, model.lines[i].end.z);
+
+                if (count < 0)
+                {
+                    err = ERR_FILE;
+                    break;
+                }
+            }
         }
+
+        fclose(f);
     }
 
     return err;

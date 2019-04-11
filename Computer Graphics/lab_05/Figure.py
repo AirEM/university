@@ -43,22 +43,35 @@ class Figure:
                              self.__points[self.__points_len - 2][0],
                              self.__points[self.__points_len - 2][1])
 
-    def fill(self, painter, pixmap, slow=False):
+    def fill(self, painter, images, slow=False):
         mid_x = self._find_middle()
         min_y, max_y = self._find_y()
+
+        image = images[0]
+        start_image = images[1]
 
         for i in range(self.__state, self.__points_len - 1):
 
             pb = self.__points[i]
             pe = self.__points[i + 1]
 
-            image = pixmap.toImage()
+            left = False
+            right = False
 
             # horizontal line
 
             if pb[1] == pe[1]:
                 self.__state += 1
                 continue
+
+            # right or left
+
+            if pb[0] < mid_x or pe[0] < mid_x:
+                left = True
+            elif pb[0] > mid_x or pe[0] > mid_x:
+                right = True
+
+            print(left, right)
 
             if pb[0] < mid_x < pe[0]:
 
@@ -76,6 +89,11 @@ class Figure:
                 self.fill_area((mid_x, y_new), pb, mid_x, image, painter)
             else:
                 self.fill_area(pb, pe, mid_x, image, painter)
+
+            pen = painter.pen()
+            pen.setColor(Qt.blue)
+            painter.setPen(pen)
+            painter.drawLine(pb[0], pb[1], pe[0], pe[1])
 
             self.__state += 1
             break
