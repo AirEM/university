@@ -8,7 +8,9 @@ class Figure:
         self.__points_len = 0
         self.__state = 0
 
-    def _find_middle(self):
+    # protected functions
+
+    def __find_middle(self):
         min_x = min(self.__points, key=lambda item: item[0])[0]
         max_x = max(self.__points, key=lambda item: item[0])[0]
         mid_x = (max_x + min_x) / 2
@@ -23,18 +25,65 @@ class Figure:
 
         return self.__points[index][0]
 
-    def _find_y(self):
-        return min(self.__points, key=lambda item: item[1])[1],\
-               max(self.__points, key=lambda item: item[1])[1]
+    def __fill_edge(self, painter, image, pb, pe, mid_x):
 
-    def addPoint(self, x, y):
+        left = False
+
+        # horizontal line
+        if pb[1] == pe[1]:
+            self.__state += 1
+            return
+
+        # Is the line to the left of the partition?
+        if pb[0] < mid_x or pe[0] < mid_x:
+            left = True
+
+        start_x = pb[0]
+        y = pb[1]
+        y_end = pe[1]
+        dx = (pe[0] - pb[0]) / (pe[1] - pb[1])
+
+        while y < y_end:
+
+            x = start_x
+
+            if left:
+                while x < mid_x:
+                    self.__inversion(painter, image, x, y)
+                    x += 1
+                start_x += dx
+                y += 1
+
+            else:
+                while x >= mid_x:
+                    self.__inversion(painter, image, x, y)
+                    x -= 1
+                start_x += dx
+                y += 1
+
+        self.__state += 1
+        return
+
+    def __inversion(self, painter, image, x, y):
+
+        col = QColor(image.pixel(x, y))
+
+        if col == Qt.blue:
+            pen = painter.pen()
+            pen.setColor(Qt.white)
+            painter.setPen(pen)
+        else:
+            pen = painter.pen()
+            pen.setColor(Qt.blue)
+            painter.setPen(pen)
+
+        painter.drawPoint(x, y)
+
+    # secondary functions
+
+    def add_point(self, x, y):
         self.__points.append((x, y))
         self.__points_len += 1
-
-    def clean(self):
-        self.__points.clear()
-        self.__points_len = 0
-        self.__state = 0
 
     def draw(self, painter):
         if self.__points_len > 1:
@@ -43,98 +92,36 @@ class Figure:
                              self.__points[self.__points_len - 2][0],
                              self.__points[self.__points_len - 2][1])
 
-    def fill(self, painter, images, slow=False):
-        mid_x = self._find_middle()
-        min_y, max_y = self._find_y()
+    # main functions
 
-        image = images[0]
-        start_image = images[1]
+    def fill(self, painter, image, slow=False):
+
+        mid_x = self.__find_middle()
 
         for i in range(self.__state, self.__points_len - 1):
 
-            pb = self.__points[i]
-            pe = self.__points[i + 1]
+            pb = min(self.__points[i], self.__points[i + 1], key=lambda item: item[1])
+            pe = max(self.__points[i], self.__points[i + 1], key=lambda item: item[1])
 
-            left = False
-            right = False
-
-            # horizontal line
-
-            if pb[1] == pe[1]:
-                self.__state += 1
-                continue
-
-            # right or left
-
-            if pb[0] < mid_x or pe[0] < mid_x:
-                left = True
-            elif pb[0] > mid_x or pe[0] > mid_x:
-                right = True
-
-            print(left, right)
-
-            if pb[0] < mid_x < pe[0]:
-
+            if pb[0] < mid_x < pe[0] or pb[0] > mid_x > pe[0]:
                 y_new = ((pe[1] - pb[1]) * mid_x - (pb[0] * pe[1] - pe[0] * pb[1])) / (pe[0] - pb[0])
                 y_new = round(y_new)
 
-                self.fill_area(pb, (mid_x, y_new), mid_x, image, painter)
-                self.fill_area((mid_x, y_new), pe, mid_x, image, painter)
+                self.__fill_edge(painter, image, pb, (mid_x, y_new), mid_x)
+                self.__fill_edge(painter, image, (mid_x, y_new), pe, mid_x)
 
-            elif pb[0] > mid_x > pe[0]:
-                y_new = ((pe[1] - pb[1]) * mid_x - (pb[0] * pe[1] - pe[0] * pb[1])) / (pe[0] - pb[0])
-                y_new = round(y_new)
-
-                self.fill_area(pe, (mid_x, y_new), mid_x, image, painter)
-                self.fill_area((mid_x, y_new), pb, mid_x, image, painter)
             else:
-                self.fill_area(pb, pe, mid_x, image, painter)
+                self.__fill_edge(painter, image, pb, pe, mid_x)
 
-            pen = painter.pen()
-            pen.setColor(Qt.blue)
-            painter.setPen(pen)
-            painter.drawLine(pb[0], pb[1], pe[0], pe[1])
+            # painter.drawLine(pb[0], pb[1], pe[0], pe[1])
 
-            self.__state += 1
             break
 
-    def fill_area(self, pb, pe, mid_x, image, painter):
-
-        pb, pe = min(pb, pe, key=lambda item: item[1]), max(pb, pe, key=lambda item: item[1])
-
-        for y in range(pb[1], pe[1]):
-
-            x_start = mid_x + 1
-
-            x_end = ((pb[0] - pe[0]) * (y + 0.5) - (pb[0] * pe[1] - pe[0] * pb[1])) / (pb[1] - pe[1])
-            x_end = round(x_end)
-
-            '''
-            f0 = 1 if QColor(image.pixel(x_end - 1, y)) == Qt.blue else 0
-            f1 = 1 if QColor(image.pixel(x_end, y)) == Qt.blue else 0
-            f2 = 1 if QColor(image.pixel(x_end + 1, y)) == Qt.blue else 0
-
-            print(f0, f1, f2)
-            '''
-
-            x_start, x_end = min(x_start, x_end), max(x_start, x_end)
-
-            for x in range(x_start, x_end):
-
-                if QColor(image.pixel(x, y)) == Qt.blue:
-
-                    pen = painter.pen()
-                    pen.setColor(Qt.white)
-                    painter.setPen(pen)
-
-                    painter.drawPoint(QPoint(x, y))
-                else:
-                    pen = painter.pen()
-                    pen.setColor(Qt.blue)
-                    painter.setPen(pen)
-
-                    painter.drawPoint(QPoint(x, y))
-
     def close(self):
-            self.addPoint(self.__points[0][0],
-                          self.__points[0][1])
+            self.add_point(self.__points[0][0],
+                           self.__points[0][1])
+
+    def clean(self):
+        self.__points.clear()
+        self.__points_len = 0
+        self.__state = 0

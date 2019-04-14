@@ -14,10 +14,9 @@ class RenderArea(QWidget):
         self.shift = False
 
         self.figure = Figure()
-        self.image = None
 
         self.pixmap = QPixmap(self.size()).scaled(800, 633, Qt.IgnoreAspectRatio)
-        self.pixmap.fill(Qt.transparent)
+        self.pixmap.fill()#Qt.transparent)
 
         self.setBackgroundRole(QPalette.Base)
         self.setAutoFillBackground(True)
@@ -45,7 +44,7 @@ class RenderArea(QWidget):
             else:
             '''
             self.pointsListWidget.addItem("({}; {})".format(x, self.height() - y))
-            self.figure.addPoint(x, y)
+            self.figure.add_point(x, y)
 
             self.draw()
 
@@ -84,7 +83,7 @@ class RenderArea(QWidget):
         pen = QPen(Qt.blue)
         p.setPen(pen)
 
-        self.figure.fill(p, (self.pixmap.toImage(), self.image), slow)
+        self.figure.fill(p, self.pixmap.toImage(), slow)
 
         p.end()
 
@@ -92,7 +91,6 @@ class RenderArea(QWidget):
 
     def close_figure(self):
         self.figure.close()
-        self.image = self.pixmap.toImage()
         self.draw()
 
     def clean_all(self):
