@@ -1,7 +1,9 @@
 from gui import Ui_MainWindow
 from RenderArea import RenderArea
 
-from PyQt5.QtWidgets import (QApplication, QMainWindow, QMessageBox)
+from PyQt5.QtWidgets import (QApplication, QMainWindow, QMessageBox,
+                             QGroupBox, QLabel, QGridLayout, QLineEdit)
+from PyQt5.QtCore import Qt
 
 
 class Window(QMainWindow):
@@ -32,6 +34,31 @@ class Window(QMainWindow):
         self.ui.rb_3.toggled.connect(lambda: self.set_alg(3))
         self.ui.rb_4.toggled.connect(lambda: self.set_alg(4))
 
+        GroupBox = QGroupBox("Тест")
+        rightLayout = QGridLayout()
+
+        self.ui.minREdit = QLineEdit()
+        self.ui.minREdit.setFixedWidth(30)
+
+        self.ui.maxREdit = QLineEdit()
+        self.ui.maxREdit.setFixedWidth(30)
+
+        self.ui.countREdit = QLineEdit()
+        self.ui.countREdit.setFixedWidth(30)
+
+        rightLayout.addWidget(QLabel("Мин R : "), 0, 0, 1, 2, Qt.AlignRight)
+        rightLayout.addWidget(self.ui.minREdit, 0, 2, 1, 2)
+
+        rightLayout.addWidget(QLabel("Макс R : "), 1, 0, 1, 2, Qt.AlignRight)
+        rightLayout.addWidget(self.ui.maxREdit, 1, 2, 1, 2)
+
+        rightLayout.addWidget(QLabel("Кол-во : "), 2, 0, 1, 2, Qt.AlignRight)
+        rightLayout.addWidget(self.ui.countREdit, 2, 2, 1, 2)
+
+        GroupBox.setLayout(rightLayout)
+
+        self.ui.gridLayout.addWidget(GroupBox, 1, 0, 1, 2)
+
         self.ui.drawButton.clicked.connect(self.drawButtonClicked)
         self.ui.testButton.clicked.connect(self.testButtonClicked)
         self.ui.cleanButton.clicked.connect(self.cleanButtonClicked)
@@ -59,10 +86,24 @@ class Window(QMainWindow):
             msg.show()
 
     def testButtonClicked(self):
+
+        try:
+            minR = float(self.ui.minREdit.text())
+            maxR = float(self.ui.maxREdit.text())
+            countR = int(self.ui.countREdit.text())
+
+        except ValueError:
+            msg = QMessageBox(self)
+            msg.setIcon(QMessageBox.Critical)
+            msg.setText("Некорректное заполнение полей")
+            msg.setWindowTitle("Ошибка заполнения полей")
+            msg.setStandardButtons(QMessageBox.Ok)
+            msg.show()
+
         color = self.ui.colorBox.itemData(self.ui.colorBox.currentIndex())
         figure = self.ui.tabWidget.currentIndex()
 
-        self.ui.renderArea.test(figure, color, self.alg)
+        self.ui.renderArea.test(figure, color, self.alg, minR, maxR, countR)
 
     def cleanButtonClicked(self):
         self.ui.renderArea.clean_all()

@@ -33,8 +33,10 @@ class Circle(Figure):
         self.__radius = radius
 
     def __alg_canon(self):
+        #                                       cos(45)
+        for x in range(0, round(self.__radius / sqrt(2)) + 1, 1):
 
-        for x in range(0, self.__radius + 1, 1):
+            # рассматривается 1\8 окружности
 
             y = round(sqrt(self.__radius ** 2 - x ** 2))
 
@@ -43,16 +45,10 @@ class Circle(Figure):
             self._painter.drawPoint(QPoint(-x, y))
             self._painter.drawPoint(QPoint(-x, -y))
 
-        # для дорисовки пробегаем по другой оси
-
-        for y in range(0, self.__radius + 1, 1):
-
-            x = round(sqrt(self.__radius ** 2 - y ** 2))
-
-            self._painter.drawPoint(QPoint(x, y))
-            self._painter.drawPoint(QPoint(x, -y))
-            self._painter.drawPoint(QPoint(-x, y))
-            self._painter.drawPoint(QPoint(-x, -y))
+            self._painter.drawPoint(QPoint(y, x))
+            self._painter.drawPoint(QPoint(y, -x))
+            self._painter.drawPoint(QPoint(-y, x))
+            self._painter.drawPoint(QPoint(-y, -x))
 
     def __alg_param(self):
 
@@ -161,9 +157,9 @@ class Circle(Figure):
         y = self.__radius
         
         # найти исходное значение параметра принятия решения
-        p = 5 / 4 - self.__radius
+        p = 1 - self.__radius
 
-        while True:
+        while x <= y:
             
             self._painter.drawPoint(QPoint(-x, y))
             self._painter.drawPoint(QPoint(x, -y))
@@ -185,12 +181,8 @@ class Circle(Figure):
             else:
 
                 # следующая точка на окружности (x+1, y-1)
-                
-                p += 2 * x - 2 * y + 5
                 y -= 1
-
-            if x > y:
-                break
+                p += 2 * x - 2 * y + 1
 
     def __alg_lib(self):
         self._painter.drawEllipse(QPoint(0, 0), self.__radius, self.__radius)
@@ -210,13 +202,16 @@ class Circle(Figure):
 
 class Ellipse(Figure):
     def __init__(self, a, b, painter, alg):
+
         super().__init__(painter, alg)
 
         self.__a = a
         self.__b = b
 
     def __alg_canon(self):
+
         for x in range(0, self.__a + 1, 1):
+
             y = round(self.__b * sqrt(1.0 - x ** 2 / self.__a / self.__a))
 
             self._painter.drawPoint(QPoint(x, y))
@@ -233,10 +228,13 @@ class Ellipse(Figure):
             self._painter.drawPoint(QPoint(-x, -y))
 
     def __alg_param(self):
+
         m = max(self.__a, self.__b)
+
         len_circle = round(pi * m / 2)
 
         for i in range(0, len_circle + 1, 1):
+
             x = round(self.__a * cos(i / m))
             y = round(self.__b * sin(i / m))
 
@@ -246,49 +244,62 @@ class Ellipse(Figure):
             self._painter.drawPoint(QPoint(-x, -y))
 
     def __alg_brez(self):
-        x = 0  # начальные значения
+
+        x = 0
         y = self.__b
-        a = self.__a ** 2
-        d = round(self.__b * self.__b / 2 - a * self.__b * 2 + a / 2)
-        b = self.__b ** 2
+
+        a2 = self.__a ** 2
+        b2 = self.__b ** 2
+
+        d = round((a2 + b2) / 2 - 2 * a2 * self.__b)
+
         while y >= 0:
+
             self._painter.drawPoint(QPoint(x, y))
             self._painter.drawPoint(QPoint(x, -y))
             self._painter.drawPoint(QPoint(-x, y))
             self._painter.drawPoint(QPoint(-x, -y))
+
             if d < 0:  # пиксель лежит внутри эллипса
-                buf = 2 * d + 2 * a * y - a
+                buf = 2 * d + 2 * a2 * y - a2
                 x += 1
-                if buf <= 0:  # горизотальный шаг
-                    d = d + 2 * b * x + b
+
+                if buf < 0:  # горизотальный шаг
+                    d += 2 * b2 * x + b2
+
                 else:  # диагональный шаг
                     y -= 1
-                    d = d + 2 * b * x - 2 * a * y + a + b
+                    d += 2 * b2 * x - 2 * a2 * y + a2 + b2
 
-                continue
-
-            if d > 0:  # пиксель лежит вне эллипса
-                buf = 2 * d - 2 * b * x - b
+            elif d > 0:  # пиксель лежит вне эллипса
+                buf = 2 * d - 2 * b2 * x - b2
                 y -= 1
 
                 if buf > 0:  # вертикальный шаг
-                    d = d - 2 * y * a + a
+                    d += a2 - 2 * y * a2
+
                 else:  # диагональный шаг
                     x += 1
-                    d = d + 2 * x * b - 2 * y * a + a + b
+                    d += 2 * b2 * x - 2 * a2 * y + a2 + b2
 
-                continue
-
-            if d == 0.0:  # пиксель лежит на окружности
+            else:  # пиксель лежит на окружности
                 x += 1  # диагональный шаг
                 y -= 1
-                d = d + 2 * x * b - 2 * y * a + a + b
+                d += 2 * b2 * x - 2 * a2 * y + a2 + b2
 
     def __alg_middle(self):
-        x = 0  # начальные положения
+
+        x = 0  # начальные значения
         y = self.__b
-        p = self.__b * self.__b - self.__a * self.__a * self.__b + 0.25 * self.__a * self.__a  # начальное значение параметра принятия решения в области tg<1
-        while 2 * (self.__b ** 2) * x < 2 * self.__a * self.__a * y:  # пока тангенс угла наклона меньше 1
+
+        a2 = self.__a ** 2
+        b2 = self.__b ** 2
+
+        delta = round(b2 + a2 * (y - 0.5) * (y - 0.5) - a2 * b2)
+        border = round(a2 / sqrt(b2 + a2))
+
+        while x <= border:
+
             self._painter.drawPoint(QPoint(x, y))
             self._painter.drawPoint(QPoint(x, -y))
             self._painter.drawPoint(QPoint(-x, y))
@@ -296,17 +307,16 @@ class Ellipse(Figure):
 
             x += 1
 
-            if p < 0:  # средняя точка внутри эллипса, ближе верхний пиксел, горизонтальный шаг
-                p += 2 * self.__b * self.__b * x + self.__b * self.__b
-            else:  # средняя точка вне эллипса, ближе диагональный пиксел, диагональный шаг
+            if delta > 0:
                 y -= 1
-                p += 2 * self.__b * self.__b * x - 2 * self.__a * self.__a * y + self.__b * self.__b
+                delta += -2 * a2 * y
 
-        p = self.__b * self.__b * (x + 0.5) * (x + 0.5) + self.__a * self.__a * (y - 1) * (
-                    y - 1) - self.__a * self.__a * self.__b * self.__b
-        # начальное значение параметра принятия решения в области tg>1 в точке (х + 0.5, y - 1) полседнего положения
+            delta += 2 * x * b2 + b2
+
+        delta += 0.75 * (a2 - b2) - (b2 * x + a2 * y);
 
         while y >= 0:
+
             self._painter.drawPoint(QPoint(x, y))
             self._painter.drawPoint(QPoint(x, -y))
             self._painter.drawPoint(QPoint(-x, y))
@@ -314,11 +324,11 @@ class Ellipse(Figure):
 
             y -= 1
 
-            if p > 0:
-                p -= 2 * self.__a * self.__a * y + self.__a * self.__a
-            else:
+            if delta < 0:
                 x += 1
-                p += 2 * self.__b * self.__b * x - 2 * self.__a * self.__a * y + self.__a * self.__a
+                delta += 2 * b2 * x
+
+            delta += -2 * y * a2 + a2
 
     def __alg_lib(self):
         self._painter.drawEllipse(QPoint(0, 0), self.__a, self.__b)

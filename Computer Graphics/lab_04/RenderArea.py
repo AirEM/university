@@ -49,25 +49,25 @@ class RenderArea(QWidget):
 
         self.update()
 
-    def test(self, figure, color, alg,):
+    def test(self, figure, color, alg, minR, maxR, countR):
 
         if figure:
-            self.testEllipse(color, alg)
+            self.testEllipse(color, alg, minR, maxR, countR)
         else:
-            self.testCircle(color, alg)
+            self.testCircle(color, alg, minR, maxR, countR)
 
-    def testEllipse(self, color, alg):
+    def testEllipse(self, color, alg, minR, maxR, countR):
 
         p = QPainter(self.pixmap)
         p.translate(self.width() / 2, self.height() / 2)
         pen = QPen(self.colors[color])
         p.setPen(pen)
 
-        a = 50
-        b = 25
-        step = 25
+        a = minR
+        b = minR - 25
+        step = round((maxR - minR) / countR)
 
-        for _ in range(9):
+        for _ in range(countR):
             self.figure = Ellipse(a, b, p, alg)
             self.figure.draw()
             a += step
@@ -77,16 +77,16 @@ class RenderArea(QWidget):
 
         self.update()
 
-    def testCircle(self, color, alg):
+    def testCircle(self, color, alg, minR, maxR, countR):
         p = QPainter(self.pixmap)
         p.translate(self.width() / 2, self.height() / 2)
         pen = QPen(self.colors[color])
         p.setPen(pen)
 
-        r = 25
-        step = 25
+        r = minR
+        step = round((maxR - minR) / countR)
 
-        for i in range(10):
+        for i in range(countR):
             self.figure = Circle(r, p, alg)
             self.figure.draw()
             r += step
