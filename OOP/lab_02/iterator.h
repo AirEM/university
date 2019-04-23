@@ -1,19 +1,15 @@
 #pragma once
 
 #include "iteratorbase.h"
-#include "iteratorexception.h"
 
 template <typename T>
 class Iterator : public IteratorBase<T>
 {
 private:
-	T* begin;
-	T* end;
-
     using IteratorBase<T>::current;
 
 public:
-	Iterator(T*, int);
+    Iterator(T*);
 
 	Iterator<T>& operator= (const Iterator<T>&);
 
@@ -37,20 +33,16 @@ public:
 
 
 template<typename T>
-Iterator<T>::Iterator(T* arr, int size)
+Iterator<T>::Iterator(T* arr)
 {
-	begin = arr;
 	current = arr;
-	end = arr + size;
 }
 
 
 template<typename T>
 Iterator<T>& Iterator<T>::operator= (const Iterator<T>& iter)
 {
-	begin = iter.begin;
 	current = iter.current;
-	end = iter.end;
 
 	return *this;
 }
@@ -66,10 +58,7 @@ T& Iterator<T>::operator*() const
 template<typename T>
 Iterator<T>& Iterator<T>::operator++ ()
 {
-    if (current == end)
-        throw IndexIteratorException();
-
-    current++;
+	current++;
 
 	return *this;
 }
@@ -87,12 +76,7 @@ Iterator<T> Iterator<T>::operator++ (int)
 template<typename T>
 Iterator<T>& Iterator<T>::operator-- ()
 {
-    if (current == begin)
-    {
-        throw IndexIteratorException();
-    }
-
-    current--;
+	current--;
 
 	return *this;
 }
@@ -111,11 +95,6 @@ Iterator<T> Iterator<T>::operator-- (int)
 template<typename T>
 Iterator<T>& Iterator<T>::operator+= (int n)
 {
-    if (current + n > end)
-    {
-        throw IndexIteratorException();
-    }
-
 	current += n;
 
 	return *this;
@@ -124,11 +103,6 @@ Iterator<T>& Iterator<T>::operator+= (int n)
 template<typename T>
 Iterator<T>& Iterator<T>::operator-= (int n)
 {
-    if (current - n < begin)
-    {
-        throw IndexIteratorException();
-    }
-
 	current -= n;
 
 	return *this;
@@ -144,5 +118,5 @@ bool Iterator<T>::operator== (const Iterator<T> & iter)
 template<typename T>
 bool Iterator<T>::operator!= (const Iterator<T> & iter)
 {
-	return current != iter.current;
+    return current != iter.current;;
 }

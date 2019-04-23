@@ -4,19 +4,14 @@
 
 #include "listbase.h"
 #include "iterator.h"
-#include "listexception.h"
-
+#include "citerator.h"
 
 
 template <typename T>
-class List : public ListBase<T>
+class List : public ListBase
 {
 private:
 	T* array;
-
-	using ListBase<T>::position;
-	using ListBase<T>::size_array;
-	using ListBase<T>::buf_size;
 
 public:
 	List();
@@ -25,8 +20,13 @@ public:
 	List(std::initializer_list<T>);
 	~List();
 
+    bool empty() const;
+    int size() const;
+
 	Iterator<T> begin() const;
+    cIterator<T> cbegin() const;
 	Iterator<T> end() const;
+    cIterator<T> cend() const;
 
 	T& front()const;
 	T& back() const;
@@ -48,9 +48,6 @@ public:
 
 	bool operator==(const List&);
 	bool operator!=(const List&);
-
-	using ListBase<T>::empty;
-	using ListBase<T>::size;
 };
 
 
@@ -61,16 +58,21 @@ public:
 
 template <typename T>
 List<T>::List()
-{
+{   
+    size_array = initial_size;
+    position = 0;
+
 	array = static_cast<T*>(malloc(size_array * sizeof(T)));
 
 	if (array == nullptr)
-		throw MemoryListException();
+        throw MemoryListException();
 }
 
 template <typename T>
-List<T>::List(int size) : ListBase<T>::ListBase(size)
+List<T>::List(int size)
 {
+    size_array = size;
+    position = 0;
     array = static_cast<T*>(malloc(size_array * sizeof(T)));
 
     if (array == nullptr)
@@ -100,20 +102,51 @@ List<T>::~List()
 
 
 template <typename T>
+bool List<T>::empty() const
+{
+    return position == 0;
+}
+
+template <typename T>
+int List<T>::size() const
+{
+    return position;
+}
+
+
+template <typename T>
 Iterator<T> List<T>::begin() const
 {
-	Iterator<T> iter(array, position);
+    Iterator<T> iter(array);
 
 	return iter;
 }
 
 template <typename T>
+cIterator<T> List<T>::cbegin() const
+{
+    cIterator<T> iter(array);
+
+    return iter;
+}
+
+
+template <typename T>
 Iterator<T> List<T>::end() const
 {
-	Iterator<T> iter(array, position);
+    Iterator<T> iter(array);
 	iter += position;
 
 	return iter;
+}
+
+template <typename T>
+cIterator<T> List<T>::cend() const
+{
+    cIterator<T> iter(array);
+    iter += position;
+
+    return iter;
 }
 
 
@@ -149,7 +182,7 @@ void List<T>::push_back(const T & value)
 	{
 		copy_array = array;
 
-		size_array += buf_size;
+        size_array *= magnification;
 		array = static_cast<T*>(realloc(array, size_array * sizeof(T)));
 
 		if (array == nullptr)
@@ -171,7 +204,7 @@ void List<T>::push_front(const T & value)
 	{
 		copy_array = array;
 
-		size_array += buf_size;
+        size_array += magnification;
 		array = static_cast<T*>(realloc(array, size_array * sizeof(T)));
 
 		if (array == nullptr)
@@ -203,7 +236,7 @@ void List<T>::insert(int pos, const T & value)
 	{
 		copy_array = array;
 
-		size_array += buf_size;
+        size_array += magnification;
 		array = static_cast<T*>(realloc(array, size_array * sizeof(T)));
 
 		if (array == nullptr)

@@ -1,47 +1,16 @@
 #pragma once
 
-template <typename T>
+#include "listexception.h"
+
 class ListBase
 {
 protected:
 	int size_array;
 	int position;
-	const int buf_size = 10;
+    const int initial_size = 10;
+    const int magnification = 2;
 
 public:
-	ListBase();
-	ListBase(int);
-
-	bool empty() const;
-	int size() const;
-
+    virtual bool empty() const = 0;
+    virtual int size() const = 0;
 };
-
-
-// sourse
-
-template <typename T>
-ListBase<T>::ListBase()
-{
-    size_array = buf_size;
-    position = 0;
-}
-
-template <typename T>
-ListBase<T>::ListBase(int size) : size_array(size)
-{
-    position = 0;
-}
-
-
-template <typename T>
-bool ListBase<T>::empty() const
-{
-	return position == 0;
-}
-
-template <typename T>
-int ListBase<T>::size() const
-{
-	return position;
-}
