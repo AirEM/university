@@ -2,6 +2,7 @@ from Figure import Figure
 from PyQt5.QtCore import QPoint, QSize, Qt, QEvent
 from PyQt5.QtGui import QPainter, QPixmap, QPalette, QPen, QKeyEvent
 from PyQt5.QtWidgets import QWidget
+import time
 
 
 class RenderArea(QWidget):
@@ -57,14 +58,27 @@ class RenderArea(QWidget):
         painter.drawPixmap(QPoint(), self.pixmap)
 
     def fill(self, slow=False):
-        p = QPainter(self.pixmap)
-        pen = QPen(Qt.blue)
-        p.setPen(pen)
 
-        self.figure.fillBr(p, self.pixmap.toImage())
-        p.end()
+        state = True
 
-        self.update()
+        count = 0
+        while state:
+
+            count += 1
+
+            p = QPainter(self.pixmap)
+            pen = QPen(Qt.blue)
+            p.setPen(pen)
+
+            state = self.figure.fillBr(p, self.pixmap.toImage(), slow)
+
+            p.end()
+
+            #if slow:
+                #time.sleep(500)
+
+            self.update()
+        print("TEST COUNT = ", count)
 
     def close_figure(self):
         self.figure.close()

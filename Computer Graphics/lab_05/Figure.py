@@ -6,8 +6,9 @@ class Figure:
     def __init__(self):
         self.__points = list()
         self.__points_len = 0
-        self.__state = 0
         self.__edge_lst = list()
+        self.__state = 0
+        self.__state_coord = 0
 
     # Функуии заливки
 
@@ -105,26 +106,38 @@ class Figure:
         # !!! конец вставки
 
     # закраска области от ребра до перегородки
-    def fillBr(self, painter, image):
+    def fillBr(self, painter, image, slow=False):
 
         # накшли координату Х перегородки
         mid_x = self.__find_middle()
 
-        for i in range(self.__state, len(self.__edge_lst)):
-            self.__fill_edgeBr(painter, image, self.__edge_lst[i], mid_x)
-            self.__state += 1
+        num_edges = len(self.__edge_lst)
+
+        for i in range(self.__state, num_edges):
+
+            state = self.__fill_edgeBr(painter, image, self.__edge_lst[i], mid_x, slow)
+
+            if state:
+                self.__state += 1
             break
 
-    def __fill_edgeBr(self, painter, image, edge, mid_x):
+        return self.__state != num_edges
+
+    def __fill_edgeBr(self, painter, image, edge, mid_x, slow=False):
 
         y_arr = sorted(edge.keys())
-        len_y_arr = len(y_arr)
+        len_y_arr = len(y_arr) - 1
 
         # горизонтальная линия
         if y_arr[0] == y_arr[len_y_arr-1]:
             return
 
-        for y in y_arr[:len_y_arr - 1]:
+        if not slow:
+            self.__state_coord = 0
+
+        for i in range(self.__state_coord, len_y_arr):
+
+            y = y_arr[i]
 
             x_array = edge.get(y)
 
@@ -139,7 +152,11 @@ class Figure:
             if mid_x < x_array[0]:
                 self.__inversionBr(painter, image, mid_x, x_array[0], y)
 
-        return
+            if slow:
+                self.__state_coord = (self.__state_coord + 1) % len_y_arr
+                return not bool(self.__state_coord)
+
+        return True
 
     def __inversionBr(self, painter, image, x_begin, x_end, y):
 
