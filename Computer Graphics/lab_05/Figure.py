@@ -7,9 +7,11 @@ class Figure:
         self.__points = list()
         self.__points_len = 0
         self.__state = 0
+        self.__edge_lst = list()
 
-    # protected functions
+    # Функуии заливки
 
+    # Функция нахождения координаты X перегородки
     def __find_middle(self):
         min_x = min(self.__points, key=lambda item: item[0])[0]
         max_x = max(self.__points, key=lambda item: item[0])[0]
@@ -25,61 +27,137 @@ class Figure:
 
         return self.__points[index][0]
 
-    def __fill_edge(self, painter, image, pb, pe, mid_x):
+    # отрисовка линии алгоритмом Брезейнхема
+    def __drawLineBr(self, painter, xn, yn, xk, yk):
 
-        left = False
+        def sign(t):
+            if t > 0:
+                return 1
+            elif t < 0:
+                return -1
+            else:
+                return 0
 
-        # horizontal line
-        if pb[1] == pe[1]:
+        # !!! вставка не относится к алгориитму отрисовки
+        # текущее ребро
+
+        current_edge = dict()
+
+        # !!! конец вставки
+
+        x = xn
+        y = yn
+
+        dx = xk - xn
+        dy = yk - yn
+
+        sx = sign(dx)
+        sy = sign(dy)
+
+        dx = abs(dx)
+        dy = abs(dy)
+
+        flag = 0
+
+        if not (dx > dy):
+            flag = 1
+            dx, dy = dy, dx
+
+        e = 2 * dy - dx
+
+        for i in range(dx + 1):
+            painter.drawPoint(QPoint(x, y))
+
+            # !!! вставка не относится к алгориитму отрисовки
+            data_x = current_edge.get(y)
+
+            # если нет точки с координатой у,, то добавляем
+            if data_x is None:
+                current_edge[y] = (x, x)
+            else:
+                # если есть, то смотрим масимальный и минимальный х по координате у
+                if x < data_x[0]:
+                    data_x = (x, data_x[1])
+                elif data_x[1] < x:
+                    data_x = (data_x[0], x)
+
+                current_edge[y] = data_x
+
+            # !!! конец вставки
+
+            if e >= 0:
+                if flag == 0:
+                    y += sy
+                else:
+                    x += sx
+
+                e -= 2 * dx
+
+            if flag == 0:
+                x += sx
+            else:
+                y += sy
+
+            e += 2 * dy
+
+        # !!! вставка не относится к алгориитму отрисовки
+        self.__edge_lst.append(current_edge)
+        # !!! конец вставки
+
+    # закраска области от ребра до перегородки
+    def fillBr(self, painter, image):
+
+        # накшли координату Х перегородки
+        mid_x = self.__find_middle()
+
+        for i in range(self.__state, len(self.__edge_lst)):
+            self.__fill_edgeBr(painter, image, self.__edge_lst[i], mid_x)
             self.__state += 1
+            break
+
+    def __fill_edgeBr(self, painter, image, edge, mid_x):
+
+        y_arr = sorted(edge.keys())
+        len_y_arr = len(y_arr)
+
+        # горизонтальная линия
+        if y_arr[0] == y_arr[len_y_arr-1]:
             return
 
-        # Is the line to the left of the partition?
-        if pb[0] < mid_x or pe[0] < mid_x:
-            left = True
+        for y in y_arr[:len_y_arr - 1]:
 
-        start_x = pb[0]
-        y = pb[1]
-        y_end = pe[1]
-        dx = (pe[0] - pb[0]) / (pe[1] - pb[1])
+            x_array = edge.get(y)
 
-        while y < y_end:
+            if x_array[0] <= mid_x <= x_array[1]:
+                continue
 
-            x = start_x
+            # отрезое [begin, end)
 
-            if left:
-                while x < mid_x:
-                    self.__inversion(painter, image, x, y)
-                    x += 1
-                start_x += dx
-                y += 1
+            if x_array[1] < mid_x:
+                self.__inversionBr(painter, image, x_array[1]+1, mid_x, y)
 
-            else:
-                while x >= mid_x:
-                    self.__inversion(painter, image, x, y)
-                    x -= 1
-                start_x += dx
-                y += 1
+            if mid_x < x_array[0]:
+                self.__inversionBr(painter, image, mid_x, x_array[0], y)
 
-        self.__state += 1
         return
 
-    def __inversion(self, painter, image, x, y):
+    def __inversionBr(self, painter, image, x_begin, x_end, y):
 
-        col = QColor(image.pixel(x, y))
+        for x in range(x_begin, x_end):
+            col = QColor(image.pixel(x, y))
 
-        if col == Qt.blue:
-            pen = painter.pen()
-            pen.setColor(Qt.white)
-            painter.setPen(pen)
-        else:
-            pen = painter.pen()
-            pen.setColor(Qt.blue)
-            painter.setPen(pen)
+            if col == Qt.blue:
+                pen = painter.pen()
+                pen.setColor(Qt.white)
+                painter.setPen(pen)
+            else:
+                pen = painter.pen()
+                pen.setColor(Qt.blue)
+                painter.setPen(pen)
 
-        painter.drawPoint(x, y)
+            painter.drawPoint(x, y)
 
-    # secondary functions
+    # служебные функции
 
     def add_point(self, x, y):
         self.__points.append((x, y))
@@ -87,41 +165,17 @@ class Figure:
 
     def draw(self, painter):
         if self.__points_len > 1:
-            painter.drawLine(self.__points[self.__points_len - 1][0],
+            self.__drawLineBr(painter, self.__points[self.__points_len - 1][0],
                              self.__points[self.__points_len - 1][1],
                              self.__points[self.__points_len - 2][0],
                              self.__points[self.__points_len - 2][1])
 
-    # main functions
-
-    def fill(self, painter, image, slow=False):
-
-        mid_x = self.__find_middle()
-
-        for i in range(self.__state, self.__points_len - 1):
-
-            pb = min(self.__points[i], self.__points[i + 1], key=lambda item: item[1])
-            pe = max(self.__points[i], self.__points[i + 1], key=lambda item: item[1])
-
-            if pb[0] < mid_x < pe[0] or pb[0] > mid_x > pe[0]:
-                y_new = ((pe[1] - pb[1]) * mid_x - (pb[0] * pe[1] - pe[0] * pb[1])) / (pe[0] - pb[0])
-                y_new = round(y_new)
-
-                self.__fill_edge(painter, image, pb, (mid_x, y_new), mid_x)
-                self.__fill_edge(painter, image, (mid_x, y_new), pe, mid_x)
-
-            else:
-                self.__fill_edge(painter, image, pb, pe, mid_x)
-
-            # painter.drawLine(pb[0], pb[1], pe[0], pe[1])
-
-            break
-
     def close(self):
-            self.add_point(self.__points[0][0],
-                           self.__points[0][1])
+        self.add_point(self.__points[0][0],
+                       self.__points[0][1])
 
     def clean(self):
         self.__points.clear()
         self.__points_len = 0
+        self.__edge_lst.clear()
         self.__state = 0

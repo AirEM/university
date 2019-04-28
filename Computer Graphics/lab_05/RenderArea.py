@@ -16,7 +16,7 @@ class RenderArea(QWidget):
         self.figure = Figure()
 
         self.pixmap = QPixmap(self.size()).scaled(800, 633, Qt.IgnoreAspectRatio)
-        self.pixmap.fill()#Qt.transparent)
+        self.pixmap.fill()
 
         self.setBackgroundRole(QPalette.Base)
         self.setAutoFillBackground(True)
@@ -24,44 +24,22 @@ class RenderArea(QWidget):
     def minimumSizeHint(self):
         return QSize(800, 600)
 
-    #def sizeHint(self):
-        # return QSize(800, 600)
+    def sizeHint(self):
+        return QSize(800, 600)
+
+    def resizeEvent(self, ev):
+        self.pixmap.scaled(self.width(), self.height(), Qt.IgnoreAspectRatio)
 
     def mousePressEvent(self, ev):
+
         if ev.button() == Qt.LeftButton:
             x = ev.pos().x()
             y = ev.pos().y()
 
-            # print(self.shift)
-            '''
-            if self.shift and self.points_len > 0:
-                if abs(x - self.points[self.points_len - 1][0]) < abs(y - self.points[self.points_len - 1][1]):
-                    self.pointsListWidget.addItem("({}; {})".format(self.points[self.points_len - 1][0], self.height() - y))
-                    self.figure.addPoint((self.points[self.points_len - 1][0], y))
-                else:
-                    self.pointsListWidget.addItem("({}; {})".format(x, self.height() - self.points[self.points_len - 1][1]))
-                    self.points.append((x, self.points[self.points_len - 1][1]))
-            else:
-            '''
-            self.pointsListWidget.addItem("({}; {})".format(x, self.height() - y))
+            self.pointsListWidget.addItem("({}; {})".format(x, y))
+
             self.figure.add_point(x, y)
-
             self.draw()
-
-    '''
-    def keyPressEvent(self, event):
-        print(event.key())
-        if event.key() == Qt.Key_Shift:
-            self.shift = True
-
-    def keyReleaseEvent(self, event):
-        print(event.key())
-        if event.key() == Qt.Key_Shift:
-            self.shift = False
-    '''
-
-    def resizeEvent(self, ev):
-        self.pixmap.scaled(self.width(), self.height(), Qt.IgnoreAspectRatio)
 
     def draw(self):
         p = QPainter(self.pixmap)
@@ -83,8 +61,7 @@ class RenderArea(QWidget):
         pen = QPen(Qt.blue)
         p.setPen(pen)
 
-        self.figure.fill(p, self.pixmap.toImage(), slow)
-
+        self.figure.fillBr(p, self.pixmap.toImage())
         p.end()
 
         self.update()
