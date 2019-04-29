@@ -61,6 +61,9 @@ class RenderArea(QWidget):
 
         state = True
 
+        if not self.figure.is_close():
+            return
+
         count = 0
         while state:
 
@@ -83,6 +86,7 @@ class RenderArea(QWidget):
     def close_figure(self):
         self.figure.close()
         self.draw()
+        self.figure.set_close(True)
 
     def clean_all(self):
         self.pixmap = QPixmap(self.size())

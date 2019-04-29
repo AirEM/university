@@ -4,29 +4,31 @@ from PyQt5.QtCore import Qt, QPoint
 
 class Figure:
     def __init__(self):
-        self.__points = list()
-        self.__points_len = 0
+        self.__polygon = list()
+        self.__polygon.append([])
+        self.__polygon_state = 0
         self.__edge_lst = list()
         self.__state = 0
         self.__state_coord = 0
+        self.__is_close = False
 
     # Функуии заливки
 
     # Функция нахождения координаты X перегородки
     def __find_middle(self):
-        min_x = min(self.__points, key=lambda item: item[0])[0]
-        max_x = max(self.__points, key=lambda item: item[0])[0]
+        min_x = min(self.__polygon[0], key=lambda item: item[0])[0]
+        max_x = max(self.__polygon[0], key=lambda item: item[0])[0]
         mid_x = (max_x + min_x) / 2
 
-        diff = abs(mid_x - self.__points[0][0])
+        diff = abs(mid_x - self.__polygon[0][0][0])
         index = 0
 
-        for i in range(len(self.__points)):
-            if diff > abs(mid_x - self.__points[i][0]):
+        for i in range(len(self.__polygon[0])):
+            if diff > abs(mid_x - self.__polygon[0][i][0]):
                 index = i
-                diff = abs(mid_x - self.__points[i][0])
+                diff = abs(mid_x - self.__polygon[0][i][0])
 
-        return self.__points[index][0]
+        return self.__polygon[0][index][0]
 
     # отрисовка линии алгоритмом Брезейнхема
     def __drawLineBr(self, painter, xn, yn, xk, yk):
@@ -176,23 +178,36 @@ class Figure:
 
     # служебные функции
 
+    def is_close(self):
+        return self.__is_close
+
+    def set_close(self, f=False):
+        self.__is_close = f
+        self.__polygon.append([])
+        self.__polygon_state += 1
+
     def add_point(self, x, y):
-        self.__points.append((x, y))
-        self.__points_len += 1
+        self.__is_close = False
+        self.__polygon[self.__polygon_state].append((x, y))
 
     def draw(self, painter):
-        if self.__points_len > 1:
-            self.__drawLineBr(painter, self.__points[self.__points_len - 1][0],
-                             self.__points[self.__points_len - 1][1],
-                             self.__points[self.__points_len - 2][0],
-                             self.__points[self.__points_len - 2][1])
+
+        polygon_len = len(self.__polygon[self.__polygon_state])
+
+        if polygon_len > 1:
+            self.__drawLineBr(painter, self.__polygon[self.__polygon_state][polygon_len - 1][0],
+                              self.__polygon[self.__polygon_state][polygon_len - 1][1],
+                              self.__polygon[self.__polygon_state][polygon_len - 2][0],
+                              self.__polygon[self.__polygon_state][polygon_len - 2][1])
 
     def close(self):
-        self.add_point(self.__points[0][0],
-                       self.__points[0][1])
+        self.add_point(self.__polygon[self.__polygon_state][0][0],
+                       self.__polygon[self.__polygon_state][0][1])
 
     def clean(self):
-        self.__points.clear()
-        self.__points_len = 0
+        self.__polygon.clear()
+        self.__polygon.append([])
+        self.__polygon_state = 0
         self.__edge_lst.clear()
         self.__state = 0
+        self.__is_close = False
