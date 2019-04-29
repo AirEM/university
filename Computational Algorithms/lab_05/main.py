@@ -1,5 +1,5 @@
 from methods import integral, main_root
-from N import N
+from N import N, N_dima
 
 
 def T(z):
@@ -25,7 +25,7 @@ if __name__ == '__main__':
 
     def F(P):
 
-        return 7243 * P0 / Tn - 2 * integral(lambda z: N(T(z), P, v, x) * z, 0, 1, 20)
+        return 7243 * P0 / Tn - 2 * integral(lambda z: N_dima(T(z), P, v, x) * z, 0, 1, 20)
 
 
     result = main_root(lambda z: F(z), 0, 20)

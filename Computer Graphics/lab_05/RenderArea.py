@@ -77,11 +77,11 @@ class RenderArea(QWidget):
 
             p.end()
 
-            #if slow:
-                #time.sleep(500)
-
-            self.update()
-        print("TEST COUNT = ", count)
+            if slow:
+                time.sleep(0.005)
+                self.repaint()
+            else:
+                self.update()
 
     def close_figure(self):
         self.figure.close()

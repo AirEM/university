@@ -148,4 +148,59 @@ def N(T, P, v, x):
 
     return result
 
+def find_max_increment(X, d_X):
+    max_inc = abs(d_X[0]/X[0])
+    for i in range(1, len(X)):
+        if abs(d_X[i]/X[i]) > max_inc:
+            max_inc = abs(d_X[i]/X[i])
+    return max_inc
 
+def N_dima(T, P, v, x):
+    count = 0
+
+    while True:
+
+        count += 1
+
+        gamma = get_gamma(T, v, x)
+
+        d_e = get_deltaE(gamma, T)
+
+        K = get_k(T, d_e)
+
+        lin_sys_left_side = [[1, -1, 1, 0, 0, 0],
+               [1, 0, -1, 1, 0, 0],
+               [1, 0, 0, -1, 1, 0],
+               [1, 0, 0, 0, -1, 1],
+               [exp(v), 0, -z[2] * exp(x[2]), -z[3] * exp(x[3]), -z[4] * exp(x[4]), -z[5] * exp(x[5])],
+               [-exp(v), -exp(x[1]), -exp(x[2]), -exp(x[3]), -exp(x[4]), -exp(x[5])]
+               ]
+
+        alpha = get_alfa(gamma, T)
+
+        lin_sys_right_side = [log(K[1]) - v - x[2] + x[1],
+               log(K[2]) - v - x[3] + x[2],
+               log(K[3]) - v - x[4] + x[3],
+               log(K[4]) - v - x[5] + x[4],
+               -exp(v) + z[2] * exp(x[2]) + z[3] * exp(x[3]) + z[4] * exp(x[4]) + z[5] * exp(x[5]),
+               exp(v) + exp(x[1]) + exp(x[2]) + exp(x[3]) + exp(x[4]) + exp(x[5]) - alpha - P * 7243 / T
+               ]
+
+        #d_X = solve_lin_system_gauss(lin_sys_left_side, lin_sys_right_side)
+        d_X = np.linalg.solve(lin_sys_left_side, lin_sys_right_side) # ~30% быстрее
+
+        test_lst = list()
+        test_lst.append(v)
+        test_lst.extend(x[1:])
+
+        if find_max_increment(test_lst, d_X) < eps:
+            break
+
+        for i in range(1, len(x)):
+            x[i] += d_X[i]
+
+    time_end = time()
+
+    #print("time = ", time_end - time_start)
+
+    return sum([exp(i) for i in x[1:]]) + exp(v)
