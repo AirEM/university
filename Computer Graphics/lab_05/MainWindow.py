@@ -13,6 +13,10 @@ class Window(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
+        self.ui.colorBox.addItem("Черный", 0)
+        self.ui.colorBox.addItem("Синий", 1)
+        self.ui.colorBox.addItem("Красный", 2)
+
         self.ui.renderArea = RenderArea(self.ui.pointsListWidget)
 
         self.ui.horizontalLayout.addWidget(self.ui.renderArea)
@@ -26,8 +30,9 @@ class Window(QMainWindow):
 
         try:
             slow = self.ui.slowCheckBox.isChecked()
+            color = self.ui.colorBox.itemData(self.ui.colorBox.currentIndex())
 
-            self.ui.renderArea.fill(slow)
+            self.ui.renderArea.fill(color, slow)
 
         except ValueError:
             msg = QMessageBox(self)

@@ -12,7 +12,8 @@ class RenderArea(QWidget):
 
         self.pointsListWidget = pListWidget
 
-        self.shift = False
+        #self.shift = False
+        self.colors = [Qt.black, Qt.blue, Qt.red]
 
         self.figure = Figure()
 
@@ -44,7 +45,7 @@ class RenderArea(QWidget):
 
     def draw(self):
         p = QPainter(self.pixmap)
-        pen = QPen(Qt.blue)
+        pen = QPen(Qt.black)
         p.setPen(pen)
 
         self.figure.draw(p)
@@ -57,9 +58,10 @@ class RenderArea(QWidget):
         painter = QPainter(self)
         painter.drawPixmap(QPoint(), self.pixmap)
 
-    def fill(self, slow=False):
+    def fill(self, color, slow=False):
 
         state = True
+        current_color = self.colors[color]
 
         if not self.figure.is_close():
             return
@@ -70,15 +72,15 @@ class RenderArea(QWidget):
             count += 1
 
             p = QPainter(self.pixmap)
-            pen = QPen(Qt.blue)
+            pen = QPen(current_color)
             p.setPen(pen)
 
-            state = self.figure.fillBr(p, self.pixmap.toImage(), slow)
+            state = self.figure.fillBr(p, self.pixmap.toImage(), current_color, slow)
 
             p.end()
 
             if slow:
-                time.sleep(0.005)
+                time.sleep(0.01)
                 self.repaint()
             else:
                 self.update()
@@ -90,7 +92,7 @@ class RenderArea(QWidget):
 
     def clean_all(self):
         self.pixmap = QPixmap(self.size())
-        self.pixmap.fill(Qt.transparent)
+        self.pixmap.fill()
 
         self.figure.clean()
 

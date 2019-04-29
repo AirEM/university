@@ -45,6 +45,9 @@ class Ui_MainWindow(object):
         self.slowCheckBox = QtWidgets.QCheckBox(self.leftFrame)
         self.slowCheckBox.setObjectName("slowCheckBox")
         self.verticalLayout.addWidget(self.slowCheckBox)
+        self.colorBox = QtWidgets.QComboBox(self.leftFrame)
+        self.colorBox.setObjectName("colorBox")
+        self.verticalLayout.addWidget(self.colorBox)
         self.drawButton = QtWidgets.QPushButton(self.leftFrame)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
@@ -86,7 +89,7 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.slowCheckBox.setText(_translate("MainWindow", "Задержка"))
-        self.drawButton.setText(_translate("MainWindow", "Закрасить"))
+        self.drawButton.setText(_translate("MainWindow", "Отрисовать"))
         self.closeButton.setText(_translate("MainWindow", "Замкнуть"))
         self.cleanButton.setText(_translate("MainWindow", "Очистить"))
 

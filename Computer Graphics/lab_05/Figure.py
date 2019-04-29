@@ -108,7 +108,7 @@ class Figure:
         # !!! конец вставки
 
     # закраска области от ребра до перегородки
-    def fillBr(self, painter, image, slow=False):
+    def fillBr(self, painter, image, color, slow=False):
 
         # накшли координату Х перегородки
         mid_x = self.__find_middle()
@@ -117,7 +117,7 @@ class Figure:
 
         for i in range(self.__state, num_edges):
 
-            state = self.__fill_edgeBr(painter, image, self.__edge_lst[i], mid_x, slow)
+            state = self.__fill_edgeBr(painter, image, color, self.__edge_lst[i], mid_x, slow)
 
             if state:
                 self.__state += 1
@@ -125,14 +125,14 @@ class Figure:
 
         return self.__state != num_edges
 
-    def __fill_edgeBr(self, painter, image, edge, mid_x, slow=False):
+    def __fill_edgeBr(self, painter, image, color, edge, mid_x, slow=False):
 
         y_arr = sorted(edge.keys())
         len_y_arr = len(y_arr) - 1
 
         # горизонтальная линия
         if y_arr[0] == y_arr[len_y_arr-1]:
-            return
+            return True
 
         if not slow:
             self.__state_coord = 0
@@ -149,10 +149,10 @@ class Figure:
             # отрезое [begin, end)
 
             if x_array[1] < mid_x:
-                self.__inversionBr(painter, image, x_array[1]+1, mid_x, y)
+                self.__inversionBr(painter, image, color, x_array[1]+1, mid_x, y)
 
             if mid_x < x_array[0]:
-                self.__inversionBr(painter, image, mid_x, x_array[0], y)
+                self.__inversionBr(painter, image, color, mid_x, x_array[0], y)
 
             if slow:
                 self.__state_coord = (self.__state_coord + 1) % len_y_arr
@@ -160,18 +160,22 @@ class Figure:
 
         return True
 
-    def __inversionBr(self, painter, image, x_begin, x_end, y):
+    def __inversionBr(self, painter, image, color, x_begin, x_end, y):
 
         for x in range(x_begin, x_end):
             col = QColor(image.pixel(x, y))
 
-            if col == Qt.blue:
+            if col != color and col != Qt.white:
+                pen = painter.pen()
+                pen.setColor(Qt.black)
+                painter.setPen(pen)
+            elif col == color:
                 pen = painter.pen()
                 pen.setColor(Qt.white)
                 painter.setPen(pen)
             else:
                 pen = painter.pen()
-                pen.setColor(Qt.blue)
+                pen.setColor(color)
                 painter.setPen(pen)
 
             painter.drawPoint(x, y)
