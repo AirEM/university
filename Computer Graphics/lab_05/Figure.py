@@ -143,22 +143,26 @@ class Figure:
 
             x_array = edge.get(y)
 
-            if x_array[0] <= mid_x <= x_array[1]:
-                continue
-
-            # отрезое [begin, end)
-
-            if x_array[1] < mid_x:
-                self.__inversionBr(painter, image, color, x_array[1]+1, mid_x, y)
-
-            if mid_x < x_array[0]:
-                self.__inversionBr(painter, image, color, mid_x, x_array[0], y)
+            self.__inversion(painter, image, color, mid_x, x_array[0], x_array[1], y)
 
             if slow:
                 self.__state_coord = (self.__state_coord + 1) % len_y_arr
                 return not bool(self.__state_coord)
 
         return True
+
+    def __inversion(self, painter, image, color, mid_x, x_left, x_right, cur_y):
+
+        if x_left <= mid_x <= x_right:
+            return
+
+        # отрезое [begin, end)
+
+        if x_left < mid_x:
+            self.__inversionBr(painter, image, color, x_left + 1, mid_x, cur_y)
+
+        if mid_x < x_right:
+            self.__inversionBr(painter, image, color, mid_x, x_right, cur_y)
 
     def __inversionBr(self, painter, image, color, x_begin, x_end, y):
 
