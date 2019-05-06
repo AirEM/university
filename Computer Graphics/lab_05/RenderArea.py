@@ -67,7 +67,7 @@ class RenderArea(QWidget):
 
         count = 0
         while state:
-
+            # begin while
             count += 1
 
             p = QPainter(self.pixmap)
@@ -83,6 +83,7 @@ class RenderArea(QWidget):
                 self.repaint()
             else:
                 self.update()
+            # end while
 
     def close_figure(self):
         self.figure.close()

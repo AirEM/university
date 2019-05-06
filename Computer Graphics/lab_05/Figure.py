@@ -9,6 +9,7 @@ class Figure:
         self.__polygon_state = 0
         self.__edge_lst = list()
         self.__state = 0
+        self.__state_br = None
         self.__state_coord = 0
         self.__is_close = False
 
@@ -44,7 +45,8 @@ class Figure:
         # !!! вставка не относится к алгориитму отрисовки
         # текущее ребро
 
-        current_edge = dict()
+        #current_edge = dict()
+        current_edge = ((xn, yn), (xk, yk))
 
         # !!! конец вставки
 
@@ -71,6 +73,7 @@ class Figure:
         for i in range(dx + 1):
             painter.drawPoint(QPoint(x, y))
 
+            '''
             # !!! вставка не относится к алгориитму отрисовки
             data_x = current_edge.get(y)
 
@@ -87,6 +90,7 @@ class Figure:
                 current_edge[y] = data_x
 
             # !!! конец вставки
+            '''
 
             if e >= 0:
                 if flag == 0:
@@ -127,28 +131,107 @@ class Figure:
 
     def __fill_edgeBr(self, painter, image, color, edge, mid_x, slow=False):
 
-        y_arr = sorted(edge.keys())
-        len_y_arr = len(y_arr) - 1
+        max_y = max(edge[0][1], edge[1][1])
 
         # горизонтальная линия
-        if y_arr[0] == y_arr[len_y_arr-1]:
+        if edge[0][1] == edge[1][1]:
             return True
 
         if not slow:
             self.__state_coord = 0
 
-        for i in range(self.__state_coord, len_y_arr):
+        def sign(t):
+            if t > 0:
+                return 1
+            elif t < 0:
+                return -1
+            else:
+                return 0
 
-            y = y_arr[i]
+        x = edge[0][0]
+        y = edge[0][1]
 
-            x_array = edge.get(y)
+        dx = edge[1][0] - edge[0][0]
+        dy = edge[1][1] - edge[0][1]
 
-            self.__inversion(painter, image, color, mid_x, x_array[0], x_array[1], y)
+        sx = sign(dx)
+        sy = sign(dy)
 
-            if slow:
-                self.__state_coord = (self.__state_coord + 1) % len_y_arr
-                return not bool(self.__state_coord)
+        dx = abs(dx)
+        dy = abs(dy)
 
+        flag = 0
+
+        if not (dx > dy):
+            flag = 1
+            dx, dy = dy, dx
+
+        e = 2 * dy - dx
+
+        # Какой-то блок
+
+        cur_y = y
+        x_left = x
+        x_right = x
+        loop_count = dx + 1
+
+        # Конец какого0то блока
+
+        if slow and self.__state_br is not None:
+            x = self.__state_br[0]
+            y = self.__state_br[1]
+            e = self.__state_br[2]
+            flag = self.__state_br[3]
+            cur_y = y
+            x_right = x
+            x_left = x
+            self.__state_coord = self.__state_br[4]
+
+        for i in range(self.__state_coord, loop_count):
+            if cur_y == y:
+                if x < x_left:
+                    x_left = x
+                if x_right < x:
+                    x_right = x
+            else:
+                if cur_y != max_y:
+                    self.__inversion(painter, image, color, mid_x, x_left, x_right, cur_y)
+
+                    if slow:
+                        self.__state_coord = (self.__state_coord + 1) % loop_count
+                        self.__state_br = (x, y, e, flag, i)
+                        result = not bool(self.__state_coord)
+
+                        if result:
+                            self.__state_br = None
+                            self.__state_coord = 0
+
+                        return result
+
+                cur_y = y
+                x_left = x
+                x_right = x
+
+            if e >= 0:
+                if flag == 0:
+                    y += sy
+                else:
+                    x += sx
+
+                e -= 2 * dx
+
+            if flag == 0:
+                x += sx
+            else:
+                y += sy
+
+            e += 2 * dy
+
+        if cur_y != max_y:
+            self.__inversion(painter, image, color, mid_x, x_left, x_right, cur_y)
+
+        self.__state_br = None
+        self.__state_coord = 0
         return True
 
     def __inversion(self, painter, image, color, mid_x, x_left, x_right, cur_y):
