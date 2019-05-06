@@ -89,7 +89,7 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.slowCheckBox.setText(_translate("MainWindow", "Задержка"))
-        self.drawButton.setText(_translate("MainWindow", "Отрисовать"))
+        self.drawButton.setText(_translate("MainWindow", "Закрасить"))
         self.closeButton.setText(_translate("MainWindow", "Замкнуть"))
         self.cleanButton.setText(_translate("MainWindow", "Очистить"))
 

@@ -12,7 +12,6 @@ class RenderArea(QWidget):
 
         self.pointsListWidget = pListWidget
 
-        #self.shift = False
         self.colors = [Qt.black, Qt.blue, Qt.red]
 
         self.figure = Figure()
