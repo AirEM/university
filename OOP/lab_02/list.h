@@ -6,15 +6,18 @@
 #include "iterator.h"
 #include "citerator.h"
 
+#include "listitem.h"
+
 
 template <typename T>
 class List : public ListBase
 {
-private:
-	T* array;
+public:
+    std::shared_ptr<ListItem<T>> begin_ptr;
+    std::shared_ptr<ListItem<T>> current_ptr;
+	std::shared_ptr<ListItem<T>> end_ptr;
 
 public:
-	List();
 	explicit List(int);
 	List(const List&);
 	List(std::initializer_list<T>);
@@ -23,7 +26,7 @@ public:
     bool empty() const;
     int size() const;
 
-	Iterator<T> begin() const;
+    Iterator<T> begin() const;
     cIterator<T> cbegin() const;
 	Iterator<T> end() const;
     cIterator<T> cend() const;
@@ -32,6 +35,7 @@ public:
 	T& back() const;
 
 	void push_back(const T&);
+
 	void push_front(const T&);
 
 	void insert(int, const T&);
@@ -41,8 +45,6 @@ public:
 	void merge(const List<T>&);
 
 	bool equals(const List<T>&);
-
-	T& operator[] (int) const;
 
 	List<T>& operator= (const List<T>&);
 
@@ -56,48 +58,80 @@ public:
 
 
 
-template <typename T>
-List<T>::List()
-{   
-    size_array = initial_size;
-    position = 0;
-
-	array = static_cast<T*>(malloc(size_array * sizeof(T)));
-
-	if (array == nullptr)
-        throw MemoryListException();
-}
 
 template <typename T>
 List<T>::List(int size)
 {
-    size_array = size;
     position = 0;
-    array = static_cast<T*>(malloc(size_array * sizeof(T)));
 
-    if (array == nullptr)
+    ListItem<T> *item = new ListItem<T>;
+
+    if (item == nullptr)
         throw MemoryListException();
+
+    begin_ptr = std::make_shared<ListItem<T>>(*item);
+	current_ptr = begin_ptr;
+
+	std::shared_ptr<ListItem<T>> iter_ptr(begin_ptr);
+
+    for (int i = 1; i < size; i++)
+    {
+        ListItem<T> *new_item = new ListItem<T>;
+
+        if (new_item == nullptr)
+                throw MemoryListException();
+
+		std::shared_ptr<ListItem<T>> last_current_ptr = iter_ptr;
+
+		iter_ptr = std::make_shared<ListItem<T>>(*new_item);
+			
+		iter_ptr->next.reset();
+		iter_ptr->prev = last_current_ptr;
+
+		last_current_ptr->next = iter_ptr;
+    }
+
+	end_ptr = iter_ptr;
+
+	size_array = size;
 }
 
 template <typename T>
-List<T>::List(const List & list) : List(list.position)
+List<T>::List(const List& list) : List(list.position)
 {
-	position = list.position;
-	memcpy(array, list.array, list.position * sizeof(T));
+	std::shared_ptr<ListItem<T>> list_iter(list.begin_ptr);
+
+	for (int i = 0; i < list.size(); i++)
+	{
+		this->push_back(list_iter->item);
+
+		list_iter = list_iter->next;
+	}
 }
 
 template <typename T>
 List<T>::List(std::initializer_list<T> list) : List(list.size())
 {
 	for (T element : list)
-		array[position++] = element;
+		this->push_back(element);
 }
 
 template <typename T>
 List<T>::~List()
 {
-	if (array != nullptr)
-		free(array);
+	for (int i = 0; i < size_array; i++)
+	{
+		current_ptr = begin_ptr->next;
+		
+		begin_ptr->next.reset();
+		begin_ptr->prev.reset();
+
+		begin_ptr = current_ptr;
+	}
+
+	begin_ptr.reset();
+	current_ptr.reset();
+	end_ptr.reset();
 }
 
 
@@ -114,6 +148,7 @@ int List<T>::size() const
 }
 
 
+/*
 template <typename T>
 Iterator<T> List<T>::begin() const
 {
@@ -148,112 +183,109 @@ cIterator<T> List<T>::cend() const
 
     return iter;
 }
+*/
 
 
 template <typename T>
 T& List<T>::front() const
 {
-	T& value = nullptr;
-
-	if (position > 0)
-		value = array[0];
+	T& value = *(begin_ptr->item);
 
 	return value;
 }
 
 template <typename T>
-T& List<T>::back()const
+T& List<T>::back() const
 {
-	T& value = nullptr;
-
-	if (position > 0)
-		value = array[position - 1];
+	T& value = *(end_ptr->item);
 
 	return value;
 }
 
 
 template <typename T>
-void List<T>::push_back(const T & value)
+void List<T>::push_back(const T& value)
 {
-	T* copy_array;
 
-	if (position == size_array)
-	{
-		copy_array = array;
-
-        size_array *= magnification;
-		array = static_cast<T*>(realloc(array, size_array * sizeof(T)));
-
-		if (array == nullptr)
-		{
-			array = copy_array;
-			throw MemoryListException();
-		}
-	}
-
-	array[position++] = value;
-}
-
-template <typename T>
-void List<T>::push_front(const T & value)
-{
-	T* copy_array;
-
-	if (position == size_array)
-	{
-		copy_array = array;
-
-        size_array += magnification;
-		array = static_cast<T*>(realloc(array, size_array * sizeof(T)));
-
-		if (array == nullptr)
-		{
-			array = copy_array;
-			throw MemoryListException();
-		}
-	}
-
-	for (int i = position; i > 0; i--)
-		array[i] = array[i - 1];
-
-	array[0] = value;
 	position++;
+	current_ptr->item = value;
+
+
+	if (position >= size_array)
+	{
+		ListItem<T>* item = new ListItem<T>;
+
+		if (item == nullptr)
+			throw MemoryListException();
+
+		std::shared_ptr<ListItem<T>> new_ptr = std::make_shared<ListItem<T>>(*item);
+
+		current_ptr->next = new_ptr;
+		new_ptr->prev = current_ptr;
+	}
+
+	current_ptr = current_ptr->next;
+
+}
+
+template <typename T>
+void List<T>::push_front(const T& value)
+{
+	ListItem<T>* item = new ListItem<T>;
+
+	if (item == nullptr)
+		throw MemoryListException();
+
+	std::shared_ptr<ListItem<T>> new_ptr = std::make_shared<ListItem<T>>(*item);
+
+	new_ptr->item = value;
+	new_ptr->next = begin_ptr;
+
+	begin_ptr.reset();
+	begin_ptr = new_ptr;
+	position++;
+	size_array++;
 }
 
 
 template <typename T>
 void List<T>::insert(int pos, const T & value)
 {
-	T* copy_array;
 
     if (pos < 0 || position < pos)
     {
         throw IndexListException();
     }
 
-	if (position == size_array)
-	{
-		copy_array = array;
+	std::shared_ptr<ListItem<T>> iter_ptr(begin_ptr);
+	
 
-        size_array += magnification;
-		array = static_cast<T*>(realloc(array, size_array * sizeof(T)));
+	for (int i = 0; i < pos - 1; i++)
+		iter_ptr = iter_ptr->next;
 
-		if (array == nullptr)
-		{
-			array = copy_array;
-			throw MemoryListException();
-		}
-	}
+	std::shared_ptr<ListItem<T>> next_iter_ptr(iter_ptr->next);
 
-	for (int i = position; i > pos; i--)
-		array[i] = array[i - 1];
+	ListItem<T>* item = new ListItem<T>;
 
-	array[pos] = value;
+	if (item == nullptr)
+		throw MemoryListException();
+
+	std::shared_ptr<ListItem<T>> new_ptr = std::make_shared<ListItem<T>>(*item);
+
+	new_ptr->item = value;
+
+	new_ptr->next = next_iter_ptr;
+	new_ptr->prev = iter_ptr;
+
+	iter_ptr->next = new_ptr;
+	next_iter_ptr->prev = new_ptr;
 
 	position++;
+	size_array++;
+
 }
 
+/*
 template <typename T>
 void List<T>::remove(int pos)
 {
@@ -297,16 +329,7 @@ bool List<T>::equals(const List<T> & list)
 	return status;
 }
 
-
-template <typename T>
-T& List<T>::operator[](int pos) const
-{
-	if (pos < 0 || position < pos)
-		throw IndexListException();
-
-	return array[pos];
-}
-
+*/
 
 template <typename T>
 List<T>& List<T>::operator= (const List<T> & list)
@@ -314,7 +337,7 @@ List<T>& List<T>::operator= (const List<T> & list)
 	return List<T>(list);
 }
 
-
+/*
 template <typename T>
 bool List<T>::operator==(const List & list)
 {
@@ -326,3 +349,4 @@ bool List<T>::operator!=(const List & list)
 {
 	return !(this->equals(list));
 }
+*/
