@@ -28,9 +28,10 @@ int main()
 {
 	int size = 5;
 
-	List<int> l1(size);
-    List<int> l2{ -5, -4, -3, -2, -1 };;
+	List<int> l1;
+    List<int> l2{ -5, -4, -3, -2, -1 };
     List<int> l3(l2);
+
 
 	// constructor
 
@@ -68,7 +69,7 @@ int main()
     print_list(l2); // 0 -5 -4 -3 -2 -1 2 3 4 5 6
     print_list(l3); // 0 -5 -4 -3 -2 -1 3 4 5 6 7
 	std::cout << std::endl;
-
+	
 	// insert
     
 	l1.insert(3, 9);
@@ -83,42 +84,39 @@ int main()
 	std::cout << std::endl;
 
 	// remove
-	/*
-	l0.remove(3);
+	
 	l1.remove(3);
 	l2.remove(3);
 	l3.remove(3);
 
-
+	
 	std::cout << "remove" << std::endl;
-	print_list(l0); // 0 0 1 2 3 4
 	print_list(l1); // 0 1 2 3 4 5
     print_list(l2); // 0 -5 -4 -3 -2 -1 2 3 4 5 6
 	print_list(l3); // 0 -5 -4 -3 -2 -1 3 4 5 6 7
 	std::cout << std::endl;
 
 	// merge & equals
+	
+	List<int> lt{ 0, -5, -4, -3, -2, -1, 2, 3, 4, 5, 6, 0, 1, 2, 3, 4, 5 };
 
-	l0.remove(0);
-	l1.remove(5);
-
-	l2.merge(l0);
+	l2.merge(l1);
 
 
 	std::cout << "merge & equals" << std::endl;
-	std::cout << (l0 == l1) << std::endl; // 1
-	std::cout << (l0 == l3) << std::endl; // 0
-    print_list(l2); // 0 -5 -4 -3 -2 -1 2 3 4 5 6 0 1 2 3 4
+	std::cout << (l2 == lt) << std::endl; // 1
+	std::cout << (l2 == l3) << std::endl; // 0
+    print_list(l2); // 0 -5 -4 -3 -2 -1 2 3 4 5 6 0 1 2 3 4 5
 	std::cout << std::endl;
 
 	// --------------------------------
-
+	/*
 	//iterator
 
 	std::cout << "iterator" << std::endl;
     print_list_iter(l0); // 0 1 2 3 4
     print_list_iter(l1); // 0 1 2 3 4
-    print_list_iter(l2); // 0 -5 -4 -3 -2 -1 2 3 4 5 6 0 1 2 3 4
+    print_list_iter(l2); // 0 -5 -4 -3 -2 -1 2 3 4 5 6 0 1 2 3 4 5
     print_list_iter(l3); // 0 -5 -4 -3 -2 -1 3 4 5 6 7
 	std::cout << std::endl;
     */

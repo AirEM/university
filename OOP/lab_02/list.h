@@ -12,26 +12,27 @@
 template <typename T>
 class List : public ListBase
 {
-public:
+public: // must be PRIVATE !!!
     std::shared_ptr<ListItem<T>> begin_ptr;
     std::shared_ptr<ListItem<T>> current_ptr;
-	std::shared_ptr<ListItem<T>> end_ptr;
+
+	std::shared_ptr<ListItem<T>> get_item_ptr(const T&);
 
 public:
-	explicit List(int);
+	explicit List();
 	List(const List&);
 	List(std::initializer_list<T>);
 	~List();
 
-    bool empty() const;
-    int size() const;
+    bool empty() const override;
+    int size() const override;
 
     Iterator<T> begin() const;
     cIterator<T> cbegin() const;
 	Iterator<T> end() const;
     cIterator<T> cend() const;
 
-	T& front()const;
+	T& front() const;
 	T& back() const;
 
 	void push_back(const T&);
@@ -41,8 +42,9 @@ public:
 	void insert(int, const T&);
 
 	void remove(int);
+	void clear();
 
-	void merge(const List<T>&);
+	void merge(List<T>&);
 
 	bool equals(const List<T>&);
 
@@ -57,47 +59,35 @@ public:
 // sourse
 
 
+template <typename T>
+std::shared_ptr<ListItem<T>> List<T>::get_item_ptr(const T& value)
+{
+	ListItem<T>* item = new ListItem<T>;
+
+	if (item == nullptr)
+		throw MemoryListException();
+
+	std::shared_ptr<ListItem<T>> new_ptr = std::make_shared<ListItem<T>>(*item);
+	new_ptr->item = value;
+	new_ptr->next = nullptr;
+	new_ptr->prev = nullptr;
+
+	return new_ptr;
+}
+
+
+// main_sourse
 
 
 template <typename T>
-List<T>::List(int size)
+List<T>::List()
 {
-    position = 0;
+    list_size = 0;
 
-    ListItem<T> *item = new ListItem<T>;
-
-    if (item == nullptr)
-        throw MemoryListException();
-
-    begin_ptr = std::make_shared<ListItem<T>>(*item);
-	current_ptr = begin_ptr;
-
-	std::shared_ptr<ListItem<T>> iter_ptr(begin_ptr);
-
-    for (int i = 1; i < size; i++)
-    {
-        ListItem<T> *new_item = new ListItem<T>;
-
-        if (new_item == nullptr)
-                throw MemoryListException();
-
-		std::shared_ptr<ListItem<T>> last_current_ptr = iter_ptr;
-
-		iter_ptr = std::make_shared<ListItem<T>>(*new_item);
-			
-		iter_ptr->next.reset();
-		iter_ptr->prev = last_current_ptr;
-
-		last_current_ptr->next = iter_ptr;
-    }
-
-	end_ptr = iter_ptr;
-
-	size_array = size;
 }
 
 template <typename T>
-List<T>::List(const List& list) : List(list.position)
+List<T>::List(const List& list) : List()
 {
 	std::shared_ptr<ListItem<T>> list_iter(list.begin_ptr);
 
@@ -110,7 +100,7 @@ List<T>::List(const List& list) : List(list.position)
 }
 
 template <typename T>
-List<T>::List(std::initializer_list<T> list) : List(list.size())
+List<T>::List(std::initializer_list<T> list) : List()
 {
 	for (T element : list)
 		this->push_back(element);
@@ -119,32 +109,20 @@ List<T>::List(std::initializer_list<T> list) : List(list.size())
 template <typename T>
 List<T>::~List()
 {
-	for (int i = 0; i < size_array; i++)
-	{
-		current_ptr = begin_ptr->next;
-		
-		begin_ptr->next.reset();
-		begin_ptr->prev.reset();
-
-		begin_ptr = current_ptr;
-	}
-
-	begin_ptr.reset();
-	current_ptr.reset();
-	end_ptr.reset();
+	clear();
 }
 
 
 template <typename T>
 bool List<T>::empty() const
 {
-    return position == 0;
+    return list_size == 0;
 }
 
 template <typename T>
 int List<T>::size() const
 {
-    return position;
+    return list_size;
 }
 
 
@@ -197,7 +175,7 @@ T& List<T>::front() const
 template <typename T>
 T& List<T>::back() const
 {
-	T& value = *(end_ptr->item);
+	T& value = *(current_ptr->item);
 
 	return value;
 }
@@ -206,122 +184,169 @@ T& List<T>::back() const
 template <typename T>
 void List<T>::push_back(const T& value)
 {
-
-	position++;
-	current_ptr->item = value;
+	std::shared_ptr<ListItem<T>> new_ptr = get_item_ptr(value);
 
 
-	if (position >= size_array)
+	if (begin_ptr)
 	{
-		ListItem<T>* item = new ListItem<T>;
-
-		if (item == nullptr)
-			throw MemoryListException();
-
-		std::shared_ptr<ListItem<T>> new_ptr = std::make_shared<ListItem<T>>(*item);
-
 		current_ptr->next = new_ptr;
 		new_ptr->prev = current_ptr;
+
+		current_ptr = current_ptr->next;
+	}
+	else
+	{
+		begin_ptr = new_ptr;
+		current_ptr = new_ptr;
 	}
 
-	current_ptr = current_ptr->next;
 
+	list_size++;
 }
 
 template <typename T>
 void List<T>::push_front(const T& value)
 {
-	ListItem<T>* item = new ListItem<T>;
+	std::shared_ptr<ListItem<T>> new_ptr = get_item_ptr(value);
 
-	if (item == nullptr)
-		throw MemoryListException();
+	if (begin_ptr)
+	{
+		new_ptr->next = begin_ptr;
+		begin_ptr->prev = new_ptr;
 
-	std::shared_ptr<ListItem<T>> new_ptr = std::make_shared<ListItem<T>>(*item);
+		begin_ptr = begin_ptr->prev;
+	}
+	else
+	{
+		begin_ptr = new_ptr;
+		current_ptr = new_ptr;
+	}
 
-	new_ptr->item = value;
-	new_ptr->next = begin_ptr;
-
-	begin_ptr.reset();
-	begin_ptr = new_ptr;
-	position++;
-	size_array++;
+	list_size++;
 }
 
 
 template <typename T>
 void List<T>::insert(int pos, const T & value)
 {
-
-    if (pos < 0 || position < pos)
-    {
+    if (pos < 0 || list_size <= pos)
         throw IndexListException();
-    }
 
-	std::shared_ptr<ListItem<T>> iter_ptr(begin_ptr);
+	if (pos == 0)
+		this->push_front(value);
+	else
+	{
+		std::shared_ptr<ListItem<T>> new_ptr = get_item_ptr(value);
+
+		std::shared_ptr<ListItem<T>> before_ptr(begin_ptr);
+		for (int i = 0; i < pos - 1; i++)
+			before_ptr = before_ptr->next;
+
+		std::shared_ptr<ListItem<T>> after_ptr(before_ptr->next);
+
+		if (after_ptr)
+		{
+			after_ptr->prev = new_ptr;
+			new_ptr->next = after_ptr;
+		}
+		else
+			current_ptr = new_ptr;
+
+		new_ptr->prev = before_ptr;
+		before_ptr->next = new_ptr;
+	}
 	
-
-	for (int i = 0; i < pos - 1; i++)
-		iter_ptr = iter_ptr->next;
-
-	std::shared_ptr<ListItem<T>> next_iter_ptr(iter_ptr->next);
-
-	ListItem<T>* item = new ListItem<T>;
-
-	if (item == nullptr)
-		throw MemoryListException();
-
-	std::shared_ptr<ListItem<T>> new_ptr = std::make_shared<ListItem<T>>(*item);
-
-	new_ptr->item = value;
-
-	new_ptr->next = next_iter_ptr;
-	new_ptr->prev = iter_ptr;
-
-	iter_ptr->next = new_ptr;
-	next_iter_ptr->prev = new_ptr;
-
-	position++;
-	size_array++;
-
+	list_size++;
 }
 
-/*
+
 template <typename T>
 void List<T>::remove(int pos)
 {
-	if (pos < 0 || position < pos)
+	if (pos < 0 || list_size <= pos)
 		throw IndexListException();
 
-	for (int i = pos; i < position; i++)
-		array[i] = array[i + 1];
+	if (pos == 0)
+	{
+		begin_ptr = begin_ptr->next;
+		begin_ptr->next.reset();
+	}
+	else
+	{
+		std::shared_ptr<ListItem<T>> befor_ptr(begin_ptr);
 
-	position--;
+		for (int i = 0; i < pos - 1; i++)
+			befor_ptr = befor_ptr->next;
+
+		std::shared_ptr<ListItem<T>> after_ptr(befor_ptr->next->next);
+
+		if (after_ptr)
+			after_ptr->prev = befor_ptr;
+		else
+			current_ptr = current_ptr->prev;
+
+		befor_ptr->next = after_ptr;
+	}
+
+	list_size--;
 }
+
+template <typename T>
+void List<T>::clear()
+{
+	for (int i = 0; i < this->list_size; i++)
+	{
+		current_ptr = begin_ptr->next;
+
+		begin_ptr->next.reset();
+		begin_ptr->prev.reset();
+
+		begin_ptr = current_ptr;
+	}
+
+	begin_ptr.reset();
+	current_ptr.reset();
+
+	list_size = 0;
+}
+
 
 
 template <typename T>
-void List<T>::merge(const List<T> & list)
+void List<T>::merge(List<T> & list)
 {
-	for (int i = 0; i < list.size(); i++)
-		this->push_back(list[i]);
+	this->current_ptr->next = list.begin_ptr;
+	this->current_ptr = list.current_ptr;
+
+	this->list_size += list.list_size;
+
+	list.list_size = 0;
+	list.begin_ptr.reset();
+	list.current_ptr.reset();
 }
+
 
 template <typename T>
 bool List<T>::equals(const List<T> & list)
 {
 	bool status = true;
 
-	T* current_array = this->array;
-	T* other_array = list.array;
+	std::shared_ptr<ListItem<T>> current_ptr(begin_ptr);
+	std::shared_ptr<ListItem<T>> other_ptr(list.begin_ptr);
 
-	if (this->position == list.position)
+	if (this->list_size == list.list_size)
 	{
-		for (int i = 0; i < this->position; i++)
-			if (current_array[i] != other_array[i])
+		for (int i = 0; i < this->list_size; i++)
+		{
+			if (current_ptr->item != other_ptr->item)
 			{
 				status = false;
 				break;
 			}
+
+			current_ptr = current_ptr->next;
+			other_ptr = other_ptr->next;
+		}
 	}
 	else
 		status = false;
@@ -329,15 +354,13 @@ bool List<T>::equals(const List<T> & list)
 	return status;
 }
 
-*/
-
 template <typename T>
 List<T>& List<T>::operator= (const List<T> & list)
 {
 	return List<T>(list);
 }
 
-/*
+
 template <typename T>
 bool List<T>::operator==(const List & list)
 {
@@ -349,4 +372,4 @@ bool List<T>::operator!=(const List & list)
 {
 	return !(this->equals(list));
 }
-*/
+

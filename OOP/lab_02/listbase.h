@@ -4,9 +4,8 @@
 
 class ListBase
 {
-public:
-	int size_array;
-	int position;
+protected:
+	int list_size;
 
 public:
     virtual bool empty() const = 0;
