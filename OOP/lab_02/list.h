@@ -6,13 +6,11 @@
 #include "iterator.h"
 #include "citerator.h"
 
-#include "listitem.h"
-
 
 template <typename T>
 class List : public ListBase
 {
-public: // must be PRIVATE !!!
+private:
     std::shared_ptr<ListItem<T>> begin_ptr;
     std::shared_ptr<ListItem<T>> current_ptr;
 
@@ -27,10 +25,10 @@ public:
     bool empty() const override;
     int size() const override;
 
-    Iterator<T> begin() const;
-    cIterator<T> cbegin() const;
-	Iterator<T> end() const;
-    cIterator<T> cend() const;
+    Iterator<T> begin();
+    cIterator<T> cbegin();
+	Iterator<T> end();
+    cIterator<T> cend();
 
 	T& front() const;
 	T& back() const;
@@ -126,42 +124,38 @@ int List<T>::size() const
 }
 
 
-/*
+
 template <typename T>
-Iterator<T> List<T>::begin() const
+Iterator<T> List<T>::begin()
 {
-    Iterator<T> iter(array);
+	Iterator<T> iter(begin_ptr);
 
 	return iter;
 }
 
 template <typename T>
-cIterator<T> List<T>::cbegin() const
+cIterator<T> List<T>::cbegin()
 {
-    cIterator<T> iter(array);
+    cIterator<T> iter(begin_ptr);
 
     return iter;
 }
 
-
 template <typename T>
-Iterator<T> List<T>::end() const
+Iterator<T> List<T>::end()
 {
-    Iterator<T> iter(array);
-	iter += position;
+    Iterator<T> iter(current_ptr);
 
-	return iter;
+	return ++iter;
 }
 
 template <typename T>
-cIterator<T> List<T>::cend() const
+cIterator<T> List<T>::cend()
 {
-    cIterator<T> iter(array);
-    iter += position;
+    cIterator<T> iter(current_ptr);
 
-    return iter;
+    return ++iter;
 }
-*/
 
 
 template <typename T>
@@ -353,6 +347,7 @@ bool List<T>::equals(const List<T> & list)
 
 	return status;
 }
+
 
 template <typename T>
 List<T>& List<T>::operator= (const List<T> & list)

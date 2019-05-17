@@ -1,23 +1,11 @@
 #include <iostream>
 #include "list.h"
 
-template<typename T>
-void print_list(const List<T>& list)
-{
-	std::shared_ptr<ListItem<T>> iter = list.begin_ptr;
-
-	for (int i = 0; i < list.size(); i++)
-	{
-		std::cout << iter->item << " ";
-		iter = iter->next;
-	}
-	std::cout << std::endl;
-}
 
 template<typename T>
-void print_list_iter(const List<T> & list)
+void print_list(List<T> & list)
 {
-	for (auto it = list.begin(); it != list.end(); ++it)
+	for (auto it = list.cbegin(); it != list.cend(); ++it)
 		std::cout << *it << " ";
 	std::cout << std::endl;
 }
@@ -110,16 +98,28 @@ int main()
 	std::cout << std::endl;
 
 	// --------------------------------
-	/*
+	
 	//iterator
 
 	std::cout << "iterator" << std::endl;
-    print_list_iter(l0); // 0 1 2 3 4
-    print_list_iter(l1); // 0 1 2 3 4
-    print_list_iter(l2); // 0 -5 -4 -3 -2 -1 2 3 4 5 6 0 1 2 3 4 5
-    print_list_iter(l3); // 0 -5 -4 -3 -2 -1 3 4 5 6 7
+
+	auto it = l2.begin();
+
+	std::cout << (*it) << std::endl;
+	++it;
+	auto it1 = it;
+	std::cout << (*it) << std::endl;
+	--it;
+	auto it2 = it;
+	std::cout << (*it) << std::endl;
+
+	std::cout << (it == it1) << std::endl;
+	std::cout << (it == it2) << std::endl;
+
+    print_list(l2);
+    print_list(l3);
 	std::cout << std::endl;
-    */
+    
 	return 0;
 }
 

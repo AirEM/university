@@ -1,17 +1,28 @@
 #pragma once
 
 #include "iteratorbase.h"
+#include "listitem.h"
+
+//#include <memory>
 
 template <typename T>
 class Iterator : public IteratorBase<T>
 {
-private:
-    using IteratorBase<T>::current;
+protected:
+	std::weak_ptr<ListItem<T>> current_ptr;
 
 public:
-    Iterator(T*);
+    Iterator(std::shared_ptr<ListItem<T>> &);
+
+	~Iterator();
 
 	Iterator<T>& operator= (const Iterator<T>&);
+
+	void next();
+	void prev();
+
+	void advance(int);
+	void distance(int);
 
 	T& operator* () const;
 
@@ -22,8 +33,9 @@ public:
 
 	Iterator<T>& operator+= (int);
 	Iterator<T>& operator-= (int);
-	bool operator== (const Iterator<T>&);
-	bool operator!= (const Iterator<T>&);
+
+	bool operator== (const Iterator<T>&) const;
+	bool operator!= (const Iterator<T>&) const;
 };
 
 
@@ -33,32 +45,74 @@ public:
 
 
 template<typename T>
-Iterator<T>::Iterator(T* arr)
+Iterator<T>::Iterator(std::shared_ptr<ListItem<T>>& ptr)
 {
-	current = arr;
+	current_ptr = ptr;
+}
+
+
+template<typename T>
+Iterator<T>::~Iterator()
+{
+	current_ptr.reset();
 }
 
 
 template<typename T>
 Iterator<T>& Iterator<T>::operator= (const Iterator<T>& iter)
 {
-	current = iter.current;
-
-	return *this;
+	return Iterator<T>(iter);
 }
+
+
+template<typename T>
+void Iterator<T>::next()
+{
+	auto item = current_ptr.lock();
+	item = item->next;
+	current_ptr = item;
+}
+
+template<typename T>
+void Iterator<T>::prev()
+{
+	auto item = current_ptr.lock();
+	item = item->prev;
+	current_ptr = item;
+}
+
+
+template<typename T>
+void Iterator<T>::advance(int pos)
+{
+	for (int i = 0; i < pos; i++)
+		this->next();
+}
+
+template<typename T>
+void Iterator<T>::distance(int pos)
+{
+	for (int i = 0; i < pos; i++)
+		this->prev();
+}
+
 
 
 template<typename T>
 T& Iterator<T>::operator*() const
 {
-	return *current;
+	auto item = current_ptr.lock();
+
+	T& val = item->item;
+
+	return val;
 }
 
 
 template<typename T>
 Iterator<T>& Iterator<T>::operator++ ()
 {
-	current++;
+	this->next();
 
 	return *this;
 }
@@ -68,15 +122,16 @@ Iterator<T> Iterator<T>::operator++ (int)
 {
 	Iterator<T> prev = *this;
 
-	++(*this);
+	this->next();
 
 	return prev;
 }
 
+
 template<typename T>
 Iterator<T>& Iterator<T>::operator-- ()
 {
-	current--;
+	this->prev();
 
 	return *this;
 }
@@ -86,37 +141,38 @@ Iterator<T> Iterator<T>::operator-- (int)
 {
 	Iterator<T> prev = *this;
 
-	--(*this);
+	this->prev();
 
 	return prev;
 }
 
 
 template<typename T>
-Iterator<T>& Iterator<T>::operator+= (int n)
+Iterator<T>& Iterator<T>::operator+= (int pos)
 {
-	current += n;
+	this->advance(pos);
 
 	return *this;
 }
 
 template<typename T>
-Iterator<T>& Iterator<T>::operator-= (int n)
+Iterator<T>& Iterator<T>::operator-= (int pos)
 {
-	current -= n;
+	this->distance(pos);
 
 	return *this;
 }
 
 
 template<typename T>
-bool Iterator<T>::operator== (const Iterator<T> & iter)
+bool Iterator<T>::operator== (const Iterator<T> & iter) const
 {
-	return current == iter.current;
+	return this->current_ptr.lock() == iter.current_ptr.lock();
 }
 
 template<typename T>
-bool Iterator<T>::operator!= (const Iterator<T> & iter)
+bool Iterator<T>::operator!= (const Iterator<T> & iter) const
 {
-    return current != iter.current;;
+    return this->current_ptr.lock() != iter.current_ptr.lock();
 }
+
