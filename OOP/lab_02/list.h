@@ -3,7 +3,6 @@
 #include <iostream>
 
 #include "listbase.h"
-#include "iterator.h"
 #include "citerator.h"
 
 
@@ -25,10 +24,10 @@ public:
     bool empty() const override;
     int size() const override;
 
-    Iterator<T> begin();
-    cIterator<T> cbegin();
-	Iterator<T> end();
-    cIterator<T> cend();
+	Iterator<T> begin() const;
+    cIterator<T> cbegin() const;
+	Iterator<T> end() const;
+    cIterator<T> cend() const;
 
 	T& front() const;
 	T& back() const;
@@ -44,12 +43,12 @@ public:
 
 	void merge(List<T>&);
 
-	bool equals(const List<T>&);
+	bool equals(const List<T>&) const;
 
 	List<T>& operator= (const List<T>&);
 
-	bool operator==(const List&);
-	bool operator!=(const List&);
+	bool operator==(const List&) const;
+	bool operator!=(const List&) const;
 };
 
 
@@ -126,7 +125,7 @@ int List<T>::size() const
 
 
 template <typename T>
-Iterator<T> List<T>::begin()
+Iterator<T> List<T>::begin() const
 {
 	Iterator<T> iter(begin_ptr);
 
@@ -134,7 +133,7 @@ Iterator<T> List<T>::begin()
 }
 
 template <typename T>
-cIterator<T> List<T>::cbegin()
+cIterator<T> List<T>::cbegin() const
 {
     cIterator<T> iter(begin_ptr);
 
@@ -142,7 +141,7 @@ cIterator<T> List<T>::cbegin()
 }
 
 template <typename T>
-Iterator<T> List<T>::end()
+Iterator<T> List<T>::end() const
 {
     Iterator<T> iter(current_ptr);
 
@@ -150,7 +149,7 @@ Iterator<T> List<T>::end()
 }
 
 template <typename T>
-cIterator<T> List<T>::cend()
+cIterator<T> List<T>::cend() const
 {
     cIterator<T> iter(current_ptr);
 
@@ -321,7 +320,7 @@ void List<T>::merge(List<T> & list)
 
 
 template <typename T>
-bool List<T>::equals(const List<T> & list)
+bool List<T>::equals(const List<T> & list) const
 {
 	bool status = true;
 
@@ -357,13 +356,13 @@ List<T>& List<T>::operator= (const List<T> & list)
 
 
 template <typename T>
-bool List<T>::operator==(const List & list)
+bool List<T>::operator==(const List & list) const
 {
 	return this->equals(list);
 }
 
 template <typename T>
-bool List<T>::operator!=(const List & list)
+bool List<T>::operator!=(const List & list) const
 {
 	return !(this->equals(list));
 }

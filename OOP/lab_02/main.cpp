@@ -5,8 +5,10 @@
 template<typename T>
 void print_list(List<T> & list)
 {
-	for (auto it = list.cbegin(); it != list.cend(); ++it)
-		std::cout << *it << " ";
+	if (!list.empty())
+		for (auto it = list.cbegin(); it != list.cend(); ++it)
+			std::cout << *it << " ";
+
 	std::cout << std::endl;
 }
 
@@ -105,21 +107,25 @@ int main()
 
 	auto it = l2.begin();
 
-	std::cout << (*it) << std::endl;
+	std::cout << (*it) << std::endl; // 0
 	++it;
 	auto it1 = it;
-	std::cout << (*it) << std::endl;
+	std::cout << (*it) << std::endl; // -5
 	--it;
 	auto it2 = it;
-	std::cout << (*it) << std::endl;
+	std::cout << (*it) << std::endl; // 0
 
-	std::cout << (it == it1) << std::endl;
-	std::cout << (it == it2) << std::endl;
-
-    print_list(l2);
-    print_list(l3);
 	std::cout << std::endl;
-    
+
+	std::cout << (it == it1) << std::endl; // 0
+	std::cout << (it == it2) << std::endl; // 1
+
+	std::cout << std::endl;
+
+    print_list(l2); // 0 -5 -4 -3 -2 -1 2 3 4 5 6 0 1 2 3 4 5
+    print_list(l3); // 0 -5 -4 -3 -2 -1 3 4 5 6 7
+	std::cout << std::endl;
+
 	return 0;
 }
 

@@ -3,8 +3,6 @@
 #include "iteratorbase.h"
 #include "listitem.h"
 
-//#include <memory>
-
 template <typename T>
 class Iterator : public IteratorBase<T>
 {
@@ -12,17 +10,17 @@ protected:
 	std::weak_ptr<ListItem<T>> current_ptr;
 
 public:
-    Iterator(std::shared_ptr<ListItem<T>> &);
+    Iterator(const std::shared_ptr<ListItem<T>> &);
 
 	~Iterator();
 
 	Iterator<T>& operator= (const Iterator<T>&);
 
-	void next();
-	void prev();
+	void next() override;
+	void prev() override;
 
-	void advance(int);
-	void distance(int);
+	void advance(int) override;
+	void distance(int) override;
 
 	T& operator* () const;
 
@@ -45,7 +43,7 @@ public:
 
 
 template<typename T>
-Iterator<T>::Iterator(std::shared_ptr<ListItem<T>>& ptr)
+Iterator<T>::Iterator(const std::shared_ptr<ListItem<T>>& ptr)
 {
 	current_ptr = ptr;
 }
