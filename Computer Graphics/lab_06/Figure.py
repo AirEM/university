@@ -28,7 +28,7 @@ class Figure:
         # !!! конец вставки
 
     # закраска области от ребра до перегородки
-    def fill(self, point, painter, image, color, slow=False):
+    def fill(self, point, painter, image, color):
 
         # Настройка цвета
         color_edge = Qt.black
@@ -45,103 +45,113 @@ class Figure:
         else:
             stack = [point]
 
-        # пока стек не пуст
-        while stack:
+        # Извлечение пикселя (х,у) из стека
+        x, y = stack.pop()
 
-            # извлечение пикселя (х,у) из стека
-            current_point = stack.pop()
-            x = current_point[0]
-            y = current_point[1]
+        # Запоминаем абсицссу
+        current_x = x
 
-            # tx = x, запоминаем абсицссу
-            current_x = current_point[0]
-            Fl = 0
+        # Закраска пискселя (x, y)
+        painter.drawPoint(x, y)
 
-            # цвет(х,у) = цвет закраски
+        # Left---------------------------------------
+        # Заполнение интервала слева от затравки
+        x -= 1
+        while QColor(image.pixel(x, y)) != color_edge:
             painter.drawPoint(x, y)
-
-            # заполняем интервал слева от затравки
             x = x - 1
-            while QColor(image.pixel(x, y)) != color_edge:
-                painter.drawPoint(x, y)
-                x = x - 1
 
-            # сохраняем крайний слева пиксел
-            x_left = x + 1
-            x = current_x
+        # Сохраняем крайний слева пиксел
+        x_left = x + 1
+        # End----------------------------------------
 
-            # заполняем интервал справа от затравки
+        x = current_x
+
+        # Right--------------------------------------
+        # Заполнение интервала справа от затравки
+        x += 1
+        while QColor(image.pixel(x, y)) != color_edge:
+            painter.drawPoint(x, y)
             x = x + 1
 
-            while QColor(image.pixel(x, y)) != color_edge:
-                painter.drawPoint(x, y)
+        # Сохраняем крайний справа пиксел
+        x_right = x - 1
+        # End----------------------------------------
+
+        # Find_Top-----------------------------------
+        y = y + 1
+        x = x_left
+        # Ищем затравку на строке выше
+        while x <= x_right:
+
+            # Поиск незакрашенного пиксела
+            flag = False
+            cur_col = QColor(image.pixel(x, y))
+            while cur_col != color_edge and cur_col != color and x <= x_right:
+                if not flag:
+                    flag = True
+                x += 1
+                cur_col = QColor(image.pixel(x, y))
+
+            # Если был найдет незакрашенный пиксел,
+            # то в стэк помещается крайний правый незакрашенный пиксел.
+            if flag:
+                cur_col = QColor(image.pixel(x, y))
+                if x == x_right and cur_col != color_edge and cur_col != color:
+                    stack.append((x, y))
+                else:
+                    stack.append((x - 1, y))
+
+            # Продолжаем поиск, если интервал был прерван
+            current_x = x
+            cur_col = QColor(image.pixel(x, y))
+            while (cur_col == color_edge or cur_col == color) and x < x_right:
                 x = x + 1
-
-            # сохраняем крайний справа пиксел
-            x_right = x - 1
-            y = y + 1
-            x = x_left
-
-            # ----------------------------------------
-            # ищем затравку на строке выше
-            while x <= x_right:
-                Fl = 0
                 cur_col = QColor(image.pixel(x, y))
-                while cur_col != color_edge and cur_col != color and x <= x_right:
-                    if Fl == 0:
-                        Fl = 1
-                    x = x + 1
-                    cur_col = QColor(image.pixel(x, y))
 
-                if Fl == 1:
-                    cur_col = QColor(image.pixel(x, y))
-                    if x == x_right and cur_col != color_edge and cur_col != color:
-                        stack.append((x, y))
-                    else:
-                        stack.append((x - 1, y))
-                    Fl = 0
+            # Удостоверяемся, что перешли на следующий пиксел
+            if x == current_x:
+                x = x + 1
+        # End----------------------------------------
 
-                current_x = x
+        # Find_Down----------------------------------
+        # Ищем затравку на строке ниже
+        y = y - 2
+        x = x_left
+        while x <= x_right:
+
+            # Поиск незакрашенного пиксела
+            flag = False
+            cur_col = QColor(image.pixel(x, y))
+            while cur_col != color_edge and cur_col != color and x <= x_right:
+                if not flag:
+                    flag = True
+                x = x + 1
                 cur_col = QColor(image.pixel(x, y))
-                while (cur_col == color_edge or cur_col == color) and x < x_right:
-                    x = x + 1
-                    cur_col = QColor(image.pixel(x, y))
 
-                if x == current_x:
-                    x = x + 1
-
-            y = y - 2
-            x = x_left
-            while x <= x_right:
-                Fl = 0
+            # Если был найдет незакрашенный пиксел,
+            # то в стэк помещается крайний правый незакрашенный пиксел.
+            if flag:
                 cur_col = QColor(image.pixel(x, y))
-                while cur_col != color_edge and cur_col != color and x <= x_right:
-                    if Fl == 0:
-                        Fl = 1
-                    x = x + 1
-                    cur_col = QColor(image.pixel(x, y))
+                if x == x_right and cur_col != color_edge and cur_col != color:
+                    stack.append((x, y))
+                else:
+                    stack.append((x - 1, y))
 
-                if Fl == 1:
-                    cur_col = QColor(image.pixel(x, y))
-                    if x == x_right and cur_col != color_edge and cur_col != color:
-                        stack.append((x, y))
-                    else:
-                        stack.append((x - 1, y))
-                    Fl = 0
-
-                current_x = x
+            # Продолжаем поиск, если интервал был прерван
+            current_x = x
+            cur_col = QColor(image.pixel(x, y))
+            while (cur_col == color_edge or cur_col == color) and x < x_right:
+                x = x + 1
                 cur_col = QColor(image.pixel(x, y))
-                while (cur_col == color_edge or cur_col == color) and x < x_right:
-                    x = x + 1
-                    cur_col = QColor(image.pixel(x, y))
 
-                if x == current_x:
-                    x = x + 1
+            # Удостоверяемся, что перешли на следующий пиксел
+            if x == current_x:
+                x = x + 1
+        # End----------------------------------------
 
-            self.__state_fill = stack
-            return bool(len(stack))
-
-        return False
+        self.__state_fill = stack
+        return bool(len(stack))
 
     # служебные функции
 

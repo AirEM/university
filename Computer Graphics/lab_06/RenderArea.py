@@ -74,7 +74,7 @@ class RenderArea(QWidget):
             pen = QPen(current_color)
             p.setPen(pen)
 
-            state = self.figure.fill((300, 300), p, self.pixmap.toImage(), current_color, slow)
+            state = self.figure.fill((300, 300), p, self.pixmap.toImage(), current_color)
 
             p.end()
 
