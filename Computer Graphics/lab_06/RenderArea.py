@@ -10,7 +10,12 @@ class RenderArea(QWidget):
     def __init__(self, pListWidget):
         super().__init__()
 
-        self.pointsListWidget = pListWidget
+        self.pointsListWidget = pListWidget[0]
+        self.zx_lineEdit = pListWidget[1]
+        self.zy_lineEdit = pListWidget[2]
+
+        self.zx_lineEdit.setText(str(100))
+        self.zy_lineEdit.setText(str(100))
 
         self.colors = [Qt.black, Qt.blue, Qt.red]
 
@@ -31,16 +36,20 @@ class RenderArea(QWidget):
     def resizeEvent(self, ev):
         self.pixmap.scaled(self.width(), self.height(), Qt.IgnoreAspectRatio)
 
-    def mousePressEvent(self, ev):
-
-        if ev.button() == Qt.LeftButton:
-            x = ev.pos().x()
-            y = ev.pos().y()
-
-            self.pointsListWidget.addItem("({}; {})".format(x, y))
-
-            self.figure.add_point(x, y)
+    def mousePressEvent(self, event):
+        if event.button() == Qt.RightButton:
+            # координаты затравки
+            self.zx_lineEdit.setText(str(event.x()))
+            self.zy_lineEdit.setText(str(event.y()))
+        else:
+            self.pointsListWidget.addItem("({}; {})".format(event.x(), event.y()))
+            self.figure.add_point(event.x(), event.y())
             self.draw()
+
+    def mouseMoveEvent(self, event):
+        self.pointsListWidget.addItem("({}; {})".format(event.x(), event.y()))
+        self.figure.add_point(event.x(), event.y())
+        self.draw()
 
     def draw(self):
         p = QPainter(self.pixmap)
@@ -61,6 +70,7 @@ class RenderArea(QWidget):
 
         state = True
         current_color = self.colors[color]
+        point = (int(self.zx_lineEdit.text()), int(self.zy_lineEdit.text()))
 
         if not self.figure.is_close():
             return
@@ -74,7 +84,7 @@ class RenderArea(QWidget):
             pen = QPen(current_color)
             p.setPen(pen)
 
-            state = self.figure.fill((300, 300), p, self.pixmap.toImage(), current_color)
+            state = self.figure.fill(point, p, self.pixmap.toImage(), current_color)
 
             p.end()
 

@@ -17,7 +17,8 @@ class Window(QMainWindow):
         self.ui.colorBox.addItem("Синий", 1)
         self.ui.colorBox.addItem("Красный", 2)
 
-        self.ui.renderArea = RenderArea(self.ui.pointsListWidget)
+        self.ui.renderArea = RenderArea((self.ui.pointsListWidget,
+                                         self.ui.zx_lineEdit, self.ui.zy_lineEdit))
 
         self.ui.horizontalLayout.addWidget(self.ui.renderArea)
 

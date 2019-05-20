@@ -15,7 +15,6 @@ class Figure:
 
     # Функуии заливки
 
-    # отрисовка линии алгоритмом Брезейнхема
     def __drawLine(self, painter, xn, yn, xk, yk):
 
         painter.drawLine(xn, yn, xk, yk)
@@ -27,7 +26,7 @@ class Figure:
         self.__edge_lst.append(current_edge)
         # !!! конец вставки
 
-    # закраска области от ребра до перегородки
+    # закраска области
     def fill(self, point, painter, image, color):
 
         # Настройка цвета
