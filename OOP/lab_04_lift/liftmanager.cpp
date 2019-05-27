@@ -23,6 +23,11 @@ LiftManager::LiftManager(QObject *parent) : QObject(parent)
     connect(this, SIGNAL(NeedMoveSignal()), this, SLOT(NeedMoveSlot()));
 }
 
+LiftManager::~LiftManager()
+{
+    delete lift;
+    delete doors;
+}
 
 void LiftManager::FloorSelectionSlot(int floor)
 {
@@ -115,7 +120,7 @@ void LiftManager::NeedMoveSlot()
             emit UndefinedWaitingSignal();
         }
     }
-    else// if (this->currentDirection == Direction::DOWN)
+    else
     {
         if (need_down(currentFloor))
             emit DescendSignal();

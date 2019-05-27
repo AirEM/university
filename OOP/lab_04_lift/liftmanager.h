@@ -12,6 +12,7 @@ class LiftManager : public QObject
     Q_OBJECT
 public:
     explicit LiftManager(QObject *parent = nullptr);
+    ~LiftManager();
 
 signals:
     // to Lift

@@ -69,7 +69,6 @@ void MainWindow::ChandgeDirectionSlot(Direction d)
     case Direction::STOPED:
         this->ui->labelDirection->setText(QString("STOP"));
         break;
-
     }
 }
 
@@ -83,16 +82,12 @@ void MainWindow::ChangeLiftStateSlot(LiftState state)
     case LiftState::DESCEND:
         this->ui->labelLiftState->setText(QString("Движение вниз"));
         break;
-    case LiftState::ON_FLOOR:
-        this->ui->labelLiftState->setText(QString("Прибытие на этаж"));
-        break;
     case LiftState::WAIT:
         this->ui->labelLiftState->setText(QString("Ожидание"));
         break;
     case LiftState::UNDEFINED_WAITING:
         this->ui->labelLiftState->setText(QString("NONE"));
         break;
-
     }
 }
 
