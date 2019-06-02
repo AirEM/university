@@ -2,43 +2,35 @@
 
 Lift::Lift(QObject *parent) : QObject(parent)
 {
-    this->currentState = LiftState::UNDEFINED_WAITING;
+    this->currentState = LiftState::WAIT;
 
-    this->MoveTimer.setSingleShot(true);
-
-    connect(&MoveTimer, SIGNAL(timeout()), this, SLOT(EndMoveTimerSlot()));
+    this->UpTimer.setSingleShot(true);
+    this->DownTimer.setSingleShot(true);
 }
 
 
 void Lift::RiseSlot()
 {
-    this->currentState = LiftState::RISE;
-    emit ChangeLiftStateSignal(this->currentState);
-    this->MoveTimer.start(2000);
+    if (currentState == LiftState::WAIT ||
+            currentState == LiftState::RISE)
+    {
+        this->currentState = LiftState::RISE;
+        this->UpTimer.start(2000);
+    }
 
 }
 
 void Lift::DescendSlot()
 {
-    this->currentState = LiftState::DESCEND;
-    emit ChangeLiftStateSignal(this->currentState);
-    this->MoveTimer.start(2000);
+    if (currentState == LiftState::WAIT ||
+            currentState == LiftState::DESCEND)
+    {
+        this->currentState = LiftState::DESCEND;
+        this->DownTimer.start(2000);
+    }
 }
 
 void Lift::WaitSlot()
 {
     this->currentState = LiftState::WAIT;
-    emit ChangeLiftStateSignal(this->currentState);
-}
-
-void Lift::UndefinedWaitingSlot()
-{
-    this->currentState = LiftState::UNDEFINED_WAITING;
-    emit ChangeLiftStateSignal(this->currentState);
-}
-
-
-void Lift::EndMoveTimerSlot()
-{
-    emit ChangeFloorSignal();
 }

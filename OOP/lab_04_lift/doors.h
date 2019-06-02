@@ -12,21 +12,22 @@ class Doors : public QObject
 public:
     explicit Doors(QObject *parent = nullptr);
 
-signals:
-    void ChangeDoorsStateSignal(DoorsState); // connected
+    QTimer OpeningTimer;
+    QTimer ClosingTimer;
+    QTimer WaitingTimer;
 
 public slots:
+    // from LiftManager
     void OpenDoorsSlot(); // connected
 
 private slots:
-    void EndMovingTimerSlot(); // connected
+    // from LiftTimers
+    void EndOpeningTimerSlot(); // connected
+    void EndClosingTimerSlot(); // connected
     void EndWaitingTimerSlot(); // connected
 
 private:
     DoorsState currentState;
-
-    QTimer MovingTimer;
-    QTimer WaitingTimer;
 };
 
 #endif // DOORS_H

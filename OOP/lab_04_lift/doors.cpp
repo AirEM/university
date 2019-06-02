@@ -4,32 +4,37 @@ Doors::Doors(QObject *parent) : QObject(parent)
 {
     this->currentState = DoorsState::CLOSED;
 
-    this->MovingTimer.setSingleShot(true);
+    this->OpeningTimer.setSingleShot(true);
+    this->ClosingTimer.setSingleShot(true);
     this->WaitingTimer.setSingleShot(true);
 
-    connect(&MovingTimer, SIGNAL(timeout()), this, SLOT(EndMovingTimerSlot()));
+    connect(&OpeningTimer, SIGNAL(timeout()), this, SLOT(EndOpeningTimerSlot()));
+    connect(&ClosingTimer, SIGNAL(timeout()), this, SLOT(EndClosingTimerSlot()));
     connect(&WaitingTimer, SIGNAL(timeout()), this, SLOT(EndWaitingTimerSlot()));
 }
 
 void Doors::OpenDoorsSlot()
 {
-    this->currentState = DoorsState::OPENING;
-    emit ChangeDoorsStateSignal(this->currentState);
-    this->MovingTimer.start(2000);
+    if (currentState == DoorsState::CLOSED)
+    {
+        this->currentState = DoorsState::OPENING;
+        this->OpeningTimer.start(2000);
+    }
 }
 
-
-void Doors::EndMovingTimerSlot()
+void Doors::EndOpeningTimerSlot()
 {
     if (this->currentState == DoorsState::OPENING)
     {
         this->currentState = DoorsState::OPENED;
         this->WaitingTimer.start(2000);
     }
-    else
-        this->currentState = DoorsState::CLOSED;
+}
 
-    emit ChangeDoorsStateSignal(this->currentState);
+void Doors::EndClosingTimerSlot()
+{
+    if (this->currentState == DoorsState::CLOSING)
+        this->currentState = DoorsState::CLOSED;
 }
 
 void Doors::EndWaitingTimerSlot()
@@ -37,7 +42,6 @@ void Doors::EndWaitingTimerSlot()
     if (this->currentState == DoorsState::OPENED)
     {
         this->currentState = DoorsState::CLOSING;
-        emit ChangeDoorsStateSignal(this->currentState);
-        this->MovingTimer.start(2000);
+        this->ClosingTimer.start(2000);
     }
 }

@@ -2,25 +2,26 @@
 
 LiftManager::LiftManager(QObject *parent) : QObject(parent)
 {
-    this->currentFloor = 1;
-    this->currentDirection = Direction::STOPED;
-
     this->lift = new Lift;
     this->doors = new Doors;
 
+    this->currentFloor = 1;
+    this->currentState = ManagerState::WAIT;
+
+    // signals to Lift
     connect(this, SIGNAL(RiseSignal()), lift, SLOT(RiseSlot()));
     connect(this, SIGNAL(DescendSignal()), lift, SLOT(DescendSlot()));
     connect(this, SIGNAL(WaitSignal()), lift, SLOT(WaitSlot()));
-    connect(this, SIGNAL(UndefinedWaitingSignal()), lift, SLOT(UndefinedWaitingSlot()));
 
-    connect(lift, SIGNAL(ChangeFloorSignal()), this, SLOT(ChangeFloorSlot()));
-    connect(lift, SIGNAL(ChangeLiftStateSignal(LiftState)), this, SLOT(ChangeLiftStateSlot(LiftState)));
+    // signals from Lift
+    connect(&(lift->UpTimer), SIGNAL(timeout()), this, SLOT(FloorUpSlot()));
+    connect(&(lift->DownTimer), SIGNAL(timeout()), this, SLOT(FloorDownSlot()));
 
+    // signal to Doors
     connect(this, SIGNAL(OpenDoorsSignal()), doors, SLOT(OpenDoorsSlot()));
-    connect(doors, SIGNAL(ChangeDoorsStateSignal(DoorsState)), this,
-            SLOT(ChangeDoorsStateSlot(DoorsState)));
 
-    connect(this, SIGNAL(NeedMoveSignal()), this, SLOT(NeedMoveSlot()));
+    // signal from Doors
+    connect(&(doors->ClosingTimer), SIGNAL(timeout()), this, SLOT(WaitDoorsSlot()));
 }
 
 LiftManager::~LiftManager()
@@ -29,133 +30,104 @@ LiftManager::~LiftManager()
     delete doors;
 }
 
-void LiftManager::FloorSelectionSlot(int floor)
-{
-    this->existingFloors[floor  - 1] = 1;
 
-    if (currentDirection == Direction::STOPED)
+void LiftManager::FloorUpSlot()
+{
+    currentFloor++;
+    action();
+}
+
+void LiftManager::FloorDownSlot()
+{
+    currentFloor--;
+    action();
+}
+
+void LiftManager::WaitDoorsSlot()
+{
+    if (currentState == ManagerState::WAIT_DOORS)
+        action();
+}
+
+void LiftManager::WaitSlot(int floor)
+{
+    queue.enqueue(floor);
+
+    if (currentState == ManagerState::WAIT)
     {
         if (currentFloor < floor)
         {
-            this->currentDirection = Direction::UP;
+            this->currentState = ManagerState::UP;
             emit RiseSignal();
-            emit ChandgeDirectionSignal(Direction::UP);
         }
         else if (currentFloor == floor)
         {
-            this->existingFloors[floor  - 1] = 0;
-            emit ChandgeFloorSignal(currentFloor);
-            emit WaitSignal();
-            emit OpenDoorsSignal();
+            wait();
         }
         else
         {
-            this->currentDirection = Direction::DOWN;
+            this->currentState = ManagerState::DOWN;
             emit DescendSignal();
-            emit ChandgeDirectionSignal(Direction::DOWN);
         }
     }
-
 }
 
 
-void LiftManager::ChangeLiftStateSlot(LiftState state)
+void LiftManager::action()
 {
-    emit ChangeLiftStateSignal(state);
-}
-
-void LiftManager::ChangeFloorSlot()
-{
-    bool isFloor = 0;
-
-    if (this->currentDirection == Direction::UP)
-        currentFloor++;
+    if (queue.isEmpty() && currentState == ManagerState::WAIT_DOORS)
+        currentState = ManagerState::WAIT;
     else
-        currentFloor--;
-
-
-    emit ChandgeFloorSignal(currentFloor);
-
-    // Проверка на нужный этаж
-
-    isFloor = this->existingFloors[currentFloor - 1];
-    this->existingFloors[currentFloor - 1] = 0;
-
-    if (isFloor)
     {
+        int floor = queue.last();
+
+        if (currentFloor < floor)
+            move_up();
+        else if (currentFloor == floor)
+            wait();
+        else
+            move_down();
+        }
+}
+
+
+void LiftManager::wait()
+{
+    if (currentState == ManagerState::UP ||
+            currentState == ManagerState::DOWN ||
+            currentState == ManagerState::WAIT)
+    {
+        queue.dequeue();
+        this->currentState = ManagerState::WAIT_DOORS;
         emit WaitSignal();
         emit OpenDoorsSignal();
     }
-    else
-        emit NeedMoveSignal();
 }
 
-
-void LiftManager::ChangeDoorsStateSlot(DoorsState state)
+void LiftManager::move_up()
 {
-    emit ChangeDoorsStateSignal(state);
-
-    if (state == DoorsState::CLOSED)
-        emit NeedMoveSignal();
-}
-
-
-
-void LiftManager::NeedMoveSlot()
-{
-    if (this->currentDirection == Direction::UP)
+    if (currentState == ManagerState::UP ||
+            currentState == ManagerState::WAIT ||
+            currentState == ManagerState::WAIT_DOORS)
     {
-        if (need_up(currentFloor))
-            emit RiseSignal();
-        else if (need_down(currentFloor))
-        {
-            this->currentDirection = Direction::DOWN;
-            emit ChandgeDirectionSignal(this->currentDirection);
-            emit DescendSignal();
-        }
-        else
-        {
-            this->currentDirection = Direction::STOPED;
-            emit ChandgeDirectionSignal(this->currentDirection);
-            emit UndefinedWaitingSignal();
-        }
+        this->currentState = ManagerState::UP;
+        emit RiseSignal();
     }
-    else
+}
+
+void LiftManager::move_down()
+{
+    if (currentState == ManagerState::DOWN ||
+            currentState == ManagerState::WAIT ||
+            currentState == ManagerState::WAIT_DOORS)
     {
-        if (need_down(currentFloor))
-            emit DescendSignal();
-        else if (need_up(currentFloor))
-        {
-            this->currentDirection = Direction::UP;
-            emit ChandgeDirectionSignal(this->currentDirection);
-            emit RiseSignal();
-        }
-        else
-        {
-            this->currentDirection = Direction::STOPED;
-            emit ChandgeDirectionSignal(this->currentDirection);
-            emit UndefinedWaitingSignal();
-        }
+        this->currentState = ManagerState::DOWN;
+        emit DescendSignal();
     }
-
 }
 
 
-
-bool LiftManager::need_up(int floor)
+int LiftManager::get_floor() const
 {
-    for (int i = floor; i <= numberFloors; i++)
-        if (existingFloors[i - 1])
-            return true;
-
-    return false;
-}
-
-bool LiftManager::need_down(int floor)
-{
-    for (int i = floor; i > 0; i--)
-        if (existingFloors[i - 1])
-            return true;
-
-    return false;
+    return currentFloor;
 }

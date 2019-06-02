@@ -4,7 +4,7 @@
 #include <QMainWindow>
 #include <QRadioButton>
 
-#include "liftmanager.h"
+#include "guimanager.h"
 
 namespace Ui {
 class MainWindow;
@@ -19,27 +19,26 @@ public:
     ~MainWindow();
 
 signals:
-    // to LiftManager
+    // to GuiManager
     void FloorSelectionSignal(int); // connected
 
 private slots:
     // from Button
     void FloorSelectionSlot(); // connected
 
-    // from LiftManager
-    void ChandgeDirectionSlot(Direction); // connected
-    void ChangeLiftStateSlot(LiftState); // connected
-    void ChangeDoorsStateSlot(DoorsState); // connected
+    // from GuiManager
     void ChangeFloorSlot(int); // connected
 
-public slots:
+    // states
+    void ChangeLiftStateSlot(QString); // connected
+    void ChangeDoorsStateSlot(QString); // connected
 
 private:
     Ui::MainWindow *ui;
 
     QVector<QRadioButton*> radioButVector;
 
-    LiftManager* liftmanager;
+    GuiManager* guimanager;
 };
 
 #endif // MAINWINDOW_H

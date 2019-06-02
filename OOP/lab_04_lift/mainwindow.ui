@@ -324,7 +324,7 @@
      </font>
     </property>
     <property name="text">
-     <string>NONE</string>
+     <string>Стоит</string>
     </property>
    </widget>
    <widget class="QLabel" name="labelDoorsState">
@@ -372,7 +372,7 @@
      <x>0</x>
      <y>0</y>
      <width>544</width>
-     <height>20</height>
+     <height>22</height>
     </rect>
    </property>
   </widget>

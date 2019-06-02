@@ -2,8 +2,9 @@
 #define LIFTMANAGER_H
 
 #include <QObject>
+#include <QQueue>
 
-#include "direction.h"
+#include "managerstate.h"
 #include "doors.h"
 #include "lift.h"
 
@@ -14,55 +15,40 @@ public:
     explicit LiftManager(QObject *parent = nullptr);
     ~LiftManager();
 
+    int get_floor() const;
+
+    Lift* lift;
+    Doors* doors;
+
 signals:
     // to Lift
     void RiseSignal(); // connected
     void DescendSignal(); // connected
     void WaitSignal(); // connected
-    void UndefinedWaitingSignal(); // connected
 
     // to Doors
     void OpenDoorsSignal(); // connected
 
-    // to GUI
-    void ChandgeDirectionSignal(Direction); // connected
-    void ChangeLiftStateSignal(LiftState); // connected
-    void ChangeDoorsStateSignal(DoorsState); // connected
-    void ChandgeFloorSignal(int); // connected
-
-    // to this
-    void NeedMoveSignal(); // connected
-
 
 public slots:
-    // from GUI
-    void FloorSelectionSlot(int); // connected
-
-    // from Lift
-    void ChangeFloorSlot(); // connected
-    void ChangeLiftStateSlot(LiftState); // connected
-
-    // from Doors
-    //void DoorsClosedSlot();
-    void ChangeDoorsStateSlot(DoorsState); // cconnected
-
-private slots:
-    void NeedMoveSlot(); // connected
-
+    void FloorUpSlot(); // connected
+    void FloorDownSlot(); // connected
+    void WaitDoorsSlot(); // connected
+    void WaitSlot(int); // connected
 
 private:
 
-    bool need_up(int);
-    bool need_down(int);
+    void action();
 
-    Lift* lift;
-    Doors* doors;
+    void wait();
+    void move_up();
+    void move_down();
 
     int currentFloor;
-    Direction currentDirection;
+    ManagerState currentState;
 
     const static int numberFloors = 6;
-    int existingFloors[numberFloors] = {0};
+    QQueue<int> queue;
 };
 
 #endif // LIFTMANAGER_H
