@@ -1,0 +1,10 @@
+
+*.o
+Course Work/build-CourseWork-Desktop-Debug/.qmake.stash
+*.exe
+Course Work/build-CourseWork-Desktop-Debug/ui_mainwindow.h
+Course Work/build-CourseWork-Desktop-Debug/object_script.CourseWork.Release
+Course Work/build-CourseWork-Desktop-Debug/object_script.CourseWork.Debug
+Course Work/build-CourseWork-Desktop-Debug/Makefile.Release
+Course Work/build-CourseWork-Desktop-Debug/Makefile.Debug
+Course Work/build-CourseWork-Desktop-Debug/Makefile
