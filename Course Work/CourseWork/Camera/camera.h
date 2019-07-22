@@ -9,7 +9,7 @@ using geometry::Vector3d;
 
 const float _base_x = 0;
 const float _base_y = 0;
-const float _base_z = -1;
+const float _base_z = 0;
 
 class Camera
 {
