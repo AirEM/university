@@ -8,3 +8,5 @@ Course Work/build-CourseWork-Desktop-Debug/object_script.CourseWork.Debug
 Course Work/build-CourseWork-Desktop-Debug/Makefile.Release
 Course Work/build-CourseWork-Desktop-Debug/Makefile.Debug
 Course Work/build-CourseWork-Desktop-Debug/Makefile
+Course Work/build-CourseWork-Desktop-Debug/debug/moc_mainwindow.cpp
+Course Work/build-CourseWork-Desktop-Debug/debug/moc_predefs.h

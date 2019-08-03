@@ -24,7 +24,7 @@ float Vector3d::getZ() const
 }
 
 
-float Vector3d::norm() const
+float Vector3d::length() const
 {
     return sqrtf(_x*_x + _y*_y + _z*_z);
 }
@@ -32,7 +32,10 @@ float Vector3d::norm() const
 Vector3d& Vector3d::normalize()
 {
     float l = 1;
-    *this = (*this) * (l / norm());
+    float len = length();
+    float inv_length = l / len;
+
+    *this = (*this) * inv_length;
 
     return *this;
 }

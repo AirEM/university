@@ -17,6 +17,7 @@ public:
     float getZ() const;
 
     Vector3d& normalize();
+    float length() const;
 
     Vector3d mult(const float) const;
     float mult(const Vector3d&) const;
@@ -38,7 +39,6 @@ private:
     float _y;
     float _z;
 
-    float norm() const;
 };
 
 }

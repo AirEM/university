@@ -21,28 +21,34 @@ Material Sphere::getMaterial()
 
 bool Sphere::ray_intersect(const Vector3d &orig, const Vector3d &dir, float &t0) const
 {
-        Vector3d L = this->_centre - orig;
 
-        float tca = L * dir;
+    // Луч, напрвленный от камеры к центру сферы
+    Vector3d L = this->_centre - orig;
 
-        float d2 = L*L - tca*tca;
+    // Луч, скоректированный напрвлением
+    float tca = L * dir;
 
-        if (d2 > this->_radius * this->_radius)
-            return false;
+    // Разность между квадратами двух лучей
+    float d2 = L*L - tca*tca;
 
-        float thc = sqrtf(this->_radius * this->_radius - d2);
+    // Если их разность больше квадрата радиуса
+    // то данный луч в напрвлении dir сферу не пересекает
+    if (d2 > this->_radius * this->_radius)
+        return false;
 
-        t0 = tca - thc;
+    float thc = sqrtf(this->_radius * this->_radius - d2);
 
-        float t1 = tca + thc;
+    t0 = tca - thc;
 
-        if (t0 < 0)
-            t0 = t1;
+    float t1 = tca + thc;
 
-        if (t0 < 0)
-            return false;
+    if (t0 < 0)
+        t0 = t1;
 
-        return true;
+    if (t0 < 0)
+        return false;
+
+    return true;
 }
 
 
