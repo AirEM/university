@@ -56,9 +56,9 @@ Vector3d DrawManager::cast_ray(const Vector3d &camera_position, const Vector3d &
 
             // ==================================================================
 
-            diffuse_light_intensity  += static_cast<float>(lights[i]->getIntensity()) * std::max(0.f, static_cast<float>(light_dir*N));
+            diffuse_light_intensity  += lights[i]->getIntensity() * std::max(0.f, light_dir * N);
 
-            specular_light_intensity += powf( std::max(0.f,  static_cast<float>(reflect(light_dir * -1.0, N)*dir) ) * -1.0,
+            specular_light_intensity += powf( std::max(0.f,  reflect(light_dir * -1.0f, N) * dir ) * -1.0f,
                                               material.getSpecular() )
                     * lights[i]->getIntensity();
         }
@@ -70,7 +70,7 @@ Vector3d DrawManager::cast_ray(const Vector3d &camera_position, const Vector3d &
 
 Vector3d DrawManager::reflect(const Vector3d &I, const Vector3d &N)
 {
-    return I - N * static_cast<float>(2.f) * (I*N);
+    return I - N * 2.0f * (I*N);
 }
 
 

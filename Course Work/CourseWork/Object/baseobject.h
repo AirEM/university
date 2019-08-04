@@ -16,6 +16,7 @@ public:
 
     virtual Vector3d getCenter() = 0;
     virtual Material getMaterial() = 0;
+    virtual Vector3d getNormal(const Vector3d&) = 0;
 
     virtual bool ray_intersect(const Vector3d &, const Vector3d &, float &) const = 0;
 

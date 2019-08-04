@@ -18,6 +18,13 @@ Material Sphere::getMaterial()
     return _material;
 }
 
+Vector3d Sphere::getNormal(const Vector3d& hit)
+{
+    Vector3d N = (hit - this->_centre).normalize();
+
+    return N;
+}
+
 
 bool Sphere::ray_intersect(const Vector3d &orig, const Vector3d &dir, float &t0) const
 {

@@ -53,7 +53,7 @@ bool Scene::intersect(const Vector3d &orig, const Vector3d &dir,
             hit = orig + (dir * dist_i);
 
             // Нужно заменить на getNormal() (Функция должна быть объвлена в абстрактном классе BaseObject)
-            N = (hit - objs[i]->getCenter()).normalize();
+            N = objs[i]->getNormal(hit);//(hit - objs[i]->getCenter()).normalize();
 
             material = objs[i]->getMaterial();
         }
@@ -78,8 +78,8 @@ bool Scene::intersect(const Vector3d &orig, const Vector3d &dir,
             // Vector3d(0.98f,0.835f,0.117f) Vector3d(0.741f,0.854f,0.341f)
 
             material.getDiffuse() = (int(.5*hit.getX()+1000) + int(.5*hit.getZ())) & 1 ?
-                        Vector3d(0.98f,0.835f,0.117f)  :
-                        Vector3d(0.741f,0.854f,0.341f);
+                        Vector3d(0.3f, 0.3f, 0.3f)  :
+                        Vector3d(0.3f, 0.2f, 0.1f);
         }
     }
 

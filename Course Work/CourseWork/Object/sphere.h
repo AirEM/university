@@ -12,6 +12,7 @@ public:
 
     Vector3d getCenter() override;
     Material getMaterial() override;
+    Vector3d getNormal(const Vector3d& hit) override;
 
     bool ray_intersect(const Vector3d &, const Vector3d &, float &) const override;
 
