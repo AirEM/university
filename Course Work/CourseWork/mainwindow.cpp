@@ -38,7 +38,7 @@ void MainWindow::on_loadPushButton_clicked()
     _facede->execute(&command);
 
     // Еще сферы
-    command::AddSphereCommand command_1(4.0, -1, -12, 2, red_rubber);
+    command::AddSphereCommand command_1(0, 0, -12, 2, red_rubber);
     _facede->execute(&command_1);
 
     command::AddSphereCommand command_2(1.5, -0.5, -18, 3, red_rubber);
@@ -48,11 +48,17 @@ void MainWindow::on_loadPushButton_clicked()
     _facede->execute(&command_3);
 
 
+    // Создание куба
+    Vector3d min_p(4, -4, -11);
+    Vector3d max_p(6, -2, -13);
+    command::AddCubeCommand command_cube(min_p, max_p, red_rubber);
+    _facede->execute(&command_cube);
+
     // Добавление освещения
     command::AddLightCommand command_l(-20, 20,  20, 1.0);
     _facede->execute(&command_l);
 
-    command::AddLightCommand command_l1(30, 50, -25, 1.2);
+    command::AddLightCommand command_l1(30, 50, -25, 1.2f);
     _facede->execute(&command_l1);
 
     command::AddLightCommand command_l2(30, 20,  30, 1.0);

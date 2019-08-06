@@ -7,6 +7,30 @@ Vector3d::Vector3d() : _x(0), _y(0), _z(0) {}
 
 Vector3d::Vector3d(float x, float y, float z) : _x(x), _y(y), _z(z) {}
 
+float Vector3d::get(int ind) const
+{
+    float res = 0;
+
+    switch (ind)
+    {
+    case 0:
+        res = _x;
+        break;
+
+    case 1:
+        res = _y;
+        break;
+
+    case 2:
+        res = _z;
+        break;
+
+    }
+
+    return res;
+}
+
+
 
 float Vector3d::getX() const
 {

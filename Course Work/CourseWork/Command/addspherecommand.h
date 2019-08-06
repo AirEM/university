@@ -7,7 +7,6 @@
 namespace command {
 
 using object::Sphere;
-using object::BaseObject;
 using object::Material;
 
 class AddSphereCommand : public BaseCommand

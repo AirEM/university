@@ -12,6 +12,8 @@ public:
     Vector3d();
     Vector3d(float, float, float);
 
+    float get(int) const;
+
     float getX() const;
     float getY() const;
     float getZ() const;
