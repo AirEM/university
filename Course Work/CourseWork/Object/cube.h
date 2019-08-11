@@ -1,9 +1,6 @@
 #ifndef CUBE_H
 #define CUBE_H
 
-#include <limits>
-#include <algorithm>
-
 #include "baseobject.h"
 
 namespace object {

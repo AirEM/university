@@ -1,6 +1,9 @@
 #ifndef BASEOBJECT_H
 #define BASEOBJECT_H
 
+#include <limits>
+#include <algorithm>
+
 #include "Material/material.h"
 
 namespace object {

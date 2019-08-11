@@ -26,6 +26,7 @@ CONFIG += c++11
 
 SOURCES += \
     Camera/camera.cpp \
+    Command/addconecommand.cpp \
     Command/addcubecommand.cpp \
     Command/addlightcommand.cpp \
     Command/addspherecommand.cpp \
@@ -37,6 +38,7 @@ SOURCES += \
     Mediator/mediator.cpp \
     Object/Light/light.cpp \
     Object/Material/material.cpp \
+    Object/cone.cpp \
     Object/cube.cpp \
     Object/sphere.cpp \
     Scene/scene.cpp \
@@ -47,6 +49,7 @@ SOURCES += \
 
 HEADERS += \
     Camera/camera.h \
+    Command/addconecommand.h \
     Command/addcubecommand.h \
     Command/addlightcommand.h \
     Command/addspherecommand.h \
@@ -62,6 +65,7 @@ HEADERS += \
     Object/Light/light.h \
     Object/Material/material.h \
     Object/baseobject.h \
+    Object/cone.h \
     Object/cube.h \
     Object/sphere.h \
     Scene/scene.h \

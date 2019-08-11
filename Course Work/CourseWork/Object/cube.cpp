@@ -149,43 +149,6 @@ bool Cube::ray_intersect(const Vector3d &orig, const Vector3d &dir, float &t0) c
     t0 = t_near;
 
     return (t_near <= t_far && t_far >=0);
-
-/*
-    float lo = dir.getX()*(min_point.getX() - orig.getX());
-
-    float hi = dir.getX()*(max_point.getX() - orig.getX());
-
-    float tmin  = std::min(lo, hi);
-
-    float tmax = std::max(lo, hi);
-
-
-
-    float lo1 = dir.getY() * (min_point.getY() - orig.getY());
-
-    float hi1 = dir.getY() * (max_point.getY() - orig.getY());
-
-    tmin = std::max(tmin, std::min(lo1, hi1));
-
-    tmax = std::min(tmax, std::max(lo1, hi1));
-
-
-
-    float lo2 = dir.getZ() * (min_point.getZ() - orig.getZ());
-
-    float hi2 = dir.getZ() * (max_point.getZ() - orig.getZ());
-
-    tmin = std::max(tmin, std::min(lo2, hi2));
-
-    tmax = std::min(tmax, std::max(lo2, hi2));
-
-
-    t0 = tmin;
-
-
-    return (tmin <= tmax) && (tmax > 0.f);
-    */
-
 }
 
 }

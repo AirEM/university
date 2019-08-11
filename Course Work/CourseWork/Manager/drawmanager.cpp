@@ -27,14 +27,13 @@ Vector3d DrawManager::cast_ray(const Vector3d &camera_position, const Vector3d &
 
     // Точечное освещение
 
-    float diffuse_light_intensity = 1.0;
+    float diffuse_light_intensity = 0;
     float specular_light_intensity = 0;
 
     auto lights = scene->getLights();
 
     if (lights.size())
     {
-        diffuse_light_intensity = 0;
 
 
         for (size_t i=0; i < lights.size(); i++)
@@ -42,6 +41,7 @@ Vector3d DrawManager::cast_ray(const Vector3d &camera_position, const Vector3d &
             Vector3d light_dir = (lights[i]->getPosition() - point).normalize();
 
             // =============================== Тени  ============================
+
             float light_distance = (lights[i]->getPosition() - point).length();
 
             Vector3d shadow_orig = light_dir*N < 0 ? point - N * static_cast<float>(1e-3) : point + N * static_cast<float>(1e-3);
@@ -51,6 +51,7 @@ Vector3d DrawManager::cast_ray(const Vector3d &camera_position, const Vector3d &
 
             Material tmpmaterial;
             // scene_intersect(shadow_orig, light_dir, spheres, shadow_pt, shadow_N, tmpmaterial)
+
             if (scene->intersect(shadow_orig, light_dir, shadow_pt, shadow_N, tmpmaterial) && (shadow_pt-shadow_orig).length() < light_distance)
                 continue;
 

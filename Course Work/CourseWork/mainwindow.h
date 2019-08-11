@@ -16,6 +16,7 @@
 
 #include "Command/addspherecommand.h"
 #include "Command/addcubecommand.h"
+#include "Command/addconecommand.h"
 #include "Command/addlightcommand.h"
 #include "Command/rendercommand.h"
 

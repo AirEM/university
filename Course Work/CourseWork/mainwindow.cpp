@@ -34,18 +34,18 @@ void MainWindow::on_loadPushButton_clicked()
     Material red_rubber(Vector3d(0.9,  0.1, 0), Vector3d(0.3, 0.1, 0.1),   10.);
 
     // Создание сферы
-    command::AddSphereCommand command(-3, 0, -16, 2, ivory);
-    _facede->execute(&command);
+//    command::AddSphereCommand command(-3, 0, -16, 2, ivory);
+//    _facede->execute(&command);
 
     // Еще сферы
-    command::AddSphereCommand command_1(0, 0, -12, 2, red_rubber);
+    command::AddSphereCommand command_1(-4, -2, -12, 2, red_rubber);
     _facede->execute(&command_1);
 
-    command::AddSphereCommand command_2(1.5, -0.5, -18, 3, red_rubber);
-    _facede->execute(&command_2);
+//    command::AddSphereCommand command_2(1.5, -0.5, -18, 3, red_rubber);
+//    _facede->execute(&command_2);
 
-    command::AddSphereCommand command_3(-7,    5,   -18, 4, ivory);
-    _facede->execute(&command_3);
+//    command::AddSphereCommand command_3(-7,    5,   -18, 4, ivory);
+//    _facede->execute(&command_3);
 
 
     // Создание куба
@@ -53,6 +53,13 @@ void MainWindow::on_loadPushButton_clicked()
     Vector3d max_p(6, -2, -13);
     command::AddCubeCommand command_cube(min_p, max_p, red_rubber);
     _facede->execute(&command_cube);
+
+
+    // Создание конуса
+    Vector3d centre_cone(0, 0, -12);
+    command::AddConeCommand command_cone(centre_cone, 4, 2, red_rubber);
+    _facede->execute(&command_cone);
+
 
     // Добавление освещения
     command::AddLightCommand command_l(-20, 20,  20, 1.0);
