@@ -8,12 +8,7 @@ Sphere::Sphere(Vector3d centre, size_t radius, Material m) : _centre(centre), _r
 }
 
 
-Vector3d Sphere::getCenter()
-{
-    return _centre;
-}
-
-Material Sphere::getMaterial()
+Material Sphere::getMaterial() const
 {
     return _material;
 }

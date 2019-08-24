@@ -16,10 +16,10 @@ class Camera
 public:
     Camera();
 
-    Vector3d getCoordinates() const;
+    Vector3d getPosition() const;
 
 private:
-    Vector3d _camera_coordinates;
+    Vector3d _camera_position;
 };
 
 }

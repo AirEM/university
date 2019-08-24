@@ -21,6 +21,7 @@ public:
 
     void AddSphere(std::shared_ptr<BaseObject>);
     void AddLight(std::shared_ptr<Light>);
+    void Clean();
     void Render(int, int, std::shared_ptr<BaseDrawer>);
 
 private:

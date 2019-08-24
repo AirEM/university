@@ -30,6 +30,7 @@ SOURCES += \
     Command/addcubecommand.cpp \
     Command/addlightcommand.cpp \
     Command/addspherecommand.cpp \
+    Command/cleancommand.cpp \
     Command/rendercommand.cpp \
     Drawer/qtdrawer.cpp \
     Geometry/vector3d.cpp \
@@ -54,6 +55,7 @@ HEADERS += \
     Command/addlightcommand.h \
     Command/addspherecommand.h \
     Command/basecommand.h \
+    Command/cleancommand.h \
     Command/rendercommand.h \
     Drawer/basedrawer.h \
     Drawer/qtdrawer.h \

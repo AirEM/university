@@ -18,6 +18,7 @@ public:
 private:
     Vector3d _position;
     float _intensity;
+    int _id;
 };
 
 }

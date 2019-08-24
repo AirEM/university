@@ -23,6 +23,13 @@ void Mediator::AddLight(std::shared_ptr<Light> obj)
 }
 
 
+void Mediator::Clean()
+{
+    auto scene = _scene_manager->getScene();
+    scene->clean();
+}
+
+
 void Mediator::Render(int width, int height, std::shared_ptr<BaseDrawer> drawer)
 {
     _draw_manager->setSize(width, height);

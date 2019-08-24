@@ -18,6 +18,7 @@
 #include "Command/addcubecommand.h"
 #include "Command/addconecommand.h"
 #include "Command/addlightcommand.h"
+#include "Command/cleancommand.h"
 #include "Command/rendercommand.h"
 
 
@@ -45,22 +46,21 @@ private slots:
 
     void on_loadPushButton_clicked();
 
-    void on_savePushButton_clicked();
-
     void on_cleanPushButton_clicked();
 
-    void on_movePushButton_clicked();
+    void on_addLightPushButton_clicked();
 
-    void on_scalingPushButton_clicked();
-
-    void on_rotationPushButton_clicked();
-
+    void on_dellLightPushButton_clicked();
 
 private:
     Ui::MainWindow *_ui;
     MainLabel _label;
 
     std::unique_ptr<Facade> _facede;
+
+    void resizeEvent(QResizeEvent *event) override;
+
+    void render();
 
 };
 

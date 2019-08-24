@@ -3,11 +3,11 @@
 namespace camera
 {
 
-Camera::Camera() : _camera_coordinates(_base_x, _base_y, _base_z) {}
+Camera::Camera() : _camera_position(_base_x, _base_y, _base_z) {}
 
-Vector3d Camera::getCoordinates() const
+Vector3d Camera::getPosition() const
 {
-    return _camera_coordinates;
+    return _camera_position;
 }
 
 }

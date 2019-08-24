@@ -26,10 +26,16 @@ void Scene::addLight(std::shared_ptr<Light> obj)
     _lights.push_back(obj);
 }
 
-
 void Scene::addObject(std::shared_ptr<BaseObject> obj)
 {
     _objects.push_back(obj);
+}
+
+
+void Scene::clean()
+{
+    _objects.clear();
+    _lights.clear();
 }
 
 
@@ -52,14 +58,16 @@ bool Scene::intersect(const Vector3d &orig, const Vector3d &dir,
 
             hit = orig + (dir * dist_i);
 
-            // Нужно заменить на getNormal() (Функция должна быть объвлена в абстрактном классе BaseObject)
-            N = objs[i]->getNormal(hit);//(hit - objs[i]->getCenter()).normalize();
+            N = objs[i]->getNormal(hit);
 
             material = objs[i]->getMaterial();
         }
     }
 
     // Работа с видимой горизонтальной плоскостью (Сцена)
+
+    // TODO Вынести сцену в отделтный класс, унаследованный от BaseObject
+    // данный код убрать в ray_intersect
 
     float scene_dist = std::numeric_limits<float>::max();
 

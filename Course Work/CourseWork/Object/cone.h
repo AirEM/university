@@ -10,18 +10,21 @@ class Cone : public BaseObject
 public:
     Cone(Vector3d& , int, int, Material&);
 
-    Vector3d getCenter();
-    Material getMaterial();
-    Vector3d getNormal(const Vector3d&);
+    Material getMaterial() const override;
+    Vector3d getNormal(const Vector3d&) override;
 
-    bool ray_intersect(const Vector3d &, const Vector3d &, float &) const;
+    bool ray_intersect(const Vector3d &, const Vector3d &, float &) const override;
 
 private:
     Vector3d _centre;
     int _height;
-    int _rad;
+    int _radius;
 
-    float _a, _b, _c;
+    // Коэффициенты для вычисления пересечения луча с фигурой
+    // (Ускоряют вычисления)
+    float _alfa;
+    float _betta;
+    float _gamma;
 
 
 };

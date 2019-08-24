@@ -26,6 +26,8 @@ public:
     void addLight(std::shared_ptr<Light>);
     void addObject(std::shared_ptr<BaseObject>);
 
+    void clean();
+
     bool intersect(const Vector3d &orig, const Vector3d &dir,
                    Vector3d &hit, Vector3d &N, Material &material);
 

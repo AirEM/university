@@ -2,21 +2,17 @@
 
 namespace object {
 
-Cone::Cone(Vector3d& c, int h, int r, Material& m) : _centre(c), _height(h), _rad(r)
+Cone::Cone(Vector3d& c, int h, int r, Material& m) : _centre(c), _height(h), _radius(r)
 {
     this->_material = m;
 
-    _a = _rad;
-    _c = _rad;
-    _b = _height;
+    _alfa  = _height*_height * _radius*_radius;
+    _betta = _radius*_radius * _radius*_radius;
+    _gamma = _radius*_radius * _height*_height;
 }
 
-Vector3d Cone::getCenter()
-{
-    return Vector3d();
-}
 
-Material Cone::getMaterial()
+Material Cone::getMaterial() const
 {
     return _material;
 }
@@ -37,52 +33,41 @@ Vector3d Cone::getNormal(const Vector3d& hit)
     return AB;
 }
 
+
 bool Cone::ray_intersect(const Vector3d &orig, const Vector3d &dir, float &t0) const
 {
 
-    float t_near = std::numeric_limits<float>::min(),
-    t_far = std::numeric_limits<float>::max();
-
-
-    float alfa  = _b*_b * _c*_c;
-    float betta = _a*_a * _c*_c;
-    float gamma = _a*_a * _b*_b;
+    float t_near = std::numeric_limits<float>::min();
+    float t_far = std::numeric_limits<float>::max();
 
     float Dx = orig.getX() - _centre.getX();
     float Dy = orig.getY() - _centre.getY();
     float Dz = orig.getZ() - _centre.getZ();
 
-    float A = alfa*dir.getX()*dir.getX() - betta*dir.getY()*dir.getY() + gamma*dir.getZ()*dir.getZ();
-    float B = 2 * (alfa*dir.getX()*Dx - betta*dir.getY()*Dy + gamma*dir.getZ()*Dz);
-    float C = alfa*Dx*Dx - betta*Dy*Dy + gamma*Dz*Dz;
+    // Коэффициенты квадратного уравнения
+    float A = _alfa*dir.getX()*dir.getX() - _betta*dir.getY()*dir.getY() + _gamma*dir.getZ()*dir.getZ();
+    float B = 2 * (_alfa*dir.getX()*Dx - _betta*dir.getY()*Dy + _gamma*dir.getZ()*Dz);
+    float C = _alfa*Dx*Dx - _betta*Dy*Dy + _gamma*Dz*Dz;
 
-    float disk = B*B - 4*A*C;
+    // Дискриминант
+    float discriminant = B*B - 4*A*C;
 
-    if (disk < 0)
+    if (discriminant < 0)
         return false;
 
-
-    disk = sqrtf(disk);
+    discriminant = sqrtf(discriminant);
 
     float t1, t2;
 
-    t1 = (-B + disk) / (2*A);
-    t2 = (-B - disk) / (2*A);
+    t1 = (-B + discriminant) / (2*A);
+    t2 = (-B - discriminant) / (2*A);
 
 
     if (t1 > t2)
-    {
-        // std::swap(t1, t2);
-        float tmp = t1;
-        t1 = t2;
-        t2 = tmp;
-
-    }
+        std::swap<float>(t1, t2);
 
     if (t1 > t_near)
-    {
         t_near = t1;
-    }
 
     if (t2 < t_far)
         t_far = t2;
@@ -96,7 +81,10 @@ bool Cone::ray_intersect(const Vector3d &orig, const Vector3d &dir, float &t0) c
 
     t0 = t_near;
 
+
+    // Ограничение конической поверхности сверху и снизу
     Vector3d hit = orig + (dir * t0);
+
     if (hit.getY() < _centre.getY() - _height || hit.getY() > _centre.getY())
     {
         t0 = t_far;
@@ -106,11 +94,14 @@ bool Cone::ray_intersect(const Vector3d &orig, const Vector3d &dir, float &t0) c
     if (hit.getY() < _centre.getY() - _height || hit.getY() > _centre.getY())
         return false;
 
-    if (hit.getX() < _centre.getX() - _a ||
-            hit.getX() > _centre.getX() + _a ||
-            hit.getZ() < _centre.getZ() - _c ||
-            hit.getZ() > _centre.getZ() + _c)
+
+    // Проверка попадания луча в конус
+    if (hit.getX() < _centre.getX() - _radius ||
+            hit.getX() > _centre.getX() + _radius ||
+            hit.getZ() < _centre.getZ() - _radius ||
+            hit.getZ() > _centre.getZ() + _radius)
         return false;
+
 
     return (t_near <= t_far && t_far >=0);
 }

@@ -10,9 +10,8 @@ class Sphere : public BaseObject
 public:
     Sphere(Vector3d, size_t, Material);
 
-    Vector3d getCenter() override;
-    Material getMaterial() override;
-    Vector3d getNormal(const Vector3d& hit) override;
+    Material getMaterial() const override;
+    Vector3d getNormal(const Vector3d&) override;
 
     bool ray_intersect(const Vector3d &, const Vector3d &, float &) const override;
 
