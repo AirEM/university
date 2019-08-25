@@ -12,7 +12,7 @@ void AddConeCommand::execute(std::shared_ptr<Mediator> mediator)
 
     std::shared_ptr<Cone> obj(c);
 
-    mediator->AddSphere(obj);
+    mediator->AddFigure(obj);
 }
 
 }

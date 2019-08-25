@@ -8,18 +8,24 @@ Mediator::Mediator() :
 {}
 
 
-void Mediator::AddSphere(std::shared_ptr<BaseObject> obj)
+void Mediator::AddFigure(std::shared_ptr<BaseObject> obj)
 {
     auto scene = _scene_manager->getScene();
 
-    scene->addObject(obj);
+    scene->addFigure(obj);
 }
 
 void Mediator::AddLight(std::shared_ptr<Light> obj)
 {
     auto scene = _scene_manager->getScene();
-
     scene->addLight(obj);
+}
+
+
+void Mediator::DeleteLight(int id)
+{
+    auto scene = _scene_manager->getScene();
+    scene->deleteLight(id);
 }
 
 

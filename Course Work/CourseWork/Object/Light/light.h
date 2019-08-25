@@ -10,10 +10,11 @@ using geometry::Vector3d;
 class Light
 {
 public:
-    Light(const Vector3d&, const float);
+    Light(const Vector3d&, const float, const int);
 
     Vector3d getPosition() const;
     float getIntensity() const;
+    int getId() const;
 
 private:
     Vector3d _position;

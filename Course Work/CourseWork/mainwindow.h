@@ -21,6 +21,10 @@
 #include "Command/cleancommand.h"
 #include "Command/rendercommand.h"
 
+#include "Command/deletelightcommand.h"
+
+#include "IdMaker/idmaker.h"
+
 
 
 namespace Ui {
@@ -51,6 +55,8 @@ private slots:
     void on_addLightPushButton_clicked();
 
     void on_dellLightPushButton_clicked();
+
+    void on_renderPushButton_clicked();
 
 private:
     Ui::MainWindow *_ui;

@@ -26,9 +26,25 @@ void Scene::addLight(std::shared_ptr<Light> obj)
     _lights.push_back(obj);
 }
 
-void Scene::addObject(std::shared_ptr<BaseObject> obj)
+void Scene::addFigure(std::shared_ptr<BaseObject> obj)
 {
     _objects.push_back(obj);
+}
+
+
+void Scene::deleteLight(int id)
+{
+
+    auto end_iterator = _lights.end();
+
+    for (auto iter = _lights.begin(); iter != end_iterator; iter++)
+    {
+        if ((*iter)->getId() == id)
+        {
+            _lights.erase(iter);
+            break;
+        }
+    }
 }
 
 

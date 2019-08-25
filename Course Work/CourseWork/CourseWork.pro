@@ -31,9 +31,11 @@ SOURCES += \
     Command/addlightcommand.cpp \
     Command/addspherecommand.cpp \
     Command/cleancommand.cpp \
+    Command/deletelightcommand.cpp \
     Command/rendercommand.cpp \
     Drawer/qtdrawer.cpp \
     Geometry/vector3d.cpp \
+    IdMaker/idmaker.cpp \
     Manager/drawmanager.cpp \
     Manager/scenemanager.cpp \
     Mediator/mediator.cpp \
@@ -56,10 +58,12 @@ HEADERS += \
     Command/addspherecommand.h \
     Command/basecommand.h \
     Command/cleancommand.h \
+    Command/deletelightcommand.h \
     Command/rendercommand.h \
     Drawer/basedrawer.h \
     Drawer/qtdrawer.h \
     Geometry/vector3d.h \
+    IdMaker/idmaker.h \
     Manager/basemanager.h \
     Manager/drawmanager.h \
     Manager/scenemanager.h \

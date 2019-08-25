@@ -13,12 +13,13 @@ using object::Light;
 class AddLightCommand : public BaseCommand
 {
 public:
-    AddLightCommand(float, float, float, float);
+    AddLightCommand(float, float, float, float, int);
     void execute(std::shared_ptr<Mediator> mediator) override;
 
 private:
     float _x_centre, _y_centre, _z_centre;
     float _intensity;
+    int _id;
 };
 
 }

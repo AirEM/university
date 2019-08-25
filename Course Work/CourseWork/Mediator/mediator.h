@@ -19,8 +19,9 @@ class Mediator
 public:
     Mediator();
 
-    void AddSphere(std::shared_ptr<BaseObject>);
+    void AddFigure(std::shared_ptr<BaseObject>);
     void AddLight(std::shared_ptr<Light>);
+    void DeleteLight(int);
     void Clean();
     void Render(int, int, std::shared_ptr<BaseDrawer>);
 

@@ -24,7 +24,10 @@ public:
     std::vector<std::shared_ptr<BaseObject>> getObjects() const;
 
     void addLight(std::shared_ptr<Light>);
-    void addObject(std::shared_ptr<BaseObject>);
+    void addFigure(std::shared_ptr<BaseObject>);
+
+    void deleteLight(int);
+    //void deleteFigure(int);
 
     void clean();
 

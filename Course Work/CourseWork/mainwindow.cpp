@@ -11,14 +11,22 @@ MainWindow::MainWindow(QWidget *parent) :
     _ui->horizontalLayout->addWidget(&_label);
 
     // Добавление освещения
-    command::AddLightCommand command_l(0, 20,  20, 1.0);
-    _facede->execute(&command_l);
+    // ===============================================================================
+    int id_int = IdMaker::getLightID();
+
+    QVariant id(id_int);
+    _ui->lightComboBox->addItem(QString("Light_") + QString::number(-id_int), id);
+
+    command::AddLightCommand command(0, 20,  20, 1.0, id_int);
+    _facede->execute(&command);
+    // ===============================================================================
 }
 
 MainWindow::~MainWindow()
 {
     delete _ui;
 }
+
 
 void MainWindow::render()
 {
@@ -35,7 +43,6 @@ void MainWindow::render()
 
     _label.update();
 }
-
 
 void MainWindow::resizeEvent(QResizeEvent *event)
 {
@@ -87,14 +94,14 @@ void MainWindow::on_loadPushButton_clicked()
 
 
     // Добавление освещения
-//    command::AddLightCommand command_l(-20, 20,  20, 1.0);
-//    _facede->execute(&command_l);
+    command::AddLightCommand command_l(-20, 20,  20, 1.0, 0);
+    _facede->execute(&command_l);
 
-//    command::AddLightCommand command_l1(30, 50, -25, 1.2f);
-//    _facede->execute(&command_l1);
+    command::AddLightCommand command_l1(30, 50, -25, 1.2f, 0);
+    _facede->execute(&command_l1);
 
-//    command::AddLightCommand command_l2(30, 20,  30, 1.0);
-//    _facede->execute(&command_l2);
+    command::AddLightCommand command_l2(30, 20,  30, 1.0, 0);
+    _facede->execute(&command_l2);
 
 
 
@@ -112,17 +119,22 @@ void MainWindow::on_cleanPushButton_clicked()
 
 
 void MainWindow::on_addLightPushButton_clicked()
-{            
+{
+    // Получение паматров из GUI
+
     auto x = _ui->xLineEdit->text().toFloat();
     auto y = _ui->xLineEdit->text().toFloat();
     auto z = _ui->xLineEdit->text().toFloat();
 
     auto intesity = _ui->intLineEdit->text().toFloat();
 
-    QVariant index(317);
-    _ui->lightComboBox->addItem("Light_n", index);
+    // Генерирование ID объекта
+    int id = IdMaker::getLightID();
 
-    command::AddLightCommand command(x, y,  z, intesity);
+    // Добавление объекта в GUI
+    _ui->lightComboBox->addItem(QString("Light_") + QString::number(-id), QVariant(id));
+
+    command::AddLightCommand command(x, y,  z, intesity, id);
     _facede->execute(&command);
 
     render();
@@ -131,7 +143,16 @@ void MainWindow::on_addLightPushButton_clicked()
 
 void MainWindow::on_dellLightPushButton_clicked()
 {
-    int l = _ui->lightComboBox->currentData().toInt();
-    printf("INDEX %d", l);
-    //combobox->itemData(combobox->currentIndex())
+    int id = _ui->lightComboBox->currentData().toInt();
+    _ui->lightComboBox->removeItem(_ui->lightComboBox->currentIndex());
+
+    command::DeleteLightCommand command(id);
+    _facede->execute(&command);
+
+    render();
+}
+
+void MainWindow::on_renderPushButton_clicked()
+{
+    render();
 }

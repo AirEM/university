@@ -1,12 +1,13 @@
 #ifndef RENDERAREA_H
 #define RENDERAREA_H
 
+#include <memory>
+
 #include <QLabel>
 #include <QPixmap>
 #include <QPainter>
 #include <QPaintEvent>
 
-//#include "action.h"
 
 class MainLabel : public QLabel
 {
@@ -16,7 +17,6 @@ public:
 
     QPixmap* getPixmap();
 
-    void draw();
     void clean();
 
 private:

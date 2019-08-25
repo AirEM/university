@@ -13,7 +13,7 @@ void AddSphereCommand::execute(std::shared_ptr<Mediator> mediator)
 
     std::shared_ptr<Sphere> obj(s);
 
-    mediator->AddSphere(obj);
+    mediator->AddFigure(obj);
 
 }
 

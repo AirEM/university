@@ -12,7 +12,6 @@ class RenderCommand : public BaseCommand
 {
 public:
     RenderCommand(int, int, std::shared_ptr<BaseDrawer>);
-
     void execute(std::shared_ptr<Mediator>) override;
 
 private:
