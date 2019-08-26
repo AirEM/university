@@ -2,7 +2,7 @@
 
 namespace facade {
 
-Facade::Facade() : _mediator(new Mediator) {}
+std::shared_ptr<Mediator> Facade::_mediator(new Mediator);
 
 void Facade::execute(BaseCommand *command)
 {

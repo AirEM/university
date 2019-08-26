@@ -5,7 +5,7 @@ namespace proxy {
 int Proxy::_light_id = 1;
 int Proxy::_figure_id = 1;
 
-Proxy::Proxy() : _facade(new Facade) {}
+Proxy::Proxy() : _facade(&Facade::Instance()) {}
 
 int Proxy::CreateSphere()
 {

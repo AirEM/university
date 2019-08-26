@@ -4,7 +4,7 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     _ui(new Ui::MainWindow),
-    _facade(new Facade),
+    _facade(&Facade::Instance()),
     _proxy(new Proxy)
 {
     _ui->setupUi(this);
