@@ -7,27 +7,6 @@ int Proxy::_figure_id = 1;
 
 Proxy::Proxy() : _facade(new Facade) {}
 
-int Proxy::CreateSphere()
-{
-    int id = _figure_id++;
-
-    return id;
-}
-
-int Proxy::CreateCube()
-{
-    int id = _figure_id++;
-
-    return id;
-}
-
-int Proxy::CreateCone()
-{
-    int id = _figure_id++;
-
-    return id;
-}
-
 
 int Proxy::CreateLight()
 {
@@ -40,6 +19,19 @@ int Proxy::CreateLight()
 
     return id;
 }
+
+int Proxy::CreateFigure()
+{
+    int id = _figure_id++;
+
+    FigureDialog fd;
+    fd.setId(id);
+    fd.setModal(true);
+    fd.exec();
+
+    return id;
+}
+
 
 int Proxy::CreateMainLight()
 {

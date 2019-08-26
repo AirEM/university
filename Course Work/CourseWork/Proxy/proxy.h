@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "lightdialog.h"
+#include "figuredialog.h"
 
 #include "Facade/facade.h"
 
@@ -21,11 +22,9 @@ public:
     Proxy();
     ~Proxy() = default;
 
-    int CreateSphere();
-    int CreateCube();
-    int CreateCone();
-
     int CreateLight();
+    int CreateFigure();
+
     int CreateMainLight();
 
 private:

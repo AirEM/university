@@ -42,7 +42,7 @@ public:
     QFrame *frame;
     QHBoxLayout *horizontalLayout;
     QPushButton *addPushButton;
-    QPushButton *pushButton;
+    QPushButton *canselPushButton;
 
     void setupUi(QDialog *LightDialog)
     {
@@ -127,10 +127,10 @@ public:
 
         horizontalLayout->addWidget(addPushButton);
 
-        pushButton = new QPushButton(frame);
-        pushButton->setObjectName(QStringLiteral("pushButton"));
+        canselPushButton = new QPushButton(frame);
+        canselPushButton->setObjectName(QStringLiteral("canselPushButton"));
 
-        horizontalLayout->addWidget(pushButton);
+        horizontalLayout->addWidget(canselPushButton);
 
 
         verticalLayout->addWidget(frame);
@@ -152,7 +152,7 @@ public:
         groupBox->setTitle(QApplication::translate("LightDialog", "\320\230\320\275\321\202\320\265\320\275\321\201\320\270\320\262\320\275\320\276\321\201\321\202\321\214", nullptr));
         intensityLabel->setText(QApplication::translate("LightDialog", "I =", nullptr));
         addPushButton->setText(QApplication::translate("LightDialog", "\320\224\320\276\320\261\320\260\320\262\320\270\321\202\321\214", nullptr));
-        pushButton->setText(QApplication::translate("LightDialog", "\320\236\321\202\320\274\320\265\320\275\320\270\321\202\321\214", nullptr));
+        canselPushButton->setText(QApplication::translate("LightDialog", "\320\236\321\202\320\274\320\265\320\275\320\270\321\202\321\214", nullptr));
     } // retranslateUi
 
 };

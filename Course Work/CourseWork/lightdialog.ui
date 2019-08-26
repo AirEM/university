@@ -113,7 +113,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="pushButton">
+       <widget class="QPushButton" name="canselPushButton">
         <property name="text">
          <string>Отменить</string>
         </property>

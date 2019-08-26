@@ -46,6 +46,7 @@ SOURCES += \
     Object/sphere.cpp \
     Scene/scene.cpp \
     facade/facade.cpp \
+    figuredialog.cpp \
     lightdialog.cpp \
         main.cpp \
         mainwindow.cpp \
@@ -77,11 +78,13 @@ HEADERS += \
     Object/sphere.h \
     Scene/scene.h \
     facade/facade.h \
+    figuredialog.h \
     lightdialog.h \
         mainwindow.h \
     renderarea.h
 
 FORMS += \
+        figuredialog.ui \
         lightdialog.ui \
         mainwindow.ui
 

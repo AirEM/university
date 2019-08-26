@@ -67,12 +67,10 @@ void MainWindow::on_addLightPushButton_clicked()
 
 void MainWindow::on_addFigurePushButton_clicked()
 {
-
-    // Генерирование ID объекта
-    int id = 0;//Proxy::getLightID();
+    int id = _proxy->CreateFigure();
 
     // Добавление объекта в GUI
-    _ui->lightComboBox->addItem(QString("Light_") + QString::number(-id), QVariant(id));
+    _ui->figureComboBox->addItem(QString("Figure_") + QString::number(id), QVariant(id));
 
     render();
 }
@@ -110,12 +108,15 @@ void MainWindow::on_loadPushButton_clicked()
     Material      ivory(Vector3d(0.6f,  0.3f, 0), Vector3d(0.4f, 0.4f, 0.3f),   50.);
     Material red_rubber(Vector3d(0.9f,  0.1f, 0), Vector3d(0.3f, 0.1f, 0.1f),   10.);
 
+
+    Material red_rubber_2(Vector3d(0.9f,  0.1f, 0), Vector3d(0.9f, 0.1f, 0),   0.);
+
     // Создание сферы
 //    command::AddSphereCommand command(-3, 0, -16, 2, ivory);
 //    _facede->execute(&command);
 
     // Еще сферы
-    command::AddSphereCommand command_1(-4, -2, -12, 2, red_rubber);
+    command::AddSphereCommand command_1(-4, -2, -12, 2, red_rubber_2);
     _facade->execute(&command_1);
 
 //    command::AddSphereCommand command_2(1.5, -0.5, -18, 3, red_rubber);
