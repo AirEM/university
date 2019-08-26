@@ -23,8 +23,7 @@
 
 #include "Command/deletelightcommand.h"
 
-#include "IdMaker/idmaker.h"
-
+#include "Proxy/proxy.h"
 
 
 namespace Ui {
@@ -32,10 +31,13 @@ class MainWindow;
 }
 
 using facade::Facade;
+
 using drawer::BaseDrawer;
 using drawer::QtDrawer;
 
 using object::Material;
+
+using proxy::Proxy;
 using geometry::Vector3d;
 
 class MainWindow : public QMainWindow
@@ -58,11 +60,14 @@ private slots:
 
     void on_renderPushButton_clicked();
 
+    void on_addFigurePushButton_clicked();
+
 private:
     Ui::MainWindow *_ui;
     MainLabel _label;
 
-    std::unique_ptr<Facade> _facede;
+    std::unique_ptr<Facade> _facade;
+    std::unique_ptr<Proxy> _proxy;
 
     void resizeEvent(QResizeEvent *event) override;
 

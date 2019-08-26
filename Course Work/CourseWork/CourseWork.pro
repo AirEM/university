@@ -35,7 +35,7 @@ SOURCES += \
     Command/rendercommand.cpp \
     Drawer/qtdrawer.cpp \
     Geometry/vector3d.cpp \
-    IdMaker/idmaker.cpp \
+    Proxy/proxy.cpp \
     Manager/drawmanager.cpp \
     Manager/scenemanager.cpp \
     Mediator/mediator.cpp \
@@ -48,7 +48,8 @@ SOURCES += \
     facade/facade.cpp \
         main.cpp \
         mainwindow.cpp \
-    renderarea.cpp
+    renderarea.cpp \
+    spheredialog.cpp
 
 HEADERS += \
     Camera/camera.h \
@@ -63,7 +64,7 @@ HEADERS += \
     Drawer/basedrawer.h \
     Drawer/qtdrawer.h \
     Geometry/vector3d.h \
-    IdMaker/idmaker.h \
+    Proxy/proxy.h \
     Manager/basemanager.h \
     Manager/drawmanager.h \
     Manager/scenemanager.h \
@@ -77,10 +78,12 @@ HEADERS += \
     Scene/scene.h \
     facade/facade.h \
         mainwindow.h \
-    renderarea.h
+    renderarea.h \
+    spheredialog.h
 
 FORMS += \
-        mainwindow.ui
+        mainwindow.ui \
+        spheredialog.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
