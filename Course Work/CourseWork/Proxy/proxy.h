@@ -3,6 +3,8 @@
 
 #include <memory>
 
+#include "lightdialog.h"
+
 #include "Facade/facade.h"
 
 #include "Command/addlightcommand.h"
@@ -20,13 +22,17 @@ public:
     ~Proxy() = default;
 
     int CreateSphere();
+    int CreateCube();
+    int CreateCone();
+
+    int CreateLight();
     int CreateMainLight();
 
 private:
     static int _light_id;
     static int _figure_id;
 
-    std::unique_ptr<Facade> _facade;
+    std::shared_ptr<Facade> _facade;
 
     Proxy(const Proxy&);
     Proxy& operator=(const Proxy&);

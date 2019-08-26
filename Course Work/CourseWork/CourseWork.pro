@@ -46,10 +46,10 @@ SOURCES += \
     Object/sphere.cpp \
     Scene/scene.cpp \
     facade/facade.cpp \
+    lightdialog.cpp \
         main.cpp \
         mainwindow.cpp \
-    renderarea.cpp \
-    spheredialog.cpp
+    renderarea.cpp
 
 HEADERS += \
     Camera/camera.h \
@@ -77,13 +77,13 @@ HEADERS += \
     Object/sphere.h \
     Scene/scene.h \
     facade/facade.h \
+    lightdialog.h \
         mainwindow.h \
-    renderarea.h \
-    spheredialog.h
+    renderarea.h
 
 FORMS += \
-        mainwindow.ui \
-        spheredialog.ui
+        lightdialog.ui \
+        mainwindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

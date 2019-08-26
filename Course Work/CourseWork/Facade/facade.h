@@ -14,19 +14,14 @@ using mediator::Mediator;
 class Facade
 {
 public:
-
-    static Facade& Instance()
-    {
-        static Facade theSingleInstance;
-        return theSingleInstance;
-    }
+    Facade() = default;
+    ~Facade() = default;
 
     void execute(BaseCommand *command);
 
 private:
     static std::shared_ptr<Mediator> _mediator;
 
-    Facade(){}
     Facade(const Facade& root) = delete;
     Facade& operator=(const Facade&) = delete;
 

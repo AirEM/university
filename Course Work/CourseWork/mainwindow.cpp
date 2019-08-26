@@ -4,7 +4,7 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     _ui(new Ui::MainWindow),
-    _facade(&Facade::Instance()),
+    _facade(new Facade),
     _proxy(new Proxy)
 {
     _ui->setupUi(this);
@@ -57,22 +57,10 @@ void MainWindow::on_cleanPushButton_clicked()
 
 void MainWindow::on_addLightPushButton_clicked()
 {
-    // Получение паматров из GUI
-
-    auto x = _ui->xLineEdit->text().toFloat();
-    auto y = _ui->xLineEdit->text().toFloat();
-    auto z = _ui->xLineEdit->text().toFloat();
-
-    auto intesity = _ui->intLineEdit->text().toFloat();
-
-    // Генерирование ID объекта
-    int id = 0;//Proxy::getLightID();
+    int id = _proxy->CreateLight();
 
     // Добавление объекта в GUI
-    _ui->lightComboBox->addItem(QString("Light_") + QString::number(-id), QVariant(id));
-
-    command::AddLightCommand command(x, y,  z, intesity, id);
-    _facade->execute(&command);
+    _ui->lightComboBox->addItem(QString("Light_") + QString::number(id), QVariant(id));
 
     render();
 }
@@ -80,24 +68,11 @@ void MainWindow::on_addLightPushButton_clicked()
 void MainWindow::on_addFigurePushButton_clicked()
 {
 
-    // TODO ВЫБОР ИЗ ТРЕХ ФИГУР, КОТОРЫЕ НУЖНО ДОБАВИТЬ
-
-    // Получение паматров из GUI
-
-    auto x = _ui->xSphereLineEdit->text().toFloat();
-    auto y = _ui->ySphereLineEdit->text().toFloat();
-    auto z = _ui->zSphereLineEdit->text().toFloat();
-
-    auto radius = _ui->radiusSphereLineEdit->text().toFloat();
-
     // Генерирование ID объекта
     int id = 0;//Proxy::getLightID();
 
     // Добавление объекта в GUI
     _ui->lightComboBox->addItem(QString("Light_") + QString::number(-id), QVariant(id));
-
-//    command::AddSphereCommand command(x, y,  z, radius);//, id);
-//    _facede->execute(&command);
 
     render();
 }

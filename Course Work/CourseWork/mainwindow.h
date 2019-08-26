@@ -66,8 +66,8 @@ private:
     Ui::MainWindow *_ui;
     MainLabel _label;
 
-    std::unique_ptr<Facade> _facade;
-    std::unique_ptr<Proxy> _proxy;
+    std::shared_ptr<Facade> _facade;
+    std::shared_ptr<Proxy> _proxy;
 
     void resizeEvent(QResizeEvent *event) override;
 
