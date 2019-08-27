@@ -45,9 +45,9 @@ SOURCES += \
     Object/cube.cpp \
     Object/sphere.cpp \
     Scene/scene.cpp \
-    facade/facade.cpp \
-    figuredialog.cpp \
-    lightdialog.cpp \
+    Facade/facade.cpp \
+    UI/figuredialog.cpp \
+    UI/lightdialog.cpp \
         main.cpp \
         mainwindow.cpp \
     renderarea.cpp
@@ -77,15 +77,15 @@ HEADERS += \
     Object/cube.h \
     Object/sphere.h \
     Scene/scene.h \
-    facade/facade.h \
-    figuredialog.h \
-    lightdialog.h \
+    Facade/facade.h \
+    UI/figuredialog.h \
+    UI/lightdialog.h \
         mainwindow.h \
     renderarea.h
 
 FORMS += \
-        figuredialog.ui \
-        lightdialog.ui \
+        UI/figuredialog.ui \
+        UI/lightdialog.ui \
         mainwindow.ui
 
 # Default rules for deployment.

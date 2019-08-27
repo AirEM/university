@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>240</width>
-    <height>320</height>
+    <width>311</width>
+    <height>360</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -93,6 +93,45 @@
           </item>
           <item>
            <widget class="QLineEdit" name="radiusSphereLineEdit"/>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="sphereColorGroupBox">
+         <property name="title">
+          <string>Цвет</string>
+         </property>
+         <layout class="QHBoxLayout" name="horizontalLayout_4">
+          <item>
+           <widget class="QLabel" name="redSphereLabel">
+            <property name="text">
+             <string>R =</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="redSphereLineEdit"/>
+          </item>
+          <item>
+           <widget class="QLabel" name="greenSphereLabel">
+            <property name="text">
+             <string>G =</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="greenSphereLineEdit"/>
+          </item>
+          <item>
+           <widget class="QLabel" name="blueSphereLabel">
+            <property name="text">
+             <string>B =</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="blueSphereLineEdit"/>
           </item>
          </layout>
         </widget>

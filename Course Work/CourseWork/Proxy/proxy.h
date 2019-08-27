@@ -3,8 +3,8 @@
 
 #include <memory>
 
-#include "lightdialog.h"
-#include "figuredialog.h"
+#include "../UI/lightdialog.h"
+#include "../UI/figuredialog.h"
 
 #include "Facade/facade.h"
 

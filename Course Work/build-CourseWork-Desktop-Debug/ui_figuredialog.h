@@ -43,6 +43,14 @@ public:
     QHBoxLayout *horizontalLayout_2;
     QLabel *radiusSphereLabel;
     QLineEdit *radiusSphereLineEdit;
+    QGroupBox *sphereColorGroupBox;
+    QHBoxLayout *horizontalLayout_4;
+    QLabel *redSphereLabel;
+    QLineEdit *redSphereLineEdit;
+    QLabel *greenSphereLabel;
+    QLineEdit *greenSphereLineEdit;
+    QLabel *blueSphereLabel;
+    QLineEdit *blueSphereLineEdit;
     QWidget *cubeTab;
     QWidget *coneTab;
     QWidget *widget;
@@ -54,7 +62,7 @@ public:
     {
         if (FigureDialog->objectName().isEmpty())
             FigureDialog->setObjectName(QStringLiteral("FigureDialog"));
-        FigureDialog->resize(240, 320);
+        FigureDialog->resize(311, 360);
         verticalLayout = new QVBoxLayout(FigureDialog);
         verticalLayout->setObjectName(QStringLiteral("verticalLayout"));
         label = new QLabel(FigureDialog);
@@ -126,6 +134,43 @@ public:
 
         verticalLayout_2->addWidget(sphereRadiusGroupBox);
 
+        sphereColorGroupBox = new QGroupBox(sphereTab);
+        sphereColorGroupBox->setObjectName(QStringLiteral("sphereColorGroupBox"));
+        horizontalLayout_4 = new QHBoxLayout(sphereColorGroupBox);
+        horizontalLayout_4->setObjectName(QStringLiteral("horizontalLayout_4"));
+        redSphereLabel = new QLabel(sphereColorGroupBox);
+        redSphereLabel->setObjectName(QStringLiteral("redSphereLabel"));
+
+        horizontalLayout_4->addWidget(redSphereLabel);
+
+        redSphereLineEdit = new QLineEdit(sphereColorGroupBox);
+        redSphereLineEdit->setObjectName(QStringLiteral("redSphereLineEdit"));
+
+        horizontalLayout_4->addWidget(redSphereLineEdit);
+
+        greenSphereLabel = new QLabel(sphereColorGroupBox);
+        greenSphereLabel->setObjectName(QStringLiteral("greenSphereLabel"));
+
+        horizontalLayout_4->addWidget(greenSphereLabel);
+
+        greenSphereLineEdit = new QLineEdit(sphereColorGroupBox);
+        greenSphereLineEdit->setObjectName(QStringLiteral("greenSphereLineEdit"));
+
+        horizontalLayout_4->addWidget(greenSphereLineEdit);
+
+        blueSphereLabel = new QLabel(sphereColorGroupBox);
+        blueSphereLabel->setObjectName(QStringLiteral("blueSphereLabel"));
+
+        horizontalLayout_4->addWidget(blueSphereLabel);
+
+        blueSphereLineEdit = new QLineEdit(sphereColorGroupBox);
+        blueSphereLineEdit->setObjectName(QStringLiteral("blueSphereLineEdit"));
+
+        horizontalLayout_4->addWidget(blueSphereLineEdit);
+
+
+        verticalLayout_2->addWidget(sphereColorGroupBox);
+
         figureTabWidget->addTab(sphereTab, QString());
         cubeTab = new QWidget();
         cubeTab->setObjectName(QStringLiteral("cubeTab"));
@@ -172,6 +217,10 @@ public:
         zSphereLabel->setText(QApplication::translate("FigureDialog", "Z =", nullptr));
         sphereRadiusGroupBox->setTitle(QApplication::translate("FigureDialog", "\320\240\320\260\320\264\320\270\321\203\321\201", nullptr));
         radiusSphereLabel->setText(QApplication::translate("FigureDialog", "R =", nullptr));
+        sphereColorGroupBox->setTitle(QApplication::translate("FigureDialog", "\320\246\320\262\320\265\321\202", nullptr));
+        redSphereLabel->setText(QApplication::translate("FigureDialog", "R =", nullptr));
+        greenSphereLabel->setText(QApplication::translate("FigureDialog", "G =", nullptr));
+        blueSphereLabel->setText(QApplication::translate("FigureDialog", "B =", nullptr));
         figureTabWidget->setTabText(figureTabWidget->indexOf(sphereTab), QApplication::translate("FigureDialog", "\320\241\321\204\320\265\321\200\320\260", nullptr));
         figureTabWidget->setTabText(figureTabWidget->indexOf(cubeTab), QApplication::translate("FigureDialog", "\320\241\321\202\321\200\320\260\320\275\320\270\321\206\320\260", nullptr));
         figureTabWidget->setTabText(figureTabWidget->indexOf(coneTab), QApplication::translate("FigureDialog", "Tab 2", nullptr));
