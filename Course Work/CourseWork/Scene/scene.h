@@ -27,7 +27,7 @@ public:
     void addFigure(std::shared_ptr<BaseObject>);
 
     void deleteLight(int);
-    //void deleteFigure(int);
+    void deleteFigure(int);
 
     void clean();
 

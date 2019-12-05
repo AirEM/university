@@ -84,6 +84,7 @@ void DrawManager::render(std::shared_ptr<Scene>& scene)
     const float fov    = static_cast<float>(M_PI / 3);
 
 
+    #pragma omp parallel for
     for (int i = 0; i < width; i++)
     {
         for (int j = 0; j < height; j++)

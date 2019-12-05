@@ -29,6 +29,13 @@ void Mediator::DeleteLight(int id)
 }
 
 
+void Mediator::DeleteFigure(int id)
+{
+    auto scene = _scene_manager->getScene();
+    scene->deleteFigure(id);
+}
+
+
 void Mediator::Clean()
 {
     auto scene = _scene_manager->getScene();

@@ -24,14 +24,18 @@ public:
     ~LightDialog();
 
     void setId(int);
+    bool isCanseled();
 
 private slots:
     void on_addPushButton_clicked();
+
+    void on_canselPushButton_clicked();
 
 private:
     Ui::LightDialog *_ui;
 
     int _id;
+    bool _isCanseled;
 
     std::shared_ptr<Facade> _facade;
 };

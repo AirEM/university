@@ -8,7 +8,7 @@ namespace object {
 class Cone : public BaseObject
 {
 public:
-    Cone(Vector3d& , int, int, Material&);
+    Cone(int, Vector3d& , int, int, Material&);
 
     Material getMaterial() const override;
     Vector3d getNormal(const Vector3d&) override;

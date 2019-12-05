@@ -13,10 +13,11 @@ using object::Material;
 class AddConeCommand : public BaseCommand
 {
 public:
-    AddConeCommand(Vector3d&, int, int, Material&);
+    AddConeCommand(int, Vector3d&, int, int, Material&);
     void execute(std::shared_ptr<Mediator> mediator) override;
 
 private:
+    int _id;
     Vector3d _centre;
     int _height;
     int _rad;

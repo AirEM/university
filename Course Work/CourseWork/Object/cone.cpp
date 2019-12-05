@@ -2,8 +2,9 @@
 
 namespace object {
 
-Cone::Cone(Vector3d& c, int h, int r, Material& m) : _centre(c), _height(h), _radius(r)
+Cone::Cone(int id, Vector3d& c, int h, int r, Material& m) : _centre(c), _height(h), _radius(r)
 {
+    this->_id = id;
     this->_material = m;
 
     _alfa  = _height*_height * _radius*_radius;

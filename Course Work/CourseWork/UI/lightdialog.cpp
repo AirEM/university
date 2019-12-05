@@ -7,6 +7,8 @@ LightDialog::LightDialog(QWidget *parent) :
     _facade(new Facade)
 {
     _ui->setupUi(this);
+
+    _isCanseled = false;
 }
 
 LightDialog::~LightDialog()
@@ -21,6 +23,12 @@ void LightDialog::setId(int id)
 }
 
 
+bool LightDialog::isCanseled()
+{
+    return _isCanseled;
+}
+
+
 void LightDialog::on_addPushButton_clicked()
 {
     auto x =_ui->xLineEdit->text().toFloat();
@@ -32,5 +40,11 @@ void LightDialog::on_addPushButton_clicked()
     command::AddLightCommand command_l(x, y, z, intensity, _id);
     _facade->execute(&command_l);
 
+    this->close();
+}
+
+void LightDialog::on_canselPushButton_clicked()
+{
+    this->_isCanseled = true;
     this->close();
 }

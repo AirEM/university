@@ -2,8 +2,9 @@
 
 namespace object {
 
-Sphere::Sphere(Vector3d centre, size_t radius, Material m) : _centre(centre), _radius(radius)
+Sphere::Sphere(int id, Vector3d centre, size_t radius, Material m) : _centre(centre), _radius(radius)
 {
+    this->_id = id;
     this->_material = m;
 }
 

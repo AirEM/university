@@ -21,6 +21,7 @@
 #include "Command/cleancommand.h"
 #include "Command/rendercommand.h"
 
+#include "Command/deletefigurecommand.h"
 #include "Command/deletelightcommand.h"
 
 #include "Proxy/proxy.h"
@@ -61,6 +62,8 @@ private slots:
     void on_renderPushButton_clicked();
 
     void on_addFigurePushButton_clicked();
+
+    void on_delFigurePushButton_clicked();
 
 private:
     Ui::MainWindow *_ui;

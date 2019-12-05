@@ -8,7 +8,7 @@ namespace object {
 class Cube : public BaseObject
 {
 public:
-    Cube(Vector3d&, Vector3d&, Material&);
+    Cube(int, Vector3d&, Vector3d&, Material&);
 
     Material getMaterial() const override;
     Vector3d getNormal(const Vector3d&) override;

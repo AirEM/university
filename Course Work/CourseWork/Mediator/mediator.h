@@ -22,6 +22,7 @@ public:
     void AddFigure(std::shared_ptr<BaseObject>);
     void AddLight(std::shared_ptr<Light>);
     void DeleteLight(int);
+    void DeleteFigure(int);
     void Clean();
     void Render(int, int, std::shared_ptr<BaseDrawer>);
 

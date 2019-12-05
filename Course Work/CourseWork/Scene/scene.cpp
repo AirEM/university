@@ -34,7 +34,6 @@ void Scene::addFigure(std::shared_ptr<BaseObject> obj)
 
 void Scene::deleteLight(int id)
 {
-
     auto end_iterator = _lights.end();
 
     for (auto iter = _lights.begin(); iter != end_iterator; iter++)
@@ -42,6 +41,21 @@ void Scene::deleteLight(int id)
         if ((*iter)->getId() == id)
         {
             _lights.erase(iter);
+            break;
+        }
+    }
+}
+
+
+void Scene::deleteFigure(int id)
+{
+    auto end_iterator = _objects.end();
+
+    for (auto iter = _objects.begin(); iter != end_iterator; iter++)
+    {
+        if ((*iter)->getID() == id)
+        {
+            _objects.erase(iter);
             break;
         }
     }

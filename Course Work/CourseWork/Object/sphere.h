@@ -8,7 +8,7 @@ namespace object {
 class Sphere : public BaseObject
 {
 public:
-    Sphere(Vector3d, size_t, Material);
+    Sphere(int, Vector3d, size_t, Material);
 
     Material getMaterial() const override;
     Vector3d getNormal(const Vector3d&) override;

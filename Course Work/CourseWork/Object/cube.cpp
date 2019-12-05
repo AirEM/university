@@ -2,8 +2,10 @@
 
 namespace object {
 
-Cube::Cube(Vector3d& min, Vector3d& max, Material& m)
+Cube::Cube(int id, Vector3d& min, Vector3d& max, Material& m)
 {
+    this->_id = id;
+
     min_point = min;
     max_point = max;
     this->_material = m;

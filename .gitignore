@@ -1,12 +1,4 @@
-
-*.o
-Course Work/build-CourseWork-Desktop-Debug/.qmake.stash
-*.exe
-Course Work/build-CourseWork-Desktop-Debug/ui_mainwindow.h
-Course Work/build-CourseWork-Desktop-Debug/object_script.CourseWork.Release
-Course Work/build-CourseWork-Desktop-Debug/object_script.CourseWork.Debug
-Course Work/build-CourseWork-Desktop-Debug/Makefile.Release
-Course Work/build-CourseWork-Desktop-Debug/Makefile.Debug
-Course Work/build-CourseWork-Desktop-Debug/Makefile
-Course Work/build-CourseWork-Desktop-Debug/debug/moc_mainwindow.cpp
-Course Work/build-CourseWork-Desktop-Debug/debug/moc_predefs.h
+*.pro
+.DS_Store
+*.pro*
+/Course Work/build-CourseWork-Desktop_Qt_5_13_1_clang_64bit-Debug/*

@@ -12,10 +12,11 @@ using object::Material;
 class AddSphereCommand : public BaseCommand
 {
 public:
-    AddSphereCommand(float, float, float, size_t, Material);
+    AddSphereCommand(int, float, float, float, size_t, Material);
     void execute(std::shared_ptr<Mediator> mediator) override;
 
 private:
+    int _id;
     float _x_centre, _y_centre, _z_centre;
     size_t _radius;
     Material _material;

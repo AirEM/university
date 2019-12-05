@@ -9,15 +9,20 @@
 
 #include "Facade/facade.h"
 
+#include "Object/Material/material.h"
+
 namespace Ui {
 class FigureDialog;
 }
 
-using facade::Facade;
-
 using command::AddSphereCommand;
 using command::AddCubeCommand;
 using command::AddConeCommand;
+
+using facade::Facade;
+
+using object::Material;
+using geometry::Vector3d;
 
 class FigureDialog : public QDialog
 {
@@ -29,13 +34,19 @@ public:
 
     void setId(int);
 
+    bool isCanseled();
+
 private slots:
     void on_addPushButton_clicked();
 
+    void on_canselPushButton_clicked();
+
 private:
-    Ui::FigureDialog *ui;
+    Ui::FigureDialog *_ui;
 
     int _id;
+
+    bool _isCanseled;
 
     std::shared_ptr<Facade> _facade;
 };
