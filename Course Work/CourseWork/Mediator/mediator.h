@@ -21,8 +21,12 @@ public:
 
     void AddFigure(std::shared_ptr<BaseObject>);
     void AddLight(std::shared_ptr<Light>);
+
     void DeleteLight(int);
     void DeleteFigure(int);
+
+    void TransformCamera(float, float, float, float, float);
+
     void Clean();
     void Render(int, int, std::shared_ptr<BaseDrawer>);
 

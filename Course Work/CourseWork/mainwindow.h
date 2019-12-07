@@ -18,11 +18,15 @@
 #include "Command/addcubecommand.h"
 #include "Command/addconecommand.h"
 #include "Command/addlightcommand.h"
-#include "Command/cleancommand.h"
-#include "Command/rendercommand.h"
 
 #include "Command/deletefigurecommand.h"
 #include "Command/deletelightcommand.h"
+
+#include "Command/cleancommand.h"
+#include "Command/rendercommand.h"
+
+#include "Command/movecameracommand.h"
+#include "Command/rotatecameracommand.h"
 
 #include "Proxy/proxy.h"
 
@@ -51,7 +55,7 @@ public:
 
 private slots:
 
-    void on_loadPushButton_clicked();
+    //void on_loadPushButton_clicked();
 
     void on_cleanPushButton_clicked();
 
@@ -59,11 +63,31 @@ private slots:
 
     void on_dellLightPushButton_clicked();
 
-    void on_renderPushButton_clicked();
+    //void on_renderPushButton_clicked();
 
     void on_addFigurePushButton_clicked();
 
     void on_delFigurePushButton_clicked();
+
+    void on_upPushButton_clicked();
+
+    void on_downPushButton_clicked();
+
+    void on_rightPushButton_clicked();
+
+    void on_leftPushButton_clicked();
+
+    void on_nearerPushButton_clicked();
+
+    void on_furtherPushButton_clicked();
+
+    void on_forwardPushButton_clicked();
+
+    void on_backPushButton_clicked();
+
+    void on_rotationLeftPushButton_clicked();
+
+    void on_rotationRightPushButton_clicked();
 
 private:
     Ui::MainWindow *_ui;

@@ -24,6 +24,8 @@ public:
     Vector3d mult(const float) const;
     float mult(const Vector3d&) const;
 
+    void rotate(float, float, float);
+
     Vector3d& operator=(const Vector3d&);
     Vector3d& operator=(Vector3d&);
 

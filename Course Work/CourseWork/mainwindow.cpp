@@ -102,7 +102,7 @@ void MainWindow::on_cleanPushButton_clicked()
     render();
 }
 
-
+/*
 void MainWindow::on_renderPushButton_clicked()
 {
     render();
@@ -110,7 +110,7 @@ void MainWindow::on_renderPushButton_clicked()
 
 void MainWindow::on_loadPushButton_clicked()
 {
-    /*
+    *
      *
      *      TODO - Лист
      * X,Y как в декартевой системе координат
@@ -125,7 +125,7 @@ void MainWindow::on_loadPushButton_clicked()
      *
      * Определить новое место для центра, сейчас оно в камере
      *
-     */
+
 
     // Диффузный цвет(Метриал)
 //    Material      ivory(Vector3d(0.6f,  0.3f, 0), Vector3d(0.4f, 0.4f, 0.3f),   50.);
@@ -176,4 +176,85 @@ void MainWindow::on_loadPushButton_clicked()
 
     // Отрисовка
     this->render();
+}
+*/
+
+void MainWindow::on_upPushButton_clicked()
+{
+    command::MoveCameraCommand command(0, 1, 0);
+    _facade->execute(&command);
+
+    render();
+}
+
+void MainWindow::on_downPushButton_clicked()
+{
+    command::MoveCameraCommand command(0, -1, 0);
+    _facade->execute(&command);
+
+    render();
+}
+
+void MainWindow::on_rightPushButton_clicked()
+{
+    command::MoveCameraCommand command(1, 0, 0);
+    _facade->execute(&command);
+
+    render();
+}
+
+void MainWindow::on_leftPushButton_clicked()
+{
+    command::MoveCameraCommand command(-1, 0, 0);
+    _facade->execute(&command);
+
+    render();
+}
+
+void MainWindow::on_nearerPushButton_clicked()
+{
+    command::MoveCameraCommand command(0, 0, -1);
+    _facade->execute(&command);
+
+    render();
+}
+
+void MainWindow::on_furtherPushButton_clicked()
+{
+    command::MoveCameraCommand command(0, 0, 1);
+    _facade->execute(&command);
+
+    render();
+}
+
+void MainWindow::on_forwardPushButton_clicked()
+{
+    command::RotateCameraCommand command(-1, 0);
+    _facade->execute(&command);
+
+    render();
+}
+
+void MainWindow::on_backPushButton_clicked()
+{
+    command::RotateCameraCommand command(1, 0);
+    _facade->execute(&command);
+
+    render();
+}
+
+void MainWindow::on_rotationLeftPushButton_clicked()
+{
+    command::RotateCameraCommand command(0, 1);
+    _facade->execute(&command);
+
+    render();
+}
+
+void MainWindow::on_rotationRightPushButton_clicked()
+{
+    command::RotateCameraCommand command(0, -1);
+    _facade->execute(&command);
+
+    render();
 }

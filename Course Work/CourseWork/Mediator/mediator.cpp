@@ -28,11 +28,20 @@ void Mediator::DeleteLight(int id)
     scene->deleteLight(id);
 }
 
-
 void Mediator::DeleteFigure(int id)
 {
     auto scene = _scene_manager->getScene();
     scene->deleteFigure(id);
+}
+
+
+void Mediator::TransformCamera(float dx, float dy, float dz, float angle_x, float angle_y)
+{
+    auto camera = _scene_manager->getScene()->getCamera();
+
+    camera->moveCamera(dx, dy, dz);
+
+    camera->rotateCamera(angle_x, angle_y);
 }
 
 

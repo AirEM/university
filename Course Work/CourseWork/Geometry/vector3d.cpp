@@ -86,6 +86,18 @@ float Vector3d::mult(const Vector3d& rhs) const
 }
 
 
+void Vector3d::rotate(float angleX, float angleY, float angleZ)
+{
+    auto new_x = _x;
+    auto new_y = _y * std::cos(angleX) - _z * std::sin(angleX);
+    auto new_z = _y * std::sin(angleX) + _z * std::cos(angleX);
+
+    _x = new_x * std::cos(angleY) + new_z * std::sin(angleY);
+    _y = new_y;
+    _z = -new_x * std::sin(angleY) + new_z * std::cos(angleY);
+}
+
+
 Vector3d& Vector3d::operator=(const Vector3d& right)
 {
     //проверка на самоприсваивание

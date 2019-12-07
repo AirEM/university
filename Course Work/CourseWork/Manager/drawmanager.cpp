@@ -1,4 +1,6 @@
-#include "drawmanager.h"
+﻿#include "drawmanager.h"
+
+#include <iostream>
 
 namespace manager {
 
@@ -83,6 +85,11 @@ void DrawManager::render(std::shared_ptr<Scene>& scene)
     const int height   = _height;
     const float fov    = static_cast<float>(M_PI / 3);
 
+    auto camera_position = scene->getCamera()->getPosition();
+
+    auto camera_angle_X = scene->getCamera()->getAngleX() * static_cast<float>(M_PI) / 180.0f;
+    auto camera_angle_Y = scene->getCamera()->getAngleY() * static_cast<float>(M_PI) / 180.0f;
+
 
     #pragma omp parallel for
     for (int i = 0; i < width; i++)
@@ -94,18 +101,17 @@ void DrawManager::render(std::shared_ptr<Scene>& scene)
             float dir_y = -(j + 0.5f) + height/2.0f;
             float dir_z = -height / (2.0f * tanf( fov / 2.0f) );
 
-            // Нормализованное напрваление текущего луча
-            Vector3d dir = Vector3d(dir_x, dir_y, dir_z).normalize();
-
-            // Получение позиции камеры
-            auto camera_position = scene->getCamera()->getPosition();
+            // Поворот и нормализация  вектора напрваления текущего луча
+            Vector3d dir = Vector3d(dir_x, dir_y, dir_z);
+            dir.rotate(camera_angle_X, camera_angle_Y, 0);
+            dir.normalize();
 
             // Цвет текущего пткселя
             Vector3d res_color = cast_ray(camera_position, dir, scene);
 
-            int r = int(roundf(255 *res_color.getX()));
-            int g = int(roundf(255 *res_color.getY()));
-            int b = int(roundf(255 *res_color.getZ()));
+            int r = int(roundf(255 * res_color.getX()));
+            int g = int(roundf(255 * res_color.getY()));
+            int b = int(roundf(255 * res_color.getZ()));
 
             _drawer->setColor(r, g, b);
             _drawer->drawPoint(i, j);
