@@ -2,21 +2,17 @@
 
 namespace object {
 
-Sphere::Sphere(int id, Vector3d centre, size_t radius, Material m) : _centre(centre), _radius(radius)
+Sphere::Sphere(int id, Vector3d centre, size_t radius, Material m) : _center(centre), _radius(radius)
 {
     this->_id = id;
     this->_material = m;
+    this->_radius2 = _radius * _radius;
 }
 
 
-Material Sphere::getMaterial() const
+Vector3d Sphere::getNormal(const Vector3d& hit) const
 {
-    return _material;
-}
-
-Vector3d Sphere::getNormal(const Vector3d& hit)
-{
-    Vector3d N = (hit - this->_centre).normalize();
+    Vector3d N = (hit - this->_center).normalize();
 
     return N;
 }
@@ -26,9 +22,9 @@ bool Sphere::ray_intersect(const Vector3d &orig, const Vector3d &dir, float &t0)
 {
 
     // Луч, напрвленный от камеры к центру сферы
-    Vector3d L = this->_centre - orig;
+    Vector3d L = this->_center - orig;
 
-    // Луч, скоректированный напрвлением
+    // Блидайшая  к центру сферы точка на луче
     float tca = L * dir;
 
     // Разность между квадратами двух лучей
@@ -36,10 +32,10 @@ bool Sphere::ray_intersect(const Vector3d &orig, const Vector3d &dir, float &t0)
 
     // Если их разность больше квадрата радиуса
     // то данный луч в напрвлении dir сферу не пересекает
-    if (d2 > this->_radius * this->_radius)
+    if (d2 > this->_radius2)
         return false;
 
-    float thc = sqrtf(this->_radius * this->_radius - d2);
+    float thc = sqrtf(this->_radius2 - d2);
 
     t0 = tca - thc;
 

@@ -23,8 +23,8 @@ public:
     Material& operator=(Material&);
 
 private:
-        Vector3d _ambient; // в теории тут должен быть двумерный вектор
         Vector3d _diffuse;
+        Vector3d _ambient; // в теории тут должен быть двумерный вектор
         float _specular;
 };
 

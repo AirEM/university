@@ -17,9 +17,9 @@ public:
     BaseObject() = default;
     virtual ~BaseObject() = default;
 
-    virtual int getID() { return _id; }
-    virtual Material getMaterial() const = 0;
-    virtual Vector3d getNormal(const Vector3d&) = 0;
+    virtual int getID() const { return _id; }
+    virtual Material getMaterial() const {return _material; }
+    virtual Vector3d getNormal(const Vector3d&) const = 0;
 
     virtual bool ray_intersect(const Vector3d &, const Vector3d &, float &) const = 0;
 

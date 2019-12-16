@@ -1,6 +1,7 @@
 ﻿#include "drawmanager.h"
 
 #include <iostream>
+#include <time.h>
 
 namespace manager {
 
@@ -50,10 +51,7 @@ Vector3d DrawManager::cast_ray(const Vector3d &camera_position, const Vector3d &
 
         Vector3d shadow_pt, shadow_N;
 
-        Material tmpmaterial;
-        // scene_intersect(shadow_orig, light_dir, spheres, shadow_pt, shadow_N, tmpmaterial)
-
-        if (scene->intersect(shadow_orig, light_dir, shadow_pt, shadow_N, tmpmaterial) && (shadow_pt-shadow_orig).length() < light_distance)
+        if (scene->intersect(shadow_orig, light_dir, shadow_pt, shadow_N) && (shadow_pt-shadow_orig).length() < light_distance)
             continue;
 
         // ==================================================================
@@ -62,13 +60,12 @@ Vector3d DrawManager::cast_ray(const Vector3d &camera_position, const Vector3d &
 
         diffuse_light_intensity  += lights[i]->getIntensity() * std::max(0.f, light_dir * N);
 
-        specular_light_intensity += powf( std::max(0.f,  reflect(light_dir * -1.0f, N) * dir ) * -1.0f,
-                                          material.getSpecular() )
+        specular_light_intensity += powf( std::max(0.f,  reflect(light_dir*(-1.0f), N) * dir ) * -1.0f, material.getSpecular() )
                                     * lights[i]->getIntensity();
     }
 
 
-    auto res = material.getDiffuse() * diffuse_light_intensity * material.getAmbient().getX() + Vector3d(1., 1., 1.)*specular_light_intensity * material.getAmbient().getY();
+    Vector3d res = material.getDiffuse() * diffuse_light_intensity * material.getAmbient().getX() + Vector3d(1., 1., 1.) * specular_light_intensity * material.getAmbient().getY();
 
     return res;
 }
@@ -91,14 +88,18 @@ void DrawManager::render(std::shared_ptr<Scene>& scene)
     auto camera_angle_Y = scene->getCamera()->getAngleY() * static_cast<float>(M_PI) / 180.0f;
 
 
-    #pragma omp parallel for
+    auto start = std::chrono::steady_clock::now();
+    //clock_t tStart = clock();
+
+
+//    #pragma omp parallel for
     for (int i = 0; i < width; i++)
     {
         for (int j = 0; j < height; j++)
         {
             // Высчитываем направления текущего луча
-            float dir_x =  (i + 0.5f) -  width/2.0f;
-            float dir_y = -(j + 0.5f) + height/2.0f;
+            float dir_x =  (i + 0.5f) -  width / 2;
+            float dir_y = -(j + 0.5f) + height / 2;
             float dir_z = -height / (2.0f * tanf( fov / 2.0f) );
 
             // Поворот и нормализация  вектора напрваления текущего луча
@@ -117,6 +118,14 @@ void DrawManager::render(std::shared_ptr<Scene>& scene)
             _drawer->drawPoint(i, j);
         }
     }
+
+
+
+    auto end = std::chrono::steady_clock::now();
+    auto diff = end - start;
+    std::cout << std::chrono::duration <double, std::milli>(diff).count() << " + " << std::endl;
+
+    //std::cout << "TIME = " << static_cast<double>((clock() - tStart)/CLOCKS_PER_SEC) << std::endl;
 }
 
 

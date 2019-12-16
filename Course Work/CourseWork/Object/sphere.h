@@ -10,14 +10,14 @@ class Sphere : public BaseObject
 public:
     Sphere(int, Vector3d, size_t, Material);
 
-    Material getMaterial() const override;
-    Vector3d getNormal(const Vector3d&) override;
+    Vector3d getNormal(const Vector3d&) const override;
 
     bool ray_intersect(const Vector3d &, const Vector3d &, float &) const override;
 
 private:
-    Vector3d _centre;
+    Vector3d _center;
     size_t _radius;
+    size_t _radius2;
 };
 
 }

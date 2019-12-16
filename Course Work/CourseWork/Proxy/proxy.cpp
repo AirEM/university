@@ -51,7 +51,7 @@ int Proxy::CreateMainLight()
 {
     int id = _light_id++;
 
-    command::AddLightCommand command(0, 20, -8, 1.2f, id);
+    command::AddLightCommand command(0, 15, 0, 1.2f, id);
     _facade->execute(&command);
 
     // Добавление освещения

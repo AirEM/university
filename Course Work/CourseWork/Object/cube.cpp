@@ -6,26 +6,20 @@ Cube::Cube(int id, Vector3d& min, Vector3d& max, Material& m)
 {
     this->_id = id;
 
-    min_point = min;
-    max_point = max;
+    _min_point = min;
+    _max_point = max;
     this->_material = m;
 
-    normal[0] = Vector3d(0, 0, 1);
-    normal[1] = Vector3d(0, 0, -1);
-    normal[2] = Vector3d(-1, 0, 0);
-    normal[3] = Vector3d(1, 0, 0);
-    normal[4] = Vector3d(0, 1, 0);
-    normal[5] = Vector3d(0, -1, 0);
+    _normal[0] = Vector3d(0, 0, 1);
+    _normal[1] = Vector3d(0, 0, -1);
+    _normal[2] = Vector3d(-1, 0, 0);
+    _normal[3] = Vector3d(1, 0, 0);
+    _normal[4] = Vector3d(0, 1, 0);
+    _normal[5] = Vector3d(0, -1, 0);
 }
 
 
-
-Material Cube::getMaterial() const
-{
-    return _material;
-}
-
-Vector3d Cube::getNormal(const Vector3d& hit)
+Vector3d Cube::getNormal(const Vector3d& hit) const
 {
     Vector3d N;
 
@@ -38,11 +32,9 @@ Vector3d Cube::getNormal(const Vector3d& hit)
         M = getM(i);
 
         // Скалярное произведение Нормали и вектора hit,M
-
-        // !!! Заменить га функцию dot
-        if (test(hit, this->normal[i], M))
+        if (dot(hit, this->_normal[i], M))
         {
-            N = this->normal[i];
+            N = this->_normal[i];
             break;
         }
     }
@@ -55,13 +47,6 @@ Vector3d Cube::getNormal(const Vector3d& hit)
 
 bool Cube::ray_intersect(const Vector3d &orig, const Vector3d &dir, float &t0) const
 {
-//    // check whether initial point is inside the parallelepiped
-//    if ( ray.start[0] >= brick.min_point[0] && ray.start[0] <= brick.max_point[0] &&
-//         ray.start[1] >= brick.min_point[1] && ray.start[1] <= brick.max_point[1] &&
-//         ray.start[2] >= brick.min_point[2] && ray.start[2] <= brick.max_point[2] ) {
-//        return true;
-//    }
-
     float t_near = std::numeric_limits<float>::min();
     float t_far = std::numeric_limits<float>::max();
     float t1, t2;
@@ -71,8 +56,8 @@ bool Cube::ray_intersect(const Vector3d &orig, const Vector3d &dir, float &t0) c
     {
         if ( fabs(static_cast<double>(dir.get(i))) >= std::numeric_limits<double>::epsilon() )
         {
-            t1 = (min_point.get(i) - orig.get(i)) / dir.get(i);
-            t2 = (max_point.get(i) - orig.get(i)) / dir.get(i);
+            t1 = (_min_point.get(i) - orig.get(i)) / dir.get(i);
+            t2 = (_max_point.get(i) - orig.get(i)) / dir.get(i);
 
 
             if (t1 > t2)
@@ -92,7 +77,7 @@ bool Cube::ray_intersect(const Vector3d &orig, const Vector3d &dir, float &t0) c
         }
         else
         {
-            if ( orig.get(i) < min_point.get(i) || orig.get(i) > max_point.get(i) )
+            if ( orig.get(i) < _min_point.get(i) || orig.get(i) > _max_point.get(i) )
                 return false;
         }
     }
@@ -107,18 +92,19 @@ bool Cube::ray_intersect(const Vector3d &orig, const Vector3d &dir, float &t0) c
 Vector3d Cube::getM(int i) const
 {
     if (i == 5)
-        return min_point;
+        return _min_point;
 
     if (i == 4)
-        return max_point;
+        return _max_point;
 
     if (i % 2 == 0)
-        return min_point;
+        return _min_point;
     else
-        return max_point;
+        return _max_point;
 }
 
-bool Cube::test(const Vector3d& hit, Vector3d& N, Vector3d& M) const
+
+bool Cube::dot(const Vector3d& hit, const Vector3d& N, Vector3d& M) const
 {
     float A = N.getX();
     float B = N.getY();

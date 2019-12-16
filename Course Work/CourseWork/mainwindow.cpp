@@ -13,7 +13,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // Добавление освещения(в центр)
     int id = _proxy->CreateMainLight();
-    _ui->lightComboBox->addItem(QString("Light_") + QString::number(id), QVariant(id));
+    _ui->lightComboBox->addItem(QString("Источник_") + QString::number(id), QVariant(id));
 
 }
 
@@ -52,7 +52,7 @@ void MainWindow::on_addFigurePushButton_clicked()
 
     if (id != -1)
     {
-        _ui->figureComboBox->addItem(QString("Figure_") + QString::number(id), QVariant(id));
+        _ui->figureComboBox->addItem(QString("Фигура_") + QString::number(id), QVariant(id));
 
         render();
     }
@@ -85,12 +85,16 @@ void MainWindow::on_addLightPushButton_clicked()
 void MainWindow::on_dellLightPushButton_clicked()
 {
     int id = _ui->lightComboBox->currentData().toInt();
-    _ui->lightComboBox->removeItem(_ui->lightComboBox->currentIndex());
 
-    command::DeleteLightCommand command(id);
-    _facade->execute(&command);
+    if (id != 1)
+    {
+        _ui->lightComboBox->removeItem(_ui->lightComboBox->currentIndex());
 
-    render();
+        command::DeleteLightCommand command(id);
+        _facade->execute(&command);
+
+        render();
+    }
 }
 
 
@@ -229,7 +233,7 @@ void MainWindow::on_furtherPushButton_clicked()
 
 void MainWindow::on_forwardPushButton_clicked()
 {
-    command::RotateCameraCommand command(-1, 0);
+    command::RotateCameraCommand command(-2, 0);
     _facade->execute(&command);
 
     render();
@@ -237,7 +241,7 @@ void MainWindow::on_forwardPushButton_clicked()
 
 void MainWindow::on_backPushButton_clicked()
 {
-    command::RotateCameraCommand command(1, 0);
+    command::RotateCameraCommand command(2, 0);
     _facade->execute(&command);
 
     render();
@@ -245,7 +249,7 @@ void MainWindow::on_backPushButton_clicked()
 
 void MainWindow::on_rotationLeftPushButton_clicked()
 {
-    command::RotateCameraCommand command(0, 1);
+    command::RotateCameraCommand command(0, 2);
     _facade->execute(&command);
 
     render();
@@ -253,7 +257,7 @@ void MainWindow::on_rotationLeftPushButton_clicked()
 
 void MainWindow::on_rotationRightPushButton_clicked()
 {
-    command::RotateCameraCommand command(0, -1);
+    command::RotateCameraCommand command(0, -2);
     _facade->execute(&command);
 
     render();

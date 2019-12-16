@@ -8,8 +8,8 @@ namespace camera {
 using geometry::Vector3d;
 
 const float _base_x = 0;
-const float _base_y = 0;
-const float _base_z = 0;
+const float _base_y = 5;
+const float _base_z = 10;
 const float _base_x_angle = 0;
 const float _base_y_angle = 0;
 

@@ -13,12 +13,8 @@ Cone::Cone(int id, Vector3d& c, int h, int r, Material& m) : _centre(c), _height
 }
 
 
-Material Cone::getMaterial() const
-{
-    return _material;
-}
 
-Vector3d Cone::getNormal(const Vector3d& hit)
+Vector3d Cone::getNormal(const Vector3d& hit) const
 {
 
     Vector3d A = hit;

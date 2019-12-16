@@ -45,7 +45,8 @@ void FigureDialog::on_addPushButton_clicked()
         auto g = _ui->greenSphereLineEdit->text().toFloat() / 255.0f;
         auto b = _ui->blueSphereLineEdit->text().toFloat() / 255.0f;
 
-        Material base_material(Vector3d(0.5f,  0.5f, 0), Vector3d(r, g, b),   0.3f);
+        // Vector3d(0.5f,  0.5f, 0)
+        Material base_material(Vector3d(r, g, b), Vector3d(r, g, b),   50);
 
         command::AddSphereCommand command(_id, x, y, z, static_cast<size_t>(R), base_material);
         _facade->execute(&command);
@@ -62,7 +63,7 @@ void FigureDialog::on_addPushButton_clicked()
         auto g = _ui->greenCubeLineEdit->text().toFloat() / 255.0f;
         auto b = _ui->blueCubeLineEdit->text().toFloat() / 255.0f;
 
-        Material base_material(Vector3d(0.5f,  0.5f, 0), Vector3d(r, g, b),   0.3f);
+        Material base_material(Vector3d(0.5f,  0.5f, 0), Vector3d(r, g, b),   50);
 
         Vector3d min_p(x, y, z);
         Vector3d max_p(x + edge, y + edge, z - edge);

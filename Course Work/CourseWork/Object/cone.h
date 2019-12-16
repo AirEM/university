@@ -10,8 +10,7 @@ class Cone : public BaseObject
 public:
     Cone(int, Vector3d& , int, int, Material&);
 
-    Material getMaterial() const override;
-    Vector3d getNormal(const Vector3d&) override;
+    Vector3d getNormal(const Vector3d&) const override;
 
     bool ray_intersect(const Vector3d &, const Vector3d &, float &) const override;
 

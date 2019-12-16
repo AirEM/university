@@ -96,7 +96,59 @@ bool Scene::intersect(const Vector3d &orig, const Vector3d &dir,
 
     // Работа с видимой горизонтальной плоскостью (Сцена)
 
-    // TODO Вынести сцену в отделтный класс, унаследованный от BaseObject
+    // TODO Вынести сцену(шахматную доску) в отделтный класс, унаследованный от BaseObject
+    // данный код убрать в ray_intersect
+
+    float scene_dist = std::numeric_limits<float>::max();
+
+    if ( fabs(static_cast<double>(dir.getY())) > 1e-3)
+    {
+        float d = -(orig.getY()) / dir.getY();
+
+        Vector3d pt = orig + dir*d;
+
+        if (d > 0 && fabs(pt.getX()) < 10 && pt.getZ() < 0 && pt.getZ() > -20 && d < dist)
+        {
+            scene_dist = d;
+            hit = pt;
+            N = Vector3d(0,1,0);
+
+
+            material.getDiffuse() = (int(0.5f * hit.getX() + 1000) + int(0.5f * hit.getZ()) ) & 1 ?
+                        Vector3d(0.3f, 0.3f, 0.3f)  :
+                        Vector3d(0.3f, 0.2f, 0.1f);
+        }
+    }
+
+    return std::min(dist, scene_dist) < 1000;
+}
+
+bool Scene::intersect(const Vector3d &orig, const Vector3d &dir,
+                      Vector3d &hit, Vector3d &N)
+{
+    float dist = std::numeric_limits<float>::max();
+
+    // Работа с объетами на сцене
+
+    auto objs = this->_objects;
+
+    for (size_t i=0; i < objs.size(); i++)
+    {
+        float dist_i;
+
+        if (objs[i]->ray_intersect(orig, dir, dist_i) && dist_i < dist)
+        {
+            dist = dist_i;
+
+            hit = orig + (dir * dist_i);
+
+            N = objs[i]->getNormal(hit);
+        }
+    }
+
+    // Работа с видимой горизонтальной плоскостью (Сцена)
+
+    // TODO Вынести сцену(шахматную доску) в отделтный класс, унаследованный от BaseObject
     // данный код убрать в ray_intersect
 
     float scene_dist = std::numeric_limits<float>::max();
@@ -113,11 +165,6 @@ bool Scene::intersect(const Vector3d &orig, const Vector3d &dir,
             hit = pt;
             N = Vector3d(0,1,0);
 
-            // Vector3d(0.98f,0.835f,0.117f) Vector3d(0.741f,0.854f,0.341f)
-
-            material.getDiffuse() = (int(.5*hit.getX()+1000) + int(.5*hit.getZ())) & 1 ?
-                        Vector3d(0.3f, 0.3f, 0.3f)  :
-                        Vector3d(0.3f, 0.2f, 0.1f);
         }
     }
 

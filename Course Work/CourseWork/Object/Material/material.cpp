@@ -2,10 +2,10 @@
 
 namespace object {
 
-Material::Material() : _ambient(1, 0, 0), _diffuse(), _specular() {}
+Material::Material() : _diffuse(), _ambient(1, 0, 0), _specular() {}
 
 Material::Material(const Vector3d &a, const Vector3d &color, const float spec) :
-    _ambient(a), _diffuse(color), _specular(spec) {}
+    _diffuse(color), _ambient(a), _specular(spec) {}
 
 
 Vector3d& Material::getAmbient()
@@ -26,7 +26,6 @@ float Material::getSpecular()
 
 Material& Material::operator=(const Material& right)
 {
-    //проверка на самоприсваивание
     if (this == &right) {
         return *this;
     }
@@ -38,7 +37,6 @@ Material& Material::operator=(const Material& right)
 
 Material& Material::operator=(Material& right)
 {
-    //проверка на самоприсваивание
     if (this == &right) {
         return *this;
     }

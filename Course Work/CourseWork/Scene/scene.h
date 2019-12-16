@@ -34,6 +34,10 @@ public:
     bool intersect(const Vector3d &orig, const Vector3d &dir,
                    Vector3d &hit, Vector3d &N, Material &material);
 
+    bool intersect(const Vector3d &orig, const Vector3d &dir,
+                   Vector3d &hit, Vector3d &N);
+
+
 private:
     std::vector<std::shared_ptr<Light>> _lights;
     std::shared_ptr<Camera> _camera;
