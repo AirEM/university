@@ -76,7 +76,7 @@ void MainWindow::on_addLightPushButton_clicked()
 
     if (id != -1)
     {
-        _ui->lightComboBox->addItem(QString("Light_") + QString::number(id), QVariant(id));
+        _ui->lightComboBox->addItem(QString("Источник_") + QString::number(id), QVariant(id));
 
         render();
     }
@@ -102,6 +102,14 @@ void MainWindow::on_cleanPushButton_clicked()
 {
     command::CleanCommand c_command;
     _facade->execute(&c_command);
+
+    _ui->figureComboBox->clear();
+
+    auto curSize = _ui->lightComboBox->count();
+    for (int i = 1; i < curSize; i++)
+    {
+        _ui->lightComboBox->removeItem(1);
+    }
 
     render();
 }
@@ -259,6 +267,13 @@ void MainWindow::on_rotationRightPushButton_clicked()
 {
     command::RotateCameraCommand command(0, -2);
     _facade->execute(&command);
+
+    render();
+}
+
+void MainWindow::on_cameraParamPushButton_clicked()
+{
+    _proxy->showCameraDialog();
 
     render();
 }

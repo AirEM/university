@@ -5,6 +5,7 @@
 
 #include "../UI/lightdialog.h"
 #include "../UI/figuredialog.h"
+#include "../UI/cameradialog.h"
 
 #include "Facade/facade.h"
 
@@ -21,6 +22,8 @@ class Proxy
 public:
     Proxy();
     ~Proxy() = default;
+
+    void showCameraDialog();
 
     int CreateLight();
     int CreateFigure();

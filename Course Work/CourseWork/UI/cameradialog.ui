@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>LightDialog</class>
- <widget class="QDialog" name="LightDialog">
+ <class>CameraDialog</class>
+ <widget class="QDialog" name="CameraDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -10,17 +10,8 @@
     <height>290</height>
    </rect>
   </property>
-  <property name="minimumSize">
-   <size>
-    <width>285</width>
-    <height>233</height>
-   </size>
-  </property>
   <property name="windowTitle">
-   <string>Источник света</string>
-  </property>
-  <property name="sizeGripEnabled">
-   <bool>false</bool>
+   <string>Камера</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -31,7 +22,7 @@
       </font>
      </property>
      <property name="text">
-      <string>Источник света</string>
+      <string>Камера</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
@@ -39,83 +30,107 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="positionGroupBox">
+    <widget class="QGroupBox" name="cameraMoveGroupBox">
      <property name="title">
-      <string>Позиция</string>
+      <string>Переместить  на</string>
      </property>
-     <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <layout class="QHBoxLayout" name="horizontalLayout_3">
       <item>
        <widget class="QLabel" name="xLabel">
+        <property name="text">
+         <string>dX =</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="xLineEdit">
+        <property name="text">
+         <string>0</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="yLabel">
+        <property name="text">
+         <string>dY =</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="yLineEdit">
+        <property name="text">
+         <string>0</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="zLabel">
+        <property name="text">
+         <string>dZ =</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="zLineEdit">
+        <property name="text">
+         <string>0</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="cameraRotateGroupBox">
+     <property name="title">
+      <string>Повернуть на</string>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_4">
+      <item>
+       <widget class="QLabel" name="xRotateLabel">
         <property name="text">
          <string>X =</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="xLineEdit"/>
+       <widget class="QLineEdit" name="xRotateLineEdit">
+        <property name="text">
+         <string>0</string>
+        </property>
+       </widget>
       </item>
       <item>
-       <widget class="QLabel" name="yLabel">
+       <widget class="QLabel" name="yRotateLabel">
         <property name="text">
          <string>Y =</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="yLineEdit"/>
-      </item>
-      <item>
-       <widget class="QLabel" name="zLabel">
+       <widget class="QLineEdit" name="yRotateLineEdit">
         <property name="text">
-         <string>Z =</string>
+         <string>0</string>
         </property>
        </widget>
-      </item>
-      <item>
-       <widget class="QLineEdit" name="zLineEdit"/>
       </item>
      </layout>
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="groupBox">
-     <property name="title">
-      <string>Интенсивность</string>
-     </property>
-     <layout class="QHBoxLayout" name="horizontalLayout_3">
-      <item>
-       <widget class="QLabel" name="intensityLabel">
-        <property name="text">
-         <string>I =</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLineEdit" name="intensityLineEdit"/>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item>
-    <widget class="QFrame" name="frame">
-     <property name="frameShape">
-      <enum>QFrame::StyledPanel</enum>
-     </property>
-     <property name="frameShadow">
-      <enum>QFrame::Raised</enum>
-     </property>
+    <widget class="QWidget" name="widget" native="true">
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
-       <widget class="QPushButton" name="addPushButton">
+       <widget class="QPushButton" name="changePushButton">
         <property name="text">
-         <string>Добавить</string>
+         <string>Изменить</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QPushButton" name="canselPushButton">
         <property name="text">
-         <string>Отменить</string>
+         <string>Отмена</string>
         </property>
        </widget>
       </item>

@@ -12,7 +12,7 @@ public:
 
     Vector3d getNormal(const Vector3d&) const override;
 
-    bool ray_intersect(const Vector3d &, const Vector3d &, float &) const override;
+    bool ray_intersect(const Vector3d &, const Vector3d &, float &) override;
 
 private:
     Vector3d _min_point;

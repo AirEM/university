@@ -21,7 +21,7 @@ public:
     virtual Material getMaterial() const {return _material; }
     virtual Vector3d getNormal(const Vector3d&) const = 0;
 
-    virtual bool ray_intersect(const Vector3d &, const Vector3d &, float &) const = 0;
+    virtual bool ray_intersect(const Vector3d &, const Vector3d &, float &) = 0;
 
 protected:
     int _id;

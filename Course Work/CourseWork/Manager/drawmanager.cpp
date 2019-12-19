@@ -88,11 +88,10 @@ void DrawManager::render(std::shared_ptr<Scene>& scene)
     auto camera_angle_Y = scene->getCamera()->getAngleY() * static_cast<float>(M_PI) / 180.0f;
 
 
-    auto start = std::chrono::steady_clock::now();
-    //clock_t tStart = clock();
+//    auto start = std::chrono::steady_clock::now();
 
 
-//    #pragma omp parallel for
+    #pragma omp parallel for
     for (int i = 0; i < width; i++)
     {
         for (int j = 0; j < height; j++)
@@ -121,11 +120,9 @@ void DrawManager::render(std::shared_ptr<Scene>& scene)
 
 
 
-    auto end = std::chrono::steady_clock::now();
-    auto diff = end - start;
-    std::cout << std::chrono::duration <double, std::milli>(diff).count() << " + " << std::endl;
-
-    //std::cout << "TIME = " << static_cast<double>((clock() - tStart)/CLOCKS_PER_SEC) << std::endl;
+//    auto end = std::chrono::steady_clock::now();
+//    auto diff = end - start;
+//    std::cout << std::chrono::duration <double, std::milli>(diff).count() << " + " << std::endl;
 }
 
 

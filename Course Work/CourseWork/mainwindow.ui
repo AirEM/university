@@ -17,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Трасировка лучей</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QHBoxLayout" name="horizontalLayout">
@@ -130,9 +130,9 @@
            </widget>
           </item>
           <item row="8" column="0" colspan="2">
-           <widget class="QPushButton" name="pushButton">
+           <widget class="QPushButton" name="cameraParamPushButton">
             <property name="text">
-             <string>Задание координат</string>
+             <string>Ввод параметров</string>
             </property>
            </widget>
           </item>

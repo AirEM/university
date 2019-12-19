@@ -1,5 +1,7 @@
 #include "scene.h"
 
+#include <iostream>
+
 namespace scene {
 
 Scene::Scene() : _camera(new Camera) {}
@@ -64,8 +66,11 @@ void Scene::deleteFigure(int id)
 
 void Scene::clean()
 {
+    auto cur_size = _lights.size();
+    for (size_t i = 1; i < cur_size; ++i)
+        _lights.pop_back();
+
     _objects.clear();
-    _lights.clear();
 }
 
 
@@ -99,28 +104,33 @@ bool Scene::intersect(const Vector3d &orig, const Vector3d &dir,
     // TODO Вынести сцену(шахматную доску) в отделтный класс, унаследованный от BaseObject
     // данный код убрать в ray_intersect
 
-    float scene_dist = std::numeric_limits<float>::max();
 
-    if ( fabs(static_cast<double>(dir.getY())) > 1e-3)
+    float checkerboard_dist = std::numeric_limits<float>::max();
+
+    if (fabs(static_cast<double>(dir.getY())) > 1e-3)
     {
-        float d = -(orig.getY()) / dir.getY();
+        float d = -(orig.getY()) / dir.getY(); // the checkerboard plane has equation y = -4
 
         Vector3d pt = orig + dir*d;
 
-        if (d > 0 && fabs(pt.getX()) < 10 && pt.getZ() < 0 && pt.getZ() > -20 && d < dist)
+        if (d > 0 && dist > d && fabs(pt.getX()) < 10 && pt.getZ() < 0 && pt.getZ() > -20)
         {
-            scene_dist = d;
+            checkerboard_dist = d;
+
             hit = pt;
-            N = Vector3d(0,1,0);
 
+            if (orig.getY() >= 0)
+                N = Vector3d(0,1,0);
+            else
+                N = Vector3d(0,-1,0);
 
-            material.getDiffuse() = (int(0.5f * hit.getX() + 1000) + int(0.5f * hit.getZ()) ) & 1 ?
+            material.getDiffuse() = (int(0.5f * hit.getX() + 1000) + int(0.5f * hit.getZ())) & 1 ?
                         Vector3d(0.3f, 0.3f, 0.3f)  :
                         Vector3d(0.3f, 0.2f, 0.1f);
         }
     }
 
-    return std::min(dist, scene_dist) < 1000;
+    return std::min(dist, checkerboard_dist) < 1000;
 }
 
 bool Scene::intersect(const Vector3d &orig, const Vector3d &dir,

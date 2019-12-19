@@ -31,7 +31,7 @@ Vector3d Cone::getNormal(const Vector3d& hit) const
 }
 
 
-bool Cone::ray_intersect(const Vector3d &orig, const Vector3d &dir, float &t0) const
+bool Cone::ray_intersect(const Vector3d &orig, const Vector3d &dir, float &t0)
 {
 
     float t_near = std::numeric_limits<float>::min();

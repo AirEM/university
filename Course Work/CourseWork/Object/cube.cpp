@@ -45,7 +45,7 @@ Vector3d Cube::getNormal(const Vector3d& hit) const
 }
 
 
-bool Cube::ray_intersect(const Vector3d &orig, const Vector3d &dir, float &t0) const
+bool Cube::ray_intersect(const Vector3d &orig, const Vector3d &dir, float &t0)
 {
     float t_near = std::numeric_limits<float>::min();
     float t_far = std::numeric_limits<float>::max();

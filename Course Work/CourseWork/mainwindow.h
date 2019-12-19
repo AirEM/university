@@ -89,6 +89,8 @@ private slots:
 
     void on_rotationRightPushButton_clicked();
 
+    void on_cameraParamPushButton_clicked();
+
 private:
     Ui::MainWindow *_ui;
     MainLabel _label;

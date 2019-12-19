@@ -9,6 +9,15 @@ int Proxy::_figure_id = 1;
 Proxy::Proxy() : _facade(new Facade) {}
 
 
+void Proxy::showCameraDialog()
+{
+    CameraDialog cd;
+    cd.setModal(true);
+    cd.exec();
+
+}
+
+
 int Proxy::CreateLight()
 {
     int id = _light_id++;
@@ -51,7 +60,7 @@ int Proxy::CreateMainLight()
 {
     int id = _light_id++;
 
-    command::AddLightCommand command(0, 15, 0, 1.2f, id);
+    command::AddLightCommand command(0, 20, 10, 1.2f, id);
     _facade->execute(&command);
 
     // Добавление освещения

@@ -18,7 +18,7 @@ Vector3d Sphere::getNormal(const Vector3d& hit) const
 }
 
 
-bool Sphere::ray_intersect(const Vector3d &orig, const Vector3d &dir, float &t0) const
+bool Sphere::ray_intersect(const Vector3d &orig, const Vector3d &dir, float &t0)
 {
 
     // Луч, напрвленный от камеры к центру сферы
